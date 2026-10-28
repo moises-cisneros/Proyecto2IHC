@@ -1,0 +1,42 @@
+# Dependencias (se instalan dentro del contenedor)
+/vendor
+/node_modules
+/public/build
+/public/hot
+
+# Archivos de entorno (se generan en el contenedor)
+.env
+.env.*
+!.env.example
+
+# Archivos de git
+.git
+.gitignore
+.gitattributes
+
+# Archivos de IDE y editores
+.idea
+.vscode
+.fleet
+.nova
+.zed
+
+# Archivos de log y caché
+*.log
+/storage/logs/*.log
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/views
+/bootstrap/cache/*.php
+
+# Tests
+/tests
+
+# Docker mismo
+Dockerfile
+docker-compose.yml
+docker/
+
+# Otros
+Thumbs.db
+.DS_Store
