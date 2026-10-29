@@ -52,13 +52,12 @@ class PlanesController extends Controller
     {
         $request->validate([
             'nombre'       => 'required|max:255',
-            'organizador'  => 'required|max:255',
             'fecha_limite' => 'required|date',
         ], $this->mensajes);
 
         $plan = new Plan();
         $plan->nombre       = $request->nombre;
-        $plan->organizador  = $request->organizador;
+        $plan->organizador  = auth()->user()->name;
         $plan->fecha_limite = $request->fecha_limite;
         $plan->user_id      = auth()->id();
         $plan->save();

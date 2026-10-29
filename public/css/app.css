@@ -336,3 +336,28 @@ dialog h2,
     background-color: orange;
     margin-bottom: 5px;
 }
+
+/* ── Badge informativo de organizador (solo lectura en creación) ── */
+.campo-estatico {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    margin-bottom: 16px;
+    background: #f6f6f4;
+    border: 1px solid #e3e3df;
+    border-radius: 50px;
+    font-size: 14px;
+    color: #6f6f6a;
+}
+
+.campo-estatico strong {
+    color: #1c1c1a;
+}
+
+.icono-organizador {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
+    flex-shrink: 0;
+}
