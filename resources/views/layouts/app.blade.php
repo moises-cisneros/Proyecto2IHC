@@ -8,12 +8,6 @@
     {{-- Estilos globales de la app --}}
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
 
-    {{-- NProgress: barra de carga en la parte superior --}}
-    <link rel="stylesheet" href="https://unpkg.com/nprogress@0.2.0/nprogress.css">
-
-    {{-- SweetAlert2: cuadros de confirmación bonitos --}}
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
     {{-- Cada vista puede agregar su propio CSS extra aquí --}}
     @yield('estilos')
 </head>
@@ -51,13 +45,10 @@
 
     </main>
 
-    {{-- NProgress (spinner de barra) --}}
-    <script src="https://unpkg.com/nprogress@0.2.0/nprogress.js"></script>
+    {{-- Modal nativo accesible para confirmaciones (<dialog>) --}}
+    <x-dialog-confirm />
 
-    {{-- SweetAlert2 --}}
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    {{-- Script global: spinner automático + confirmaciones con data-confirm --}}
+    {{-- Script global: interacción inmediata + confirmaciones modales nativas --}}
     <script src="{{ asset('js/ui.js') }}"></script>
 
     {{-- Cada vista puede agregar scripts extra --}}

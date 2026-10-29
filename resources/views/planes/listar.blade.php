@@ -113,8 +113,9 @@
                         <input type="hidden" name="estado" value="confirmado">
                         <button type="submit" class="boton boton-claro"
                             data-confirm="¿Confirmar el plan &laquo;{{ $plan->nombre }}&raquo;?"
-                            data-icon="success"
-                            data-btn-ok="Sí, confirmar">Confirmar</button>
+                            data-title="Confirmar plan"
+                            data-btn-ok="Sí, confirmar"
+                            data-btn-cancel="Mantener pendiente">Confirmar</button>
                     </form>
 
                 @elseif ($plan->estado == 'confirmado')
@@ -124,8 +125,9 @@
                         <input type="hidden" name="estado" value="cancelado">
                         <button type="submit" class="boton boton-claro"
                             data-confirm="¿Cancelar el plan &laquo;{{ $plan->nombre }}&raquo;? No podrá volver a confirmarse."
-                            data-icon="warning"
-                            data-btn-ok="Sí, cancelar">Cancelar</button>
+                            data-title="Cancelar plan"
+                            data-btn-ok="Sí, cancelar"
+                            data-btn-cancel="Mantener plan">Cancelar</button>
                     </form>
 
                 @else
@@ -139,7 +141,7 @@
 
                     {{-- BOTÓN ELIMINAR
                         Si está confirmado: deshabilitado (primero hay que cancelarlo)
-                        Si no: formulario DELETE con confirmación SweetAlert2 --}}
+                        Si no: formulario DELETE con confirmación modal <dialog> nativo --}}
                     @if ($plan->estado == 'confirmado')
                         <button class="boton boton-rojo" disabled
                                 title="Cancela el plan antes de eliminarlo"> 🗑 </button>
@@ -149,8 +151,10 @@
                             @method('DELETE')
                             <button type="submit" class="boton boton-rojo"
                                 data-confirm="¿Eliminar &laquo;{{ $plan->nombre }}&raquo;? Esta acción no se puede deshacer."
-                                data-icon="error"
-                                data-btn-ok="Sí, eliminar"> 🗑 </button>
+                                data-title="Eliminar plan"
+                                data-btn-ok="Sí, eliminar"
+                                data-btn-cancel="Volver"
+                                data-type="danger"> 🗑 </button>
                         </form>
                     @endif
                 </div>
