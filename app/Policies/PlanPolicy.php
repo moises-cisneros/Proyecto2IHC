@@ -64,6 +64,19 @@ class PlanPolicy
     }
 
     /**
+     * Determine whether the user can abandon the plan.
+     * Only accepted participants can abandon. The creator cannot abandon their own plan.
+     */
+    public function abandonar(User $user, Plan $plan): bool
+    {
+        if ($this->isCreator($user, $plan)) {
+            return false;
+        }
+
+        return $this->isParticipante($user, $plan);
+    }
+
+    /**
      * Determine whether the user is the plan creator/organizer.
      */
     public function isCreator(User $user, Plan $plan): bool
