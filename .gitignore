@@ -22,3 +22,14 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+.pnpm-store/
+.codegraph/
+.atl/
+
+# Adaptadores locales de agentes (OpenSpec proyecta desde .agents/ a estas carpetas)
+/.agent/
+/.claude/
+/.cursor/
+/.opencode/
+/.pi/
+

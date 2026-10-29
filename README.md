@@ -1,59 +1,202 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Planazo — Proyecto 2 IHC
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> Aplicación web desarrollada con **Laravel 12**, plantillas **Blade**, **Tailwind CSS 4** y **MySQL 8.0**. Diseñada para ejecutarse por defecto mediante **Docker**, con soporte completo para **ejecución manual local**.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Requisitos Previos
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Elige según tu modalidad preferida:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Modo por defecto (Docker):**
+  - [Docker Desktop](https://www.docker.com/products/docker-desktop) (con Docker Compose).
+  - Git.
+- **Modo manual (Host local):**
+  - PHP 8.2 o superior (con extensiones `pdo_mysql`, `mbstring`, `openssl`).
+  - Composer 2.x.
+  - Servidor MySQL 8.0 en ejecución.
+  - Node.js 18+ y npm.
+  - Git.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## ⚡ Guía de Inicio Rápido
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Perfil 1: Docente / Evaluador
 
-## Laravel Sponsors
+Si tu objetivo es probar y calificar la aplicación inmediatamente:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+1. Clona el repositorio:
 
-### Premium Partners
+   ```bash
+   git clone https://github.com/moises-cisneros/Proyecto2IHC.git
+   cd Proyecto2IHC
+   ```
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+2. Inicia el entorno con Docker (comando estándar para cualquier sistema operativo):
 
-## Contributing
+   ```bash
+   docker compose up --build
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+   *(En Windows también podés usar el script `dev.bat`).*
+3. Abre tu navegador en [http://localhost:9300](http://localhost:9300).
+4. Inicia sesión con cualquiera de los usuarios de prueba precargados (por ejemplo: `test@example.com` / `password`).
 
-## Code of Conduct
+*(El script crea el `.env`, levanta MySQL, migra la base de datos, siembra los usuarios de prueba y arranca Laravel y Vite automáticamente).*
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+### Perfil 2: Desarrollador / Colaborador
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Si vas a programar, refactorizar o añadir funcionalidades:
 
-## License
+#### Opción A: Desarrollo con Docker (Por defecto)
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- Iniciar entorno:
+
+  ```bash
+  docker compose up --build
+  ```
+
+- Correr migraciones adicionales:
+
+  ```bash
+  docker compose exec planazo_app php artisan migrate
+  ```
+
+- Ejecutar pruebas:
+
+  ```bash
+  docker compose exec planazo_app php artisan test
+  ```
+
+- Detener entorno:
+
+  ```bash
+  docker compose down
+  ```
+
+#### Opción B: Desarrollo Manual en Host Local
+
+```bash
+# 1. Instalar dependencias
+composer install
+npm install
+
+# 2. Configurar variables de entorno y clave de cifrado
+cp .env.example .env
+php artisan key:generate
+
+# 3. Configurar tus credenciales de base de datos en .env y migrar
+php artisan migrate
+
+# 4. Iniciar servidores (en terminales separadas)
+php artisan serve    # Servidor HTTP en http://localhost:8000
+npm run dev          # Servidor Vite HMR en http://localhost:5173
+```
+
+#### Sincronización de Habilidades de IA (OpenSpec / Asistentes)
+
+El repositorio incluye habilidades versionadas para evaluación heurística y diseño de interacción en `.agents/skills/`. Si utilizas editores con agentes de IA (Cursor, OpenCode, Claude Code, etc.), puedes sincronizarlas sin ensuciar el control de versiones ejecutando:
+
+```bash
+npx @fission-ai/openspec init
+```
+
+Las configuraciones locales de cada herramienta (`.agent/`, `.claude/`, `.cursor/`, etc.) están convenientemente excluidas en `.gitignore`.
+
+---
+
+## 🌐 Accesos y Servicios
+
+| Servicio | URL / Host | Puerto Host | Descripción |
+| :--- | :--- | :--- | :--- |
+| **Aplicación Web** | [http://localhost:9300](http://localhost:9300) | `9300` | Laravel 12 (PHP 8.2) + Servidor HTTP |
+| **Vite Dev Server (HMR)** | [http://localhost:9373](http://localhost:9373) | `9373` | Compilación de assets y recarga en caliente |
+| **Base de Datos MySQL** | `127.0.0.1` | `9306` | MySQL 8.0 (BD: `proyecto2ihc`, user: `root`, pass: `root`) |
+
+---
+
+## 👤 Usuarios de Prueba Precargados (Seeders)
+
+La base de datos se siembra automáticamente al iniciar Docker con dos cuentas listas para usar sin necesidad de registrarse:
+
+| Usuario | Correo Electrónico | Contraseña | Datos de inicio |
+| :--- | :--- | :--- | :--- |
+| **Usuario 1** | `test@example.com` | `password` | Cuenta 1 de prueba |
+| **Usuario 2** | `test2@example.com` | `password` | Cuenta 2 de prueba |
+
+Para volver a sembrar los datos manualmente:
+
+```bash
+docker compose exec planazo_app php artisan db:seed
+```
+
+---
+
+## 🛑 Detener y Reiniciar el Entorno
+
+- **Detener la aplicación:**
+
+  ```bash
+  docker compose down
+  ```
+
+  *(En Windows también podés ejecutar `down.bat`).*
+- **Reiniciar desde cero (Limpiar contenedores y base de datos):**
+
+  ```bash
+  docker compose down -v
+  docker compose up --build
+  ```
+
+---
+
+## 🧭 Rutas y Funcionalidades de la Aplicación
+
+- **Acceso y Autenticación:**
+  - `/` ➔ Redirección automática a `/ingresar`.
+  - `/ingresar` ➔ Formulario de inicio de sesión (`login`).
+  - `/registro` ➔ Creación de nueva cuenta de usuario.
+  - `/recuperar` y `/restablecer/{token}` ➔ Recuperación de contraseña por correo.
+- **Gestión de Planes (Zona Autenticada):**
+  - `/mis-planes` ➔ Listado interactivo de planes personales con filtros por estado y fecha.
+  - `/planes` (POST) ➔ Creación de un nuevo plan (descripción, fecha límite).
+  - `/planes/{plan}/editar` y `PUT /planes/{plan}` ➔ Edición de plan existente.
+  - `DELETE /planes/{plan}` ➔ Eliminación de plan con diálogo de confirmación.
+  - `PUT /planes/{plan}/estado` ➔ Transición de estados del plan:
+    - `pendiente` ➔ `confirmado` ➔ `cancelado`.
+
+---
+
+## 🧪 Pruebas Automatizadas
+
+La suite de pruebas unitarias y de integración de Laravel se ejecuta mediante **PHPUnit**:
+
+- **Dentro del contenedor Docker (Recomendado):**
+
+  ```bash
+  docker compose exec planazo_app php artisan test
+  ```
+
+- **Desde el host local (si se cuenta con PHP y Composer instalados):**
+
+  ```bash
+  php artisan test
+  ```
+
+---
+
+## 📚 Documentación Técnica y Académica
+
+- [AGENTS.md](AGENTS.md): Reglas operativas estrictas para agentes de IA, prohibición de atribución de IA, principios IHC (Fitts, Hick, Carga Cognitiva) y flujo de sub-issues.
+- [ARCHITECTURE.md](ARCHITECTURE.md): Arquitectura de capas, modelos Eloquent, controladores y vistas Blade.
+- [CONTRIBUTING.md](CONTRIBUTING.md): Guía para colaboradores, ramas y convención de Conventional Commits.
+- [docs/](docs/): Evidencias académicas, historial de tareas de clase y capturas del proyecto recibido.
+
+---
+
+## 📄 Licencia
+
+Este proyecto está licenciado bajo la licencia MIT. Consulta el archivo [LICENSE](LICENSE) para más información.
