@@ -1,0 +1,39 @@
+name: Validar PR de Sub-issue
+
+on:
+  pull_request:
+    branches:
+      - master
+      - main
+
+jobs:
+  validate-subissue:
+    name: Verificar Criterios y Pruebas de Sub-issue
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del repositorio
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 10
+
+      - name: Configurar PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo, pdo_sqlite, bcmath
+          coverage: none
+
+      - name: Instalar dependencias de Composer
+        run: composer install --prefer-dist --no-interaction --no-progress
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Ejecutar script de verificación de sub-issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/verify-subissue.mjs
+
