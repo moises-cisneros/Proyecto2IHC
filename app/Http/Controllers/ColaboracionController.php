@@ -14,6 +14,32 @@ use Illuminate\Support\Str;
 class ColaboracionController extends Controller
 {
     /**
+     * Display the collaborative room for a plan.
+     */
+    public function detalle(Request $request, Plan $plan)
+    {
+        Gate::authorize('view', $plan);
+
+        $plan->load([
+            'user',
+            'opciones.user',
+            'opciones.votos',
+            'invitaciones.user',
+            'participantes',
+        ]);
+
+        $pestanaActiva = $request->input('tab', 'fechas');
+        if (!in_array($pestanaActiva, ['fechas', 'lugares'])) {
+            $pestanaActiva = 'fechas';
+        }
+
+        $fechas = $plan->opciones->where('tipo', 'fecha')->values();
+        $lugares = $plan->opciones->where('tipo', 'lugar')->values();
+
+        return view('planes.detalle', compact('plan', 'fechas', 'lugares', 'pestanaActiva'));
+    }
+
+    /**
      * Send an invitation to collaborate on a plan.
      */
     public function invitar(Request $request, Plan $plan)
