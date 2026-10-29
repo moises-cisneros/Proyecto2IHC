@@ -84,4 +84,37 @@ class AutentificacionTest extends TestCase
         $response->assertSessionHasErrors(['correo', 'contrasena']);
         $this->assertGuest();
     }
+
+    /**
+     * Registro exitoso de usuario con inicio de sesión automático.
+     */
+    public function test_usuario_puede_registrarse_correctamente_e_iniciar_sesion_automaticamente(): void
+    {
+        $response = $this->post('/registro', [
+            'nombre' => 'Nuevo Usuario',
+            'correo' => 'nuevo@example.com',
+            'contrasena' => 'password123',
+            'contrasena_confirmation' => 'password123',
+        ]);
+
+        $response->assertRedirect('/mis-planes');
+        $this->assertAuthenticated();
+        $this->assertDatabaseHas('users', [
+            'email' => 'nuevo@example.com',
+            'name' => 'Nuevo Usuario',
+        ]);
+    }
+
+    /**
+     * Usuario autenticado puede cerrar sesión correctamente.
+     */
+    public function test_usuario_autenticado_puede_cerrar_sesion(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/salir');
+
+        $response->assertRedirect('/ingresar');
+        $this->assertGuest();
+    }
 }
