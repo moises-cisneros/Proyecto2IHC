@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AutentificacionController;
+use App\Http\Controllers\HistorialController;
 use App\Http\Controllers\PlanesController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,5 +32,7 @@ Route::middleware('auth')->group(function () {
     Route::put(   '/planes/{plan}',          [PlanesController::class, 'actualizar']   )->name('planes.actualizar');
     Route::delete('/planes/{plan}',          [PlanesController::class, 'eliminar']     )->name('planes.eliminar');
     Route::put(   '/planes/{plan}/estado',   [PlanesController::class, 'cambiarEstado'])->name('planes.estado');
+
+    Route::get(   '/historial',              [HistorialController::class, 'index']     )->name('historial.index');
 
 });
