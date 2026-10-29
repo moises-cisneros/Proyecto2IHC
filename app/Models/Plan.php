@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Plan extends Model
@@ -59,6 +60,31 @@ class Plan extends Model
     public function actividades(): HasMany
     {
         return $this->hasMany(PlanActivity::class);
+    }
+
+    /**
+     * Opciones de fecha o lugar propuestas para el plan.
+     */
+    public function opciones(): HasMany
+    {
+        return $this->hasMany(Opcion::class);
+    }
+
+    /**
+     * Invitaciones emitidas para el plan.
+     */
+    public function invitaciones(): HasMany
+    {
+        return $this->hasMany(Invitacion::class);
+    }
+
+    /**
+     * Participantes que han aceptado la invitación al plan.
+     */
+    public function participantes(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'invitaciones', 'plan_id', 'user_id')
+                    ->wherePivot('estado', 'aceptada');
     }
 
     //  para busqueda y filtros 
