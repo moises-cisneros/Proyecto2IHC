@@ -13,16 +13,21 @@ echo "║        🚀  Arrancando Planazo        ║"
 echo "╚══════════════════════════════════════╝"
 echo ""
 
-# ── 1. Crear .env si no existe ────────────────────────────────
+# ── 1. Crear o ajustar .env para Docker ───────────────────────
 if [ ! -f .env ]; then
     echo "📄  Creando .env desde .env.example..."
     cp .env.example .env
-
-    # Ajustar para Docker (DB_HOST apunta al servicio "mysql")
-    sed -i 's/^DB_HOST=.*/DB_HOST=mysql/'     .env
-    sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=root/' .env
-    sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/' .env
 fi
+
+# Garantizar parámetros de conexión Docker en .env
+sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=mysql/' .env
+sed -i 's/^DB_HOST=.*/DB_HOST=mysql/'             .env
+sed -i 's/^DB_PORT=.*/DB_PORT=3306/'             .env
+sed -i 's/^# DB_DATABASE=.*/DB_DATABASE=proyecto2ihc/' .env
+sed -i 's/^DB_DATABASE=.*/DB_DATABASE=proyecto2ihc/'   .env
+sed -i 's/^DB_USERNAME=.*/DB_USERNAME=root/'     .env
+sed -i 's/^DB_PASSWORD=.*/DB_PASSWORD=root/'     .env
+sed -i 's|^APP_URL=.*|APP_URL=http://localhost:9300|' .env
 
 # ── 2. Generar clave de aplicación si está vacía ──────────────
 if grep -qE "^APP_KEY=$" .env; then
@@ -45,9 +50,12 @@ until php -r "
 done
 echo "✅  MySQL listo."
 
-# ── 4. Ejecutar migraciones ───────────────────────────────────
+# ── 4. Ejecutar migraciones y seeders ─────────────────────────
 echo "📦  Ejecutando migraciones..."
 php artisan migrate --force
+
+echo "🌱  Cargando usuarios y datos de prueba (seeders)..."
+php artisan db:seed --force
 
 # ── 5. Limpiar caché de configuración ────────────────────────
 php artisan config:clear
@@ -55,8 +63,8 @@ php artisan cache:clear
 
 echo ""
 echo "╔══════════════════════════════════════════════════╗"
-echo "║  ✅  Planazo corriendo en http://localhost:8000  ║"
-echo "║  🎨  Vite HMR en       http://localhost:5173     ║"
+echo "║  ✅  Planazo corriendo en http://localhost:9300  ║"
+echo "║  🎨  Vite HMR en       http://localhost:9373     ║"
 echo "╚══════════════════════════════════════════════════╝"
 echo ""
 
