@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Plan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class PlanesController extends Controller
 {
@@ -73,6 +74,8 @@ class PlanesController extends Controller
     */
     public function editar(Plan $plan)
     {
+        Gate::authorize('update', $plan);
+
         return view('planes.editar', compact('plan'));
     }
 
@@ -84,6 +87,8 @@ class PlanesController extends Controller
     */
     public function actualizar(Request $request, Plan $plan)
     {
+        Gate::authorize('update', $plan);
+
         $request->validate([
             'nombre'       => 'required|max:255',
             'organizador'  => 'required|max:255',
@@ -106,6 +111,8 @@ class PlanesController extends Controller
     */
     public function eliminar(Plan $plan)
     {
+        Gate::authorize('delete', $plan);
+
         // Regla de negocio: no se puede eliminar un plan confirmado
         if ($plan->estado === 'confirmado') {
             return redirect()->route('planes.listar')
@@ -125,6 +132,8 @@ class PlanesController extends Controller
     */
     public function cambiarEstado(Request $request, Plan $plan)
     {
+        Gate::authorize('cambiarEstado', $plan);
+
         $request->validate([
             'estado' => 'required|in:pendiente,confirmado,cancelado',
         ]);
