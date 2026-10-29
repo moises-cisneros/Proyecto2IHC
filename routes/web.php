@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AutentificacionController;
+use App\Http\Controllers\ColaboracionController;
 use App\Http\Controllers\HistorialController;
 use App\Http\Controllers\PlanesController;
 use Illuminate\Support\Facades\Route;
@@ -32,6 +33,10 @@ Route::middleware('auth')->group(function () {
     Route::put(   '/planes/{plan}',          [PlanesController::class, 'actualizar']   )->name('planes.actualizar');
     Route::delete('/planes/{plan}',          [PlanesController::class, 'eliminar']     )->name('planes.eliminar');
     Route::put(   '/planes/{plan}/estado',   [PlanesController::class, 'cambiarEstado'])->name('planes.estado');
+
+    Route::post(  '/planes/{plan}/invitar',  [ColaboracionController::class, 'invitar']      )->name('planes.invitar');
+    Route::post(  '/planes/{plan}/opciones', [ColaboracionController::class, 'guardarOpcion'])->name('planes.opciones.guardar');
+    Route::post(  '/opciones/{opcion}/votar', [ColaboracionController::class, 'votar']       )->name('opciones.votar');
 
     Route::get(   '/historial',              [HistorialController::class, 'index']     )->name('historial.index');
 

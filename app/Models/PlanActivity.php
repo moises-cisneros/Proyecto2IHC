@@ -20,6 +20,8 @@ class PlanActivity extends Model
         'accion',
         'descripcion',
         'estado_resultante',
+        'created_at',
+        'updated_at',
     ];
 
     /**

@@ -34,6 +34,11 @@ class InvitacionFactory extends Factory
         ]);
     }
 
+    public function pendiente(): static
+    {
+        return $this->state(['estado' => 'pendiente']);
+    }
+
     public function rechazada(): static
     {
         return $this->state(['estado' => 'rechazada']);
