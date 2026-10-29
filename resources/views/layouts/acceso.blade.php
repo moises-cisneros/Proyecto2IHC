@@ -14,20 +14,17 @@
         {{-- Tarjeta blanca con el formulario --}}
         <div class="tarjeta-acceso">
 
-            {{-- Mensajes flash (éxito o error) --}}
-            @if (session('exito'))
-                <div class="alerta alerta-exito">{{ session('exito') }}</div>
-            @endif
-
-            @if (session('error'))
-                <div class="alerta alerta-error">{{ session('error') }}</div>
-            @endif
+            {{-- Mensajes flash flotantes (éxito o error) sin layout shift --}}
+            @include('layouts._partials.mensajes')
 
             {{-- Contenido de la vista (ingresar, registro, recuperar, restablecer) --}}
             @yield('contenido')
 
         </div>
     </main>
+
+    {{-- Script global: ui.js para notificaciones toast --}}
+    <script src="{{ asset('js/ui.js') }}"></script>
 
 </body>
 </html>

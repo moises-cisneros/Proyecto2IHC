@@ -31,14 +31,8 @@
     {{-- Contenido principal de la página --}}
     <main class="contenedor">
 
-        {{-- Mensajes flash (éxito o error) que vienen del controlador --}}
-        @if (session('exito'))
-            <div class="alerta alerta-exito">{{ session('exito') }}</div>
-        @endif
-
-        @if (session('error'))
-            <div class="alerta alerta-error">{{ session('error') }}</div>
-        @endif
+        {{-- Mensajes flash flotantes (éxito o error) sin layout shift --}}
+        @include('layouts._partials.mensajes')
 
         {{-- Aquí va el contenido de cada vista --}}
         @yield('contenido')
