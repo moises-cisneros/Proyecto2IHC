@@ -14,19 +14,7 @@
 <body>
 
     {{-- Barra de navegación --}}
-    <nav class="barra">
-        <a href="{{ route('planes.listar') }}" class="marca">Planazo</a>
-
-        <div class="barra-derecha">
-            <span>{{ auth()->user()->name }}</span>
-
-            {{-- Botón para cerrar sesión --}}
-            <form method="POST" action="{{ route('salir') }}">
-                @csrf
-                <button type="submit" class="boton boton-claro">Salir</button>
-            </form>
-        </div>
-    </nav>
+    @include('layouts._partials.nav')
 
     {{-- Contenido principal de la página --}}
     <main class="contenedor">
