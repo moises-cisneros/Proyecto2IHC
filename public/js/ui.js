@@ -121,8 +121,77 @@
         });
     }
 
-    // Exponer función para uso global o programático
+    /**
+     * Muestra una notificación Toast flotante auto-dismissable (3s) con botón de cierre manual (Nielsen H3).
+     * @param {string|{mensaje: string, tipo?: string}} mensaje Texto o configuración de la notificación
+     * @param {string} [tipo='exito'] 'exito' | 'error'
+     * @returns {HTMLElement|undefined}
+     */
+    function mostrarToast(mensaje, tipo = 'exito') {
+        let texto = mensaje;
+        let estilo = tipo;
+        if (typeof mensaje === 'object' && mensaje !== null) {
+            texto = mensaje.mensaje || '';
+            estilo = mensaje.tipo || 'exito';
+        }
+
+        if (!texto) return;
+
+        let contenedor = document.getElementById('toast-contenedor');
+        if (!contenedor) {
+            contenedor = document.createElement('div');
+            contenedor.id = 'toast-contenedor';
+            contenedor.className = 'toast-contenedor fixed top-5 right-5 z-50 flex flex-col gap-2 pointer-events-none';
+            contenedor.setAttribute('aria-live', 'polite');
+            document.body.appendChild(contenedor);
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast-alerta toast-${estilo} pointer-events-auto flex items-center justify-between gap-3 p-4 rounded-xl shadow-lg border transition-all duration-300 ease-out`;
+        toast.setAttribute('role', estilo === 'error' ? 'alert' : 'status');
+
+        const iconoSvg = estilo === 'error'
+            ? '<svg class="toast-icono w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+            : '<svg class="toast-icono w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+
+        toast.innerHTML = `
+            <div class="toast-contenido flex items-center gap-3">
+                ${iconoSvg}
+                <span class="toast-mensaje text-sm font-medium">${texto}</span>
+            </div>
+            <button type="button" class="toast-cerrar min-w-[44px] min-h-[44px] flex items-center justify-center text-xl leading-none rounded-lg cursor-pointer" aria-label="Cerrar notificación">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        `;
+
+        contenedor.appendChild(toast);
+
+        let descartado = false;
+        function descartar() {
+            if (descartado) return;
+            descartado = true;
+            toast.classList.add('toast-ocultando');
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.remove();
+                }
+            }, 300);
+        }
+
+        const temporizador = setTimeout(descartar, 3000);
+
+        const btnCerrar = toast.querySelector('.toast-cerrar');
+        btnCerrar?.addEventListener('click', () => {
+            clearTimeout(temporizador);
+            descartar();
+        });
+
+        return toast;
+    }
+
+    // Exponer funciones para uso global o programático
     window.mostrarConfirmacion = mostrarConfirmacion;
+    window.mostrarToast = mostrarToast;
 
     /* ─── Interceptar clics en elementos con data-confirm ─────────────── */
     document.addEventListener('click', async function (e) {

@@ -125,6 +125,104 @@ body {
     color: #c0392b;
 }
 
+/* ── Notificaciones flotantes (Toast auto-dismissable 3s) ────── */
+.toast-contenedor {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 380px;
+    width: calc(100% - 40px);
+    pointer-events: none;
+}
+
+.toast-alerta {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    border: 1px solid transparent;
+    opacity: 1;
+    transform: translateY(0);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    animation: toast-entrada 0.3s ease-out;
+}
+
+@keyframes toast-entrada {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.toast-alerta.toast-ocultando {
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.toast-exito {
+    background: #edf7ef;
+    border-color: #c2e2c8;
+    color: #25663a;
+}
+
+.toast-error {
+    background: #fbeceb;
+    border-color: #f5c6cb;
+    color: #c0392b;
+}
+
+.toast-contenido {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+.toast-icono {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.toast-cerrar {
+    min-width: 44px;
+    min-height: 44px;
+    background: transparent;
+    border: none;
+    color: inherit;
+    font-size: 22px;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    opacity: 0.7;
+    transition: opacity 0.2s, background-color 0.2s;
+    padding: 0;
+}
+
+.toast-cerrar:hover,
+.toast-cerrar:focus-visible {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.06);
+    outline: none;
+}
+
 /* ── Pantalla "Mis planes" — encabezado ───────────────────────── */
 .encabezado-planes {
     display: flex;

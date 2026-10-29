@@ -1,7 +1,7 @@
 @if (session('exito'))
-    <div class="alerta alerta-exito">{{ session('exito') }}</div>
+    <x-toast-alerta tipo="exito" :mensaje="session('exito')" />
 @endif
 
 @if (session('error'))
-    <div class="alerta alerta-error">{{ session('error') }}</div>
+    <x-toast-alerta tipo="error" :mensaje="session('error')" />
 @endif
