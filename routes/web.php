@@ -38,6 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::post(  '/planes/{plan}/invitar',  [ColaboracionController::class, 'invitar']      )->name('planes.invitar');
     Route::post(  '/planes/{plan}/opciones', [ColaboracionController::class, 'guardarOpcion'])->name('planes.opciones.guardar');
     Route::post(  '/opciones/{opcion}/votar', [ColaboracionController::class, 'votar']       )->name('opciones.votar');
+    Route::post(  '/planes/{plan}/abandonar', [ColaboracionController::class, 'abandonar']   )->name('planes.abandonar');
 
     Route::get(   '/historial',              [HistorialController::class, 'index']     )->name('historial.index');
 
