@@ -212,5 +212,5 @@ Las credenciales de los usuarios de prueba están documentadas en la sección "U
   * `app/Models/` para persistencia y relaciones Eloquent. Prohibido mezclar consultas directas a la base de datos en las rutas.
 * **Frontend:** Plantillas Blade modulares en `resources/views/`:
   * Layouts limpios de CDNs externos (`layouts/app.blade.php`, `layouts/acceso.blade.php`).
-  * Componentes reutilizables nativos en `components/` (modal `<dialog>` nativo para confirmaciones Fitts/Hick).
+  * Componentes reutilizables nativos en `components/` (modal `<dialog>` nativo para confirmaciones y `<x-toast-alerta />` flotante auto-dismissable de 3s para avisos de sesión).
   * Vistas de dominio (`planes/`, `acceso/`) descompuestas en parciales (`_cabecera`, `_participantes`, `_sala_votacion`). Prohibido invocar queries directas desde componentes o directivas Blade.

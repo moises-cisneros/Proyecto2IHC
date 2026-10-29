@@ -159,29 +159,35 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 
 > **Tarea 5:** Invitar participantes · Proponer fechas o lugares · Votar por una opción
 
-### 4.1 Diagnóstico del estado actual
+### 4.1 Diagnóstico del estado actual y deuda técnica identificada
 
-Al analizar el código recibido se identifican las siguientes limitaciones estructurales:
+Al analizar exhaustivamente el código recibido de Toledo (`diego199D`) se identifican las siguientes limitaciones estructurales y deudas técnicas:
 
-1. **Modelo unipersonal:** `planes` solo cuenta con `user_id` (el creador). No existe el concepto de participantes, invitaciones, opciones ni votaciones.
-2. **Carencia de autorización (vulnerabilidad):** `PlanesController` no valida la propiedad del plan en `editar`, `actualizar`, `eliminar` ni `cambiarEstado`, permitiendo que cualquier usuario autenticado modifique recursos ajenos.
-3. **Modelos incompletos:** `Plan.php` no tiene relaciones Eloquent hacia `User` y `User.php` no tiene relación hacia sus planes.
-4. **Fricción de interfaz (Nielsen H6 y H8):** El formulario de creación solicita tipear manualmente el campo "Organizador" a pesar de que el usuario ya está autenticado con su cuenta (`auth()->user()->name`).
-5. **Dependencias externas y retrasos artificiales:** La aplicación inyecta SweetAlert2 y NProgress desde CDNs externos e impone un delay artificial de 1 segundo en cada formulario en `public/js/ui.js`.
-6. **Ausencia de pruebas de dominio:** El proyecto vino sin tests automatizados para validar planes ni flujos de acceso.
+1. **Omisión de la Tarea 4 (Historial de Actividad de Planes):** El repositorio recibido no implementó la persistencia de eventos ni la vista de auditoría requerida en la entrega previa (únicamente incluyó una tabla breve en un archivo Markdown sin soporte de base de datos ni controlador). Esto representa una **deuda técnica crítica** que impacta directamente en la Tarea 5, pues no existe una entidad ni mecanismo para registrar qué participante propuso fechas/lugares, envió invitaciones o emitió votos.
+2. **Dependencias externas y falla de continuidad en el reemplazo de notificaciones (SweetAlert2):** El proyecto original dependía de SweetAlert2 tanto para confirmaciones modales como para notificaciones temporales tipo Toast (`timer: 2500`). Al retirar SweetAlert2 e incorporar únicamente el modal `<dialog>` de confirmación, las alertas de éxito/error quedaron renderizadas como bloques estáticos en el DOM (`.alerta`) al tope de la vista, que empujan el layout hacia abajo (layout shift) y nunca desaparecen solas. Se requiere un **sistema dual nativo**: un modal `<dialog>` para confirmaciones destructivas y un componente **Toast flotante auto-dismissable (3 segundos)** sin desbordamiento de diseño.
+3. **Modelo unipersonal:** `planes` solo cuenta con `user_id` (el creador). No existe el concepto de participantes, invitaciones, opciones de fechas/lugares ni votaciones.
+4. **Carencia de autorización (vulnerabilidad de seguridad):** `PlanesController` no valida la propiedad del plan en `editar`, `actualizar`, `eliminar` ni `cambiarEstado`, permitiendo que cualquier usuario autenticado modifique recursos ajenos al no contar con una política formal (`PlanPolicy`).
+5. **Modelos incompletos:** `Plan.php` no tiene relaciones Eloquent hacia `User` y `User.php` no tiene relación hacia sus planes ni actividades.
+6. **Fricción de interfaz (Nielsen H6 y H8):** El formulario de creación solicita tipear manualmente el campo "Organizador" a pesar de que el usuario ya está autenticado con su cuenta (`auth()->user()->name`).
+7. **Ausencia de pruebas de dominio:** El proyecto vino sin tests automatizados para validar planes, acceso ni trazabilidad.
 
 ---
 
 ### 4.2 Nuevas tablas necesarias (migraciones)
 
+Se incorporan tanto las tablas colaborativas de la Tarea 5 como la tabla de auditoría para saldar la deuda técnica de la Tarea 4:
+
 ```
-invitaciones
+plan_activities (Deuda técnica Tarea 4 — Auditoría de eventos)
+  id | plan_id (FK) | user_id (FK) | accion | descripcion | estado_resultante (nullable) | timestamps
+
+invitaciones (Tarea 5)
   id | plan_id (FK) | user_id (FK nullable) | email | estado (pendiente/aceptada/rechazada) | token | timestamps
 
-opciones
+opciones (Tarea 5)
   id | plan_id (FK) | tipo (fecha/lugar) | valor | user_id (FK proponente) | timestamps
 
-votos
+votos (Tarea 5)
   id | opcion_id (FK) | user_id (FK) | timestamps
   UNIQUE (opcion_id, user_id)  ← integridad a nivel de BD: un usuario solo puede votar una vez por opción
 ```
@@ -192,6 +198,7 @@ votos
 
 | Modelo | Archivo | Relaciones principales |
 | --- | --- | --- |
+| `PlanActivity` | [`app/Models/PlanActivity.php`](../app/Models/PlanActivity.php) | `belongsTo(Plan::class)`, `belongsTo(User::class)` |
 | `Invitacion` | [`app/Models/Invitacion.php`](../app/Models/Invitacion.php) | `belongsTo(Plan::class)`, `belongsTo(User::class)` |
 | `Opcion` | [`app/Models/Opcion.php`](../app/Models/Opcion.php) | `belongsTo(Plan::class)`, `belongsTo(User::class, 'user_id')`, `hasMany(Voto::class)` |
 | `Voto` | [`app/Models/Voto.php`](../app/Models/Voto.php) | `belongsTo(Opcion::class)`, `belongsTo(User::class)` |
@@ -201,12 +208,14 @@ Relaciones a incorporar en los modelos base:
 ```php
 // En app/Models/Plan.php:
 public function organizador()   { return $this->belongsTo(User::class, 'user_id'); }
+public function actividades()   { return $this->hasMany(PlanActivity::class)->latest(); }
 public function invitaciones()  { return $this->hasMany(Invitacion::class); }
 public function participantes() { return $this->belongsToMany(User::class, 'invitaciones')->wherePivot('estado', 'aceptada'); }
 public function opciones()      { return $this->hasMany(Opcion::class); }
 
 // En app/Models/User.php:
 public function planes()        { return $this->hasMany(Plan::class); }
+public function actividades()   { return $this->hasMany(PlanActivity::class); }
 public function votos()         { return $this->hasMany(Voto::class); }
 ```
 
@@ -214,10 +223,11 @@ public function votos()         { return $this->hasMany(Voto::class); }
 
 ### 4.4 Capa de Autorización y Seguridad (`app/Policies/`)
 
-Se incorpora una política formal de acceso [`app/Policies/PlanPolicy.php`](../app/Policies/PlanPolicy.php) para resolver la vulnerabilidad heredada y gobernar el flujo colaborativo:
-- **Organizador / Creador:** Puede editar, cancelar, eliminar el plan, enviar invitaciones y cerrar votaciones.
-- **Participante Aceptado:** Puede ver la sala, proponer opciones (fechas/lugares), votar y abandonar el plan. **No puede borrar ni cancelar el plan**.
-- **Invitado Pendiente:** Acceso restringido en modo lectura hasta aceptar o rechazar la invitación.
+Se incorpora una política formal de acceso [`app/Policies/PlanPolicy.php`](../app/Policies/PlanPolicy.php) para gobernar el flujo colaborativo y blindar la integridad del sistema:
+
+- **Organizador / Creador:** Puede editar, cancelar, eliminar el plan, enviar invitaciones por correo y cerrar votaciones.
+- **Participante Aceptado:** Puede ver la sala, proponer opciones (fechas o lugares), votar y abandonar el plan. **No puede borrar ni cancelar el plan**.
+- **Invitado Pendiente:** Acceso restringido en modo lectura hasta aceptar o rechazar la invitación mediante el token único.
 
 ---
 
@@ -225,12 +235,14 @@ Se incorpora una política formal de acceso [`app/Policies/PlanPolicy.php`](../a
 
 | Controlador nuevo | Responsabilidad |
 | --- | --- |
+| [`HistorialController`](../app/Http/Controllers/HistorialController.php) | Consulta cronológica de auditoría con aislamiento estricto por usuario y filtros temáticos |
 | [`InvitacionesController`](../app/Http/Controllers/InvitacionesController.php) | Enviar invitaciones por correo y gestionar aceptación/rechazo vía token |
 | [`OpcionesController`](../app/Http/Controllers/OpcionesController.php) | Proponer y retirar fechas o lugares en planes activos |
 | [`VotosController`](../app/Http/Controllers/VotosController.php) | Emitir y retirar votos de forma atómica con `DB::transaction` |
 
 Validaciones extraídas a Form Requests dedicados:
-- `GuardarPlanRequest`: Valida datos del plan y automatiza la asignación del organizador.
+
+- `GuardarPlanRequest`: Valida datos del plan y automatiza la asignación del organizador desde la sesión activa.
 - `ProponerOpcionRequest`: Valida tipo (`fecha` o `lugar`) y longitud del valor propuesto.
 
 ---
@@ -240,7 +252,10 @@ Validaciones extraídas a Form Requests dedicados:
 En [`routes/web.php`](../routes/web.php) — dentro del grupo protegido `Route::middleware('auth')`:
 
 ```php
-// Sala de detalle colaborativo
+// Historial de actividad (Auditoría / Deuda Técnica Tarea 4)
+Route::get('/historial',                     [HistorialController::class, 'index'])->name('historial.index');
+
+// Sala de detalle colaborativo (Tarea 5)
 Route::get('/planes/{plan}',                 [PlanesController::class, 'mostrar'])->name('planes.mostrar');
 
 // Invitaciones
@@ -262,21 +277,29 @@ Route::delete('/opciones/{opcion}/votar',    [VotosController::class, 'quitar'])
 
 ### 4.7 Reestructuración de Vistas y Decisiones Ergonómicas (IHC)
 
-1. **Estandarización con `<dialog>` Nativo:** Se retiran SweetAlert2 y NProgress de los layouts, sustituyéndolos por el componente reutilizable `resources/views/components/dialog-confirm.blade.php`. Elimina dependencias de CDNs externos y el retraso artificial de 1 segundo.
+1. **Feedback Dual Nativo (Reemplazo integral de SweetAlert2 sin CDNs):**
+   - **Modal de Confirmación Bloqueante (`<x-dialog-confirm />`):** Utiliza `<dialog>` nativo de HTML5 con backdrop oscuro para acciones críticas y destructivas (eliminar plan, cancelar, abandonar).
+   - **Toast Flotante Auto-Dismissable (`<x-toast-alerta />`):** Ubicado en la esquina superior derecha (`fixed top-5 right-5 z-50`). No altera el flujo de la página (*Zero Layout Shift*), se muestra con animación suave, **desaparece automáticamente a los 3 segundos** (3000ms) y ofrece un botón de descarte manual `×` (Nielsen H3).
 2. **Modularización de "Mis Planes" ([`planes/listar.blade.php`](../resources/views/planes/listar.blade.php)):** Descompuesta en parciales (`_filtros.blade.php`, `_tabla.blade.php`, `_modal_crear.blade.php`).
 3. **Refactorización del Organizador (H6 y H8):** En `_modal_crear.blade.php`, se retira el campo editable de organizador y se muestra un badge informativo de solo lectura: *«Organizador: {{ auth()->user()->name }}»*.
-4. **Nueva Pantalla de Sala Colaborativa ([`planes/detalle.blade.php`](../resources/views/planes/detalle.blade.php)):**
+4. **Pantalla de Historial de Actividad ([`planes/historial.blade.php`](../resources/views/planes/historial.blade.php)):**
+   - **Tarjetas de Actividad (`ActivityCard`):** Responden a las **4 dimensiones autónomas** del evento (*qué ocurrió, cuándo, cuál fue el resultado, qué elemento involucró*).
+   - **Filtros Temáticos (Ley de Hick):** Acotados a $n=4$ chips (`Todos`, `Estados`, `Creaciones`, `Participación`) con área táctil $\ge 44$px (Ley de Fitts).
+5. **Nueva Pantalla de Sala Colaborativa ([`planes/detalle.blade.php`](../resources/views/planes/detalle.blade.php)):**
    - **Cabecera (`_cabecera.blade.php`):** Título, estado y fecha límite.
    - **Panel de Participantes (`_participantes.blade.php`):** Lista de miembros con roles (`Organizador` vs `Participante`) y botón accesible "Invitar participante" ($\ge 44$px de target táctil, Ley de Fitts).
    - **Sala de Votación (`_sala_votacion.blade.php`):** Pestañas semánticas para separar "Fechas" y "Lugares" (Ley de Hick, $n \le 4$), tarjetas de opción autónomas con recuento de votos y separación antagónica de 12px (`gap-3`) entre botones de votar y eliminar opción.
-5. **Salida de Emergencia (Nielsen H3):** Botón visible «Abandonar plan» con diálogo de confirmación para participantes invitados.
+6. **Salida de Emergencia (Nielsen H3):** Botón visible «Abandonar plan» con diálogo de confirmación para participantes invitados.
 
 ---
 
 ### 4.8 Matriz de Pruebas Automatizadas Requeridas (PHPUnit)
 
 Para cumplir con la directiva de calidad (mínimo 4 casos por suite):
-- `tests/Feature/AutentificacionTest.php`: Verifica que el middleware `auth` devuelva redirect 302 a usuarios no logueados, login con credenciales válidas/inválidas y registro de usuarios.
+
+- `tests/Feature/AutentificacionTest.php`: Redirección 302 de middleware `auth`, login exitoso/inválido y registro seguro (saneamiento deuda técnica de acceso).
+- `tests/Unit/PlanActivityTest.php`: Creación de eventos de auditoría, registro automático ante transiciones de estado y relaciones Eloquent.
+- `tests/Feature/HistorialConsultaTest.php`: Consulta cronológica, aislamiento estricto por usuario y filtros temáticos por categoría.
 - `tests/Unit/ColaboracionModelosTest.php`: Verifica relaciones `opciones()`, `participantes()`, pertenencia de votos y rechazo de votos duplicados por constraint único de BD.
 - `tests/Feature/ColaboracionEndpointsTest.php`: Verifica invitación con token, propuesta de opciones, autorización 403 con `PlanPolicy` y restricción de borrado para invitados.
 - `tests/Feature/AbandonoPlanTest.php`: Verifica abandono exitoso de participante (H3), rechazo de abandono para creadores y consistencia de votos tras salir.
@@ -289,10 +312,12 @@ Para cumplir con la directiva de calidad (mínimo 4 casos por suite):
 flowchart TD
     subgraph Frontend["Capa de Presentación (Blade + Tailwind)"]
         A[listar.blade.php] --> B[detalle.blade.php - Sala]
+        A --> H_VIEW[historial.blade.php - Auditoría]
         B --> C["_cabecera.blade.php"]
         B --> D["_participantes.blade.php (Fitts ≥44px)"]
         B --> E["_sala_votacion.blade.php (Hick: Fechas/Lugares)"]
-        B --> F["dialog-confirm (<dialog> nativo)"]
+        A & B & H_VIEW --> F["dialog-confirm (<dialog> nativo)"]
+        A & B & H_VIEW --> TOAST["toast-alerta (Flotante auto-dismiss 3s)"]
     end
 
     subgraph Backend["Capa de Negocio y Seguridad"]
@@ -300,6 +325,7 @@ flowchart TD
         H[InvitacionesController]
         I[OpcionesController]
         J[VotosController]
+        HC[HistorialController]
         K[PlanPolicy]
         G --> K
         H --> K
@@ -311,19 +337,21 @@ flowchart TD
         L[(planes)] --> M[(invitaciones)]
         L --> N[(opciones)]
         N --> O[(votos - UNIQUE)]
+        L --> ACT[(plan_activities)]
     end
 
     B --> Backend
+    H_VIEW --> HC
     Backend --> Database
 ```
 
 | Capa | Archivos modificados / refactorizados | Archivos nuevos |
 | --- | --- | --- |
-| **BD (Migraciones)** | — | 3 migraciones (`invitaciones`, `opciones`, `votos`) |
-| **Modelos** | [`Plan.php`](../app/Models/Plan.php), [`User.php`](../app/Models/User.php) | `Invitacion.php`, `Opcion.php`, `Voto.php` |
+| **BD (Migraciones)** | — | 4 migraciones (`plan_activities`, `invitaciones`, `opciones`, `votos`) |
+| **Modelos** | [`Plan.php`](../app/Models/Plan.php), [`User.php`](../app/Models/User.php) | `PlanActivity.php`, `Invitacion.php`, `Opcion.php`, `Voto.php` |
 | **Seguridad** | — | [`PlanPolicy.php`](../app/Policies/PlanPolicy.php) |
-| **Controladores** | [`PlanesController.php`](../app/Http/Controllers/PlanesController.php) | `InvitacionesController.php`, `OpcionesController.php`, `VotosController.php` |
+| **Controladores** | [`PlanesController.php`](../app/Http/Controllers/PlanesController.php) | `HistorialController.php`, `InvitacionesController.php`, `OpcionesController.php`, `VotosController.php` |
 | **Validación** | — | `GuardarPlanRequest.php`, `ProponerOpcionRequest.php` |
 | **Rutas** | [`routes/web.php`](../routes/web.php) | — |
-| **Vistas** | `layouts/app.blade.php`, `planes/listar.blade.php` | `components/dialog-confirm.blade.php`, `planes/detalle.blade.php` (+ parciales) |
-| **Pruebas** | — | 4 suites de tests PHPUnit en `tests/Feature/` y `tests/Unit/` |
+| **Vistas** | `layouts/app.blade.php`, `planes/listar.blade.php` | `components/dialog-confirm.blade.php`, `components/toast-alerta.blade.php`, `planes/historial.blade.php`, `planes/detalle.blade.php` (+ parciales) |
+| **Pruebas** | — | 6 suites de tests PHPUnit en `tests/Feature/` y `tests/Unit/` |

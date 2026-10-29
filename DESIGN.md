@@ -101,10 +101,24 @@ Abstraída de [`public/css/app.css`](file:///d:/Proyectos/Proyectos-Moises/Proye
 
 ### Diálogo Modal Nativo (`<dialog>`)
 
-* **Reemplazo integral:** Sustituye a SweetAlert2 mediante el componente nativo `resources/views/components/dialog-confirm.blade.php`.
+* **Reemplazo integral:** Sustituye a SweetAlert2 para **confirmaciones bloqueantes** mediante el componente nativo `resources/views/components/dialog-confirm.blade.php`.
 * **Dimensiones y Forma:** Ancho máximo `400px`, padding `24px`, bordes redondeados `12px` (`rounded-xl`), fondo blanco `#ffffff` y backdrop oscuro `rgba(0, 0, 0, 0.4)`.
 * **Cero CDNs externos:** Se controla con JavaScript puro nativo (`showModal()` y `close()`), asegurando compatibilidad 100% offline y sin retardos artificiales.
 * **Separación de Botones (Fitts):** Botón de confirmación y botón de cancelación alineados al final con separación mínima de `12px` (`gap-3`) y altura táctil $\ge 44$px.
+
+### Notificaciones Flotantes Nativas (Toast Auto-Dismissable)
+
+* **Reemplazo integral de alertas tipo Toast de SweetAlert2:** Resuelve el problema donde las alertas flash estáticas quedaban fijas al tope de la pantalla empujando el contenido hacia abajo (layout shift) sin desaparecer.
+* **Posicionamiento Flotante:** `position: fixed; top: 20px; right: 20px; z-index: 50;`. Se renderiza por encima de la vista sin desplazar la estructura del documento (*Zero Cumulative Layout Shift*).
+* **Temporizador y Desvanecimiento Automático:** Se muestra con una animación suave de entrada (`fade-in`), permanece visible durante **3 segundos** (3000ms) y desaparece automáticamente con transición de desvanecimiento (`fade-out`) antes de removerse del DOM.
+* **Control del Usuario (Nielsen H3):** Dispone de un botón visible de cierre manual `×` con área táctil accesible ($\ge 44$px) y etiqueta `aria-label="Cerrar notificación"` para descarte inmediato opcional.
+* **Accesibilidad (Nielsen H1):** Contenedor accesible con `role="status"` o `role="alert"` y directiva `aria-live="polite"` para lectores de pantalla.
+* **Tokens Visuales del Toast:**
+  * Éxito: Fondo `#edf7ef`, borde `#c2e2c8`, texto `#25663a`, ícono de verificación.
+  * Error: Fondo `#fbeceb`, borde `#f5c6cb`, texto `#c0392b`, ícono de advertencia.
+* **Componente y API Global en `ui.js`:**
+  * Componente Blade: `resources/views/components/toast-alerta.blade.php` para mensajes de sesión (`session('exito')` / `session('error')`).
+  * Función cliente global: `window.mostrarToast({ tipo: 'exito' | 'error', mensaje: '...' })`.
 
 ### Panel de Participantes (`_participantes.blade.php`)
 
@@ -133,3 +147,18 @@ Abstraída de [`public/css/app.css`](file:///d:/Proyectos/Proyectos-Moises/Proye
 
 * **Ergonomía H6 y H8:** Se elimina el input editable de organizador. En su lugar, se renderiza una etiqueta estática no editable:
   * *«Organizador: {{ auth()->user()->name }}»* estilizada con texto atenuado (`#6f6f6a`) e ícono de usuario.
+
+### Tarjeta de Actividad (`ActivityCard`)
+
+* **4 Dimensiones Autónomas del Evento (Reducción de Carga Cognitiva):**
+  1. **Qué ocurrió:** Ícono semántico (creación, cambio de estado, membresía, propuesta, voto) y descripción de la acción.
+  2. **Cuándo ocurrió:** Tiempo relativo en español (*"Hace 15 min"*) y fecha exacta legible (*"29 oct 2026, 10:30"*).
+  3. **Resultado:** Badge semántico con el estado resultante (`pendiente`, `confirmado`, `cancelado`).
+  4. **Elemento involucrado:** Nombre del plan con enlace directo a su sala (`/planes/{plan}`).
+* **Forma y Contraste:** Tarjeta blanca con borde `#e3e3df`, radio de `12px` y padding `16px`.
+
+### Barra de Filtros Temáticos de Historial (`planes/historial.blade.php`)
+
+* **Ley de Hick ($n = 4$):** Conjunto acotado de 4 chips semánticos mutuamente excluyentes: `Todos`, `Estados`, `Creaciones` y `Participación`.
+* **Ley de Fitts:** Cada chip garantiza un área táctil mínima de **44×44px** (`min-h-[44px]`). Chip activo resaltado con fondo amarillo cálido `#ffe683`.
+* **Estado Vacío Empático:** Si el usuario no tiene actividad registrada, se muestra una ilustración/ícono con mensaje orientador y un botón de acción primaria «Explorar o crear un plan».

@@ -42,6 +42,7 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 │   │   ├── Controllers/
 │   │   │   ├── AutentificacionController.php   # Registro, login, logout, recuperación
 │   │   │   ├── PlanesController.php           # CRUD de planes y transiciones de estado
+│   │   │   ├── HistorialController.php        # Línea de tiempo y registro de eventos
 │   │   │   ├── InvitacionesController.php     # Gestión de invitaciones y tokens
 │   │   │   ├── OpcionesController.php         # Propuestas de fechas y lugares
 │   │   │   ├── VotosController.php            # Emisión y retiro de votos
@@ -52,6 +53,7 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 │   ├── Models/
 │   │   ├── User.php                          # Modelo de usuario autenticable
 │   │   ├── Plan.php                          # Modelo central de plan y relaciones
+│   │   ├── PlanActivity.php                  # Modelo de eventos y auditoría de cambios
 │   │   ├── Invitacion.php                    # Membresías y estado de invitados
 │   │   ├── Opcion.php                        # Fechas o lugares propuestos
 │   │   └── Voto.php                          # Votos relacionales únicos
@@ -73,9 +75,9 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 │   ├── js/                                   # Entry points de JavaScript
 │   └── views/                                # Plantillas Blade modulares
 │       ├── acceso/                           # Vistas de autenticación (ingresar, registro, etc.)
-│       ├── components/                       # Componentes reutilizables (<dialog> modal nativo)
+│       ├── components/                       # Componentes reutilizables (<dialog> modal nativo, toast-alerta flotante)
 │       ├── layouts/                          # Layouts base (app, acceso, parciales de nav/mensajes)
-│       └── planes/                           # Vistas de gestión y sala colaborativa (listar, detalle)
+│       └── planes/                           # Vistas de gestión, auditoría y sala (listar, historial, detalle)
 ├── routes/
 │   ├── web.php                               # Definición de rutas web y middleware auth
 │   └── console.php                           # Comandos de consola de Artisan
@@ -115,8 +117,9 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 
 - Mapea las tablas relacionales mediante **Eloquent ORM**.
 - Define relaciones formales:
-  - `Plan`: `organizador()`, `invitaciones()`, `participantes()`, `opciones()`.
-  - `User`: `planes()`, `votos()`.
+  - `Plan`: `organizador()`, `actividades()`, `invitaciones()`, `participantes()`, `opciones()`.
+  - `User`: `planes()`, `actividades()`, `votos()`.
+  - `PlanActivity`: `plan()`, `usuario()`.
   - `Invitacion`: `plan()`, `usuario()`.
   - `Opcion`: `plan()`, `proponente()`, `votos()`.
   - `Voto`: `opcion()`, `usuario()`.
@@ -127,7 +130,9 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 - Plantillas Blade modulares desacopladas en componentes y vistas de dominio:
   - **`layouts/app.blade.php`**: Shell maestro libre de CDNs externos.
   - **`components/dialog-confirm.blade.php`**: Diálogo modal nativo de HTML5 (`<dialog>`) para confirmaciones ergonómicas de Fitts y Hick.
+  - **`components/toast-alerta.blade.php`**: Notificación flotante nativa (`fixed top-5 right-5 z-50`) con auto-cierre a los 3 segundos para mensajes de sesión sin alterar el layout.
   - **`planes/listar.blade.php`**: Orquestador del listado que incluye parciales (`_filtros.blade.php`, `_tabla.blade.php`, `_modal_crear.blade.php`).
+  - **`planes/historial.blade.php`**: Vista de auditoría cronológica con tarjetas autónomas de 4 dimensiones y filtros temáticos de Hick ($n=4$).
   - **`planes/detalle.blade.php`**: Sala colaborativa que incluye parciales (`_cabecera.blade.php`, `_participantes.blade.php`, `_sala_votacion.blade.php`).
 - **Prohibido:** Ejecutar consultas directas a la base de datos dentro de los archivos Blade.
 
