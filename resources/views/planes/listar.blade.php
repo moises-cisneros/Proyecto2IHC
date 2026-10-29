@@ -82,7 +82,11 @@
         <tr>
 
             {{-- Nombre y organizador --}}
-            <td>{{ $plan->nombre }}</td>
+            <td>
+                <a href="{{ route('planes.detalle', $plan) }}" class="enlace-plan" style="color: #1c1c1a; font-weight: 600; text-decoration: underline;">
+                    {{ $plan->nombre }}
+                </a>
+            </td>
             <td>{{ $plan->organizador }}</td>
 
             {{-- Fecha formateada como dd/mm/yyyy --}}

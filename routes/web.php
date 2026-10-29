@@ -29,6 +29,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get(   '/mis-planes',             [PlanesController::class, 'listar']       )->name('planes.listar');
     Route::post(  '/planes',                 [PlanesController::class, 'guardar']      )->name('planes.guardar');
+    Route::get(   '/planes/{plan}',          [ColaboracionController::class, 'detalle'])->name('planes.detalle');
     Route::get(   '/planes/{plan}/editar',   [PlanesController::class, 'editar']       )->name('planes.editar');
     Route::put(   '/planes/{plan}',          [PlanesController::class, 'actualizar']   )->name('planes.actualizar');
     Route::delete('/planes/{plan}',          [PlanesController::class, 'eliminar']     )->name('planes.eliminar');
