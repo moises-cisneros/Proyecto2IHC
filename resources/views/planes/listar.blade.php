@@ -104,64 +104,78 @@
 
             {{-- Columna de acciones --}}
             <td class="acciones">
+                @if ($plan->user_id === auth()->id())
+                    {{-- BOTÓN DE ESTADO
+                         pendiente  → muestra "Confirmar"
+                         confirmado → muestra "Cancelar" (con aviso de que no podrá reactivarse)
+                         cancelado  → muestra "Confirmar" deshabilitado (regla de negocio) --}}
 
-                {{-- BOTÓN DE ESTADO
-                     pendiente  → muestra "Confirmar"
-                     confirmado → muestra "Cancelar" (con aviso de que no podrá reactivarse)
-                     cancelado  → muestra "Confirmar" deshabilitado (regla de negocio) --}}
-
-                @if ($plan->estado == 'pendiente')
-                    <form method="POST" action="{{ route('planes.estado', $plan) }}">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" name="estado" value="confirmado">
-                        <button type="submit" class="boton boton-claro"
-                            data-confirm="¿Confirmar el plan &laquo;{{ $plan->nombre }}&raquo;?"
-                            data-title="Confirmar plan"
-                            data-btn-ok="Sí, confirmar"
-                            data-btn-cancel="Mantener pendiente">Confirmar</button>
-                    </form>
-
-                @elseif ($plan->estado == 'confirmado')
-                    <form method="POST" action="{{ route('planes.estado', $plan) }}">
-                        @csrf
-                        @method('PUT')
-                        <input type="hidden" name="estado" value="cancelado">
-                        <button type="submit" class="boton boton-claro"
-                            data-confirm="¿Cancelar el plan &laquo;{{ $plan->nombre }}&raquo;? No podrá volver a confirmarse."
-                            data-title="Cancelar plan"
-                            data-btn-ok="Sí, cancelar"
-                            data-btn-cancel="Mantener plan">Cancelar</button>
-                    </form>
-
-                @else
-                    {{-- Plan cancelado: no puede volver a confirmarse --}}
-                    <button class="boton boton-claro" disabled
-                            title="Un plan cancelado no puede volver a confirmarse">Confirmar</button>
-                @endif
-                <div class="botones-columna">
-                    {{-- BOTÓN EDITAR --}}
-                    <a href="{{ route('planes.editar', $plan) }}" class="boton boton-editar"> ✏ </a>
-
-                    {{-- BOTÓN ELIMINAR
-                        Si está confirmado: deshabilitado (primero hay que cancelarlo)
-                        Si no: formulario DELETE con confirmación modal <dialog> nativo --}}
-                    @if ($plan->estado == 'confirmado')
-                        <button class="boton boton-rojo" disabled
-                                title="Cancela el plan antes de eliminarlo"> 🗑 </button>
-                    @else
-                        <form method="POST" action="{{ route('planes.eliminar', $plan) }}">
+                    @if ($plan->estado == 'pendiente')
+                        <form method="POST" action="{{ route('planes.estado', $plan) }}">
                             @csrf
-                            @method('DELETE')
-                            <button type="submit" class="boton boton-rojo"
-                                data-confirm="¿Eliminar &laquo;{{ $plan->nombre }}&raquo;? Esta acción no se puede deshacer."
-                                data-title="Eliminar plan"
-                                data-btn-ok="Sí, eliminar"
-                                data-btn-cancel="Volver"
-                                data-type="danger"> 🗑 </button>
+                            @method('PUT')
+                            <input type="hidden" name="estado" value="confirmado">
+                            <button type="submit" class="boton boton-claro"
+                                data-confirm="¿Confirmar el plan &laquo;{{ $plan->nombre }}&raquo;?"
+                                data-title="Confirmar plan"
+                                data-btn-ok="Sí, confirmar"
+                                data-btn-cancel="Mantener pendiente">Confirmar</button>
                         </form>
+
+                    @elseif ($plan->estado == 'confirmado')
+                        <form method="POST" action="{{ route('planes.estado', $plan) }}">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="estado" value="cancelado">
+                            <button type="submit" class="boton boton-claro"
+                                data-confirm="¿Cancelar el plan &laquo;{{ $plan->nombre }}&raquo;? No podrá volver a confirmarse."
+                                data-title="Cancelar plan"
+                                data-btn-ok="Sí, cancelar"
+                                data-btn-cancel="Mantener plan">Cancelar</button>
+                        </form>
+
+                    @else
+                        {{-- Plan cancelado: no puede volver a confirmarse --}}
+                        <button class="boton boton-claro" disabled
+                                title="Un plan cancelado no puede volver a confirmarse">Confirmar</button>
                     @endif
-                </div>
+                    <div class="botones-columna">
+                        {{-- BOTÓN EDITAR --}}
+                        <a href="{{ route('planes.editar', $plan) }}" class="boton boton-editar"> ✏ </a>
+
+                        {{-- BOTÓN ELIMINAR
+                            Si está confirmado: deshabilitado (primero hay que cancelarlo)
+                            Si no: formulario DELETE con confirmación modal <dialog> nativo --}}
+                        @if ($plan->estado == 'confirmado')
+                            <button class="boton boton-rojo" disabled
+                                    title="Cancela el plan antes de eliminarlo"> 🗑 </button>
+                        @else
+                            <form method="POST" action="{{ route('planes.eliminar', $plan) }}">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="boton boton-rojo"
+                                    data-confirm="¿Eliminar &laquo;{{ $plan->nombre }}&raquo;? Esta acción no se puede deshacer."
+                                    data-title="Eliminar plan"
+                                    data-btn-ok="Sí, eliminar"
+                                    data-btn-cancel="Volver"
+                                    data-type="danger"> 🗑 </button>
+                            </form>
+                        @endif
+                    </div>
+                @else
+                    @can('aceptar', $plan)
+                        <form method="POST" action="{{ route('planes.aceptar', $plan) }}" style="display: inline-block;">
+                            @csrf
+                            <button type="submit" class="boton" style="min-height: 44px; padding: 8px 16px; font-size: 13px;">
+                                Aceptar invitación
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('planes.detalle', $plan) }}" class="boton boton-claro" style="min-height: 44px; display: inline-flex; align-items: center; padding: 8px 16px; font-size: 13px;">
+                            Ver sala
+                        </a>
+                    @endcan
+                @endif
             </td>
         </tr>
         @empty

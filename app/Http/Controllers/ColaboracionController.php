@@ -66,6 +66,39 @@ class ColaboracionController extends Controller
     }
 
     /**
+     * Accept a pending invitation to collaborate on a plan.
+     */
+    public function aceptar(Request $request, Plan $plan)
+    {
+        Gate::authorize('aceptar', $plan);
+
+        $usuario = auth()->user();
+
+        $invitacion = $plan->invitaciones()
+            ->where('estado', 'pendiente')
+            ->where(function ($q) use ($usuario) {
+                $q->where('user_id', $usuario->id)
+                  ->orWhere('email', $usuario->email);
+            })
+            ->firstOrFail();
+
+        $invitacion->estado = 'aceptada';
+        $invitacion->user_id = $usuario->id;
+        $invitacion->save();
+
+        // Registrar en historial de actividades
+        $plan->actividades()->create([
+            'user_id' => $usuario->id,
+            'accion' => 'participacion',
+            'descripcion' => "{$usuario->name} aceptó la invitación al plan.",
+            'estado_resultante' => $plan->estado,
+        ]);
+
+        return redirect()->route('planes.detalle', $plan)
+            ->with('exito', '¡Invitación aceptada! Ya puedes colaborar y votar en este plan.');
+    }
+
+    /**
      * Propose a date or location option for a plan.
      */
     public function guardarOpcion(Request $request, Plan $plan)

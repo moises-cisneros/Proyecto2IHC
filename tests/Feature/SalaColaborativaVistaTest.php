@@ -164,4 +164,37 @@ class SalaColaborativaVistaTest extends TestCase
         // Separación antagónica mínima de 12px entre botones de acción y cancelación
         $response->assertSee('gap: 12px');
     }
+
+    /**
+     * Caso 6: La invitación pendiente muestra el nombre del usuario y le permite aceptarla al invitado.
+     */
+    public function test_invitacion_pendiente_muestra_nombre_del_usuario_y_permite_aceptar_al_invitado(): void
+    {
+        $creador = User::factory()->create(['name' => 'Organizador Principal']);
+        $invitado = User::factory()->create([
+            'name'  => 'Carlos Invitado',
+            'email' => 'carlos@invitado.com',
+        ]);
+        $plan = Plan::factory()->create(['user_id' => $creador->id]);
+
+        Invitacion::factory()->create([
+            'plan_id' => $plan->id,
+            'email'   => $invitado->email,
+            'user_id' => $invitado->id,
+            'estado'  => 'pendiente',
+        ]);
+
+        // Creador ve el nombre del usuario invitado en la sección de pendientes
+        $responseCreador = $this->actingAs($creador)->get(route('planes.detalle', $plan));
+        $responseCreador->assertStatus(200);
+        $responseCreador->assertSee('Carlos Invitado');
+        $responseCreador->assertSee('carlos@invitado.com');
+        $responseCreador->assertSee('Invitación pendiente');
+
+        // Invitado puede acceder en modo lectura y ve el botón de aceptar
+        $responseInvitado = $this->actingAs($invitado)->get(route('planes.detalle', $plan));
+        $responseInvitado->assertStatus(200);
+        $responseInvitado->assertSee('Aceptar invitación');
+        $responseInvitado->assertSee('Carlos Invitado');
+    }
 }

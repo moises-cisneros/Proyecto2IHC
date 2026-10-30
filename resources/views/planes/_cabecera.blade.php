@@ -49,6 +49,24 @@
             @endcan
         </div>
     </div>
+
+    @can('aceptar', $plan)
+        <div style="margin-top: 18px; padding: 16px 20px; background: #fefce8; border: 1px solid #fef08a; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <div style="font-weight: 700; color: #854d0e; font-size: 15px;">¡Fuiste invitado a colaborar en este plan!</div>
+                <div style="color: #a16207; font-size: 13px;">Acepta la invitación para proponer fechas, lugares y votar en las opciones del grupo.</div>
+            </div>
+            <form method="POST" action="{{ route('planes.aceptar', $plan) }}" style="margin: 0;">
+                @csrf
+                <button type="submit"
+                        class="boton"
+                        style="min-height: 44px; min-width: 44px; padding: 10px 20px; font-weight: 600;"
+                        aria-label="Aceptar invitación al plan">
+                    Aceptar invitación
+                </button>
+            </form>
+        </div>
+    @endcan
 </div>
 
 {{-- Diálogo modal accesible para confirmar abandono de plan (Nielsen H3) --}}

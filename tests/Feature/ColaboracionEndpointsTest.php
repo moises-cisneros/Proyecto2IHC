@@ -241,4 +241,53 @@ class ColaboracionEndpointsTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    /**
+     * Caso: Usuario con invitación pendiente puede aceptarla y convertirse en participante.
+     */
+    public function test_usuario_invitado_puede_aceptar_invitacion_correctamente(): void
+    {
+        $creador = User::factory()->create();
+        $invitado = User::factory()->create(['name' => 'Carla Gómez', 'email' => 'carla@ejemplo.com']);
+        $plan = Plan::factory()->create(['user_id' => $creador->id]);
+
+        Invitacion::factory()->create([
+            'plan_id' => $plan->id,
+            'email'   => $invitado->email,
+            'user_id' => $invitado->id,
+            'estado'  => 'pendiente',
+        ]);
+
+        $response = $this->actingAs($invitado)
+            ->post(route('planes.aceptar', $plan));
+
+        $response->assertRedirect(route('planes.detalle', $plan));
+        $this->assertDatabaseHas('invitaciones', [
+            'plan_id' => $plan->id,
+            'email'   => $invitado->email,
+            'user_id' => $invitado->id,
+            'estado'  => 'aceptada',
+        ]);
+
+        $this->assertDatabaseHas('plan_activities', [
+            'plan_id' => $plan->id,
+            'user_id' => $invitado->id,
+            'accion'  => 'participacion',
+        ]);
+    }
+
+    /**
+     * Caso: Usuario sin invitación recibe 403 al intentar aceptar.
+     */
+    public function test_usuario_sin_invitacion_recibe_403_al_intentar_aceptar(): void
+    {
+        $creador = User::factory()->create();
+        $ajeno = User::factory()->create();
+        $plan = Plan::factory()->create(['user_id' => $creador->id]);
+
+        $response = $this->actingAs($ajeno)
+            ->post(route('planes.aceptar', $plan));
+
+        $response->assertStatus(403);
+    }
 }

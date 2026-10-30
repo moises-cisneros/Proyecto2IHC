@@ -12,7 +12,15 @@ class PlanPolicy
      */
     public function view(User $user, Plan $plan): bool
     {
-        return $this->isCreatorOrParticipante($user, $plan);
+        return $this->isCreatorOrParticipante($user, $plan) || $this->isInvitado($user, $plan);
+    }
+
+    /**
+     * Determine whether the user can accept an invitation to the plan.
+     */
+    public function aceptar(User $user, Plan $plan): bool
+    {
+        return $this->isInvitado($user, $plan);
     }
 
     /**
@@ -92,6 +100,19 @@ class PlanPolicy
         return $plan->participantes()->where('users.id', $user->id)->exists()
             || $plan->invitaciones()
                     ->where('estado', 'aceptada')
+                    ->where(function ($query) use ($user) {
+                        $query->where('user_id', $user->id)
+                              ->orWhere('email', $user->email);
+                    })->exists();
+    }
+
+    /**
+     * Determine whether the user has a pending invitation to the plan.
+     */
+    public function isInvitado(User $user, Plan $plan): bool
+    {
+        return $plan->invitaciones()
+                    ->where('estado', 'pendiente')
                     ->where(function ($query) use ($user) {
                         $query->where('user_id', $user->id)
                               ->orWhere('email', $user->email);

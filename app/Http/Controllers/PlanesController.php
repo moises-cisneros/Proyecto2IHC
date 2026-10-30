@@ -34,11 +34,20 @@ class PlanesController extends Controller
         $estado = $request->input('estado', '');
         $fecha  = $request->input('fecha', '');
 
-        // Solo traemos los planes del usuario logueado, aplicamos filtros y ordenamos
-        $planes = Plan::where('user_id', auth()->id())
-                      ->filtrar($buscar, $estado, $fecha)
-                      ->orderBy('fecha_limite', 'asc')
-                      ->get();
+        $userId = auth()->id();
+        $userEmail = auth()->user()->email;
+
+        // Traemos los planes del usuario logueado o en los que tiene invitación / participación
+        $planes = Plan::where(function ($query) use ($userId, $userEmail) {
+            $query->where('user_id', $userId)
+                  ->orWhereHas('invitaciones', function ($q) use ($userId, $userEmail) {
+                      $q->where('user_id', $userId)
+                        ->orWhere('email', $userEmail);
+                  });
+        })
+        ->filtrar($buscar, $estado, $fecha)
+        ->orderBy('fecha_limite', 'asc')
+        ->get();
 
         return view('planes.listar', compact('planes', 'buscar', 'estado', 'fecha'));
     }

@@ -50,24 +50,54 @@
             </div>
         @endforeach
 
-        {{-- Invitaciones pendientes (visibles para el creador) --}}
-        @can('invitar', $plan)
-            @foreach ($plan->invitaciones->where('estado', 'pendiente') as $invitacion)
-                <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #fafaf9; border: 1px dashed #d1d1cd; border-radius: 12px;">
-                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #d1d1cd; color: #575752; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
-                        ?
-                    </div>
-                    <div style="flex: 1; min-width: 0;">
-                        <div style="font-weight: 500; color: #575752; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
-                            {{ $invitacion->email }}
+        {{-- Invitaciones pendientes (visibles para el creador y para el usuario invitado) --}}
+        @foreach ($plan->invitaciones->where('estado', 'pendiente') as $invitacion)
+            @php
+                $esInvitadoActual = auth()->check() && (
+                    (int) auth()->id() === (int) $invitacion->user_id ||
+                    strtolower(auth()->user()->email) === strtolower($invitacion->email)
+                );
+                $esCreador = auth()->check() && (int) auth()->id() === (int) $plan->user_id;
+                $usuarioInvitado = $invitacion->user ?? \App\Models\User::where('email', $invitacion->email)->first();
+                $nombreAMostrar = $usuarioInvitado?->name ?? $invitacion->email;
+                $inicial = strtoupper(substr($nombreAMostrar, 0, 1));
+            @endphp
+
+            @if ($esCreador || $esInvitadoActual)
+                <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: #fafaf9; border: 1px dashed #d1d1cd; border-radius: 12px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1;">
+                        <div style="width: 36px; height: 36px; border-radius: 50%; background: #d1d1cd; color: #1c1c1a; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0;">
+                            {{ $inicial }}
                         </div>
-                        <span style="display: inline-block; padding: 2px 8px; border-radius: 6px; background: #fef3c7; color: #b45309; font-size: 11px; font-weight: 600;">
-                            Invitación pendiente
-                        </span>
+                        <div style="flex: 1; min-width: 0;">
+                            <div style="font-weight: 600; color: #1c1c1a; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                {{ $nombreAMostrar }}
+                            </div>
+                            @if ($usuarioInvitado && $usuarioInvitado->name !== $invitacion->email)
+                                <div style="font-size: 12px; color: #6f6f6a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                                    {{ $invitacion->email }}
+                                </div>
+                            @endif
+                            <span style="display: inline-block; padding: 2px 8px; border-radius: 6px; background: #fef3c7; color: #b45309; font-size: 11px; font-weight: 600; margin-top: 2px;">
+                                {{ $esInvitadoActual ? 'Tu invitación pendiente' : 'Invitación pendiente' }}
+                            </span>
+                        </div>
                     </div>
+
+                    @if ($esInvitadoActual)
+                        <form method="POST" action="{{ route('planes.aceptar', $plan) }}" style="margin: 0;">
+                            @csrf
+                            <button type="submit"
+                                    class="boton"
+                                    style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; font-size: 13px; font-weight: 600; border-radius: 8px;"
+                                    aria-label="Aceptar invitación">
+                                Aceptar invitación
+                            </button>
+                        </form>
+                    @endif
                 </div>
-            @endforeach
-        @endcan
+            @endif
+        @endforeach
     </div>
 </div>
 
