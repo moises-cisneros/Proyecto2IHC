@@ -249,6 +249,7 @@ Cuando el docente asigne un issue con un requerimiento:
    ```bash
    gh api -X POST /repos/:owner/:repo/issues/:padre/sub_issues -F sub_issue_id=:id_global
    ```
+6. **Validación obligatoria de Autenticación y Autorización (Principio de Menor Privilegio):** Todo sub-issue de backend o controlador debe auditar explícitamente el control de acceso del módulo o endpoint a implementar, garantizando que usuarios anónimos (redirección `302`) o usuarios autenticados sin privilegios o ajenos al recurso reciban un rechazo estricto (`403 Forbidden`). Es obligatorio incluir pruebas automatizadas con casos negativos (`assertStatus(403)` / `assertStatus(302)`).
 
 ### Evaluación Heurística (IHC)
 
@@ -270,7 +271,8 @@ Para el diseño y evaluación ergonómica de flujos e interfaces:
 * Toda tarea o requerimiento fuera de los requisitos docentes debe registrarse en una issue breve con:
   * **Objetivo:** Qué se busca resolver o implementar.
   * **Criterios de Aceptación:** Qué comportamiento define que la tarea está terminada.
-  * **Pruebas esperadas:** Qué casos de prueba unitaria deben cubrirse con PHPUnit (mínimo 4 si involucra reglas de negocio o transiciones de estado, según [AGENTS.md](AGENTS.md)).
+  * **Seguridad y Control de Acceso:** Explicitar middleware `auth`, comprobaciones en Policy y garantía de que usuarios ajenos o sin los privilegios requeridos queden completamente aislados.
+  * **Pruebas esperadas:** Qué casos de prueba unitaria deben cubrirse con PHPUnit (mínimo 4 si involucra reglas de negocio o transiciones de estado, incluyendo casos negativos con `assertStatus(403)` / `302`).
 
 ### Pull Requests (PRs) y Verificación de Sub-issues
 
@@ -288,8 +290,8 @@ Para el diseño y evaluación ergonómica de flujos e interfaces:
   * Usar `Refs #<número-issue-padre>` para referenciar el issue general del docente (**NUNCA usar `Closes` sobre el issue del docente**).
 * La descripción de la PR no debe contener referencias ni atribuciones a ninguna IA.
 * Respetar las responsabilidades de [ARCHITECTURE.md](ARCHITECTURE.md):
-  * Backend: lógica y reglas de estado en modelos y controladores.
-  * Frontend: vistas Blade limpias, sin consultas a BD.
+  * Backend: lógica, autenticación (`auth`), autorización (`PlanPolicy`) y reglas de estado en modelos y controladores.
+  * Frontend: vistas Blade limpias, sin consultas a BD, protegiendo acciones con `@can`.
 * **Verificación Automática (Hooks y GitHub Actions):**
   * Script de verificación cruzada local para sub-issues:
 

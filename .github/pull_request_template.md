@@ -24,4 +24,5 @@ Refs #
 
 - [ ] El commit y la rama están asociados al sub-issue (`feat/issue-<n>`, `Refs #<n>`)
 - [ ] Cumple con la arquitectura definida en `ARCHITECTURE.md`
+- [ ] **Seguridad (Auth & Policy):** Rutas protegidas por `auth`, autorización estricta en controlador con `Gate::authorize()` / `PlanPolicy` y tests de rechazo `403/302` incluidos
 - [ ] Sub-issue vinculado al árbol nativo de GitHub (`gh api`)

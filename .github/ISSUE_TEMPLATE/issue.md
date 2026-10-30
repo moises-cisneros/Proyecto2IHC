@@ -15,11 +15,12 @@ assignees: ''
 **Quiero** [acción o necesidad]  
 **Para** [beneficio o valor esperado]  
 
-## Criterios de Aceptación
+## Criterios de Aceptación y Seguridad
 
 - [ ] **CA-01:**
 - [ ] **CA-02:**
 - [ ] **CA-03:**
+- [ ] **Seguridad y Control de Acceso:** Aislamiento estricto por usuario/rol mediante middleware `auth`, autorización explícita en Policy y bloqueo con `403 Forbidden` ante accesos o mutaciones no autorizadas.
 
 ## Consideraciones de Interacción / IHC (Opcional según la entrega)
 <!-- Si la consigna exige IHC: detallar principios aplicados (Fitts, Hick, Carga Cognitiva) o lista de heurísticas (H1-H10) -->

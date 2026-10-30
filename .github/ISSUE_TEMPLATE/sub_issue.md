@@ -25,9 +25,15 @@ assignees: ''
 - [ ]
 - [ ]
 
+## Verificación de Seguridad y Control de Acceso (Autenticación y Autorización)
+<!-- Obligatorio para todo sub-issue con rutas, controladores, datos o mutaciones -->
+- [ ] **Autenticación (Identidad):** Endpoint/ruta protegido bajo middleware `auth` (redirección 302 ante accesos anónimos).
+- [ ] **Autorización (Permisos / Menor Privilegio):** Verificación formal mediante Policy (`Gate::authorize()`) en backend y `@can` en Blade para asegurar que usuarios ajenos o sin privilegios queden bloqueados.
+- [ ] **Prueba de Seguridad (Caso Negativo):** Test automatizado que verifique explícitamente el rechazo con `403 Forbidden` ante intentos de acceso o mutación indebida.
+
 ## Pruebas Automatizadas (PHPUnit)
-<!-- Obligatorio mínimo 4 casos de prueba si involucra reglas de dominio, transiciones de estado o controladores -->
+<!-- Obligatorio mínimo 4 casos de prueba si involucra reglas de dominio, transiciones de estado o controladores (incluyendo al menos 1 caso negativo de autorización 403) -->
 - [ ] Caso 1:
 - [ ] Caso 2:
 - [ ] Caso 3:
-- [ ] Caso 4:
+- [ ] Caso 4 (Seguridad / Rechazo 403 o 302):

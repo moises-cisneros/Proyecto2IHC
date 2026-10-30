@@ -107,11 +107,20 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 
 ### C. Capa de Autorización (`app/Policies/`)
 
-- Centraliza la seguridad y los permisos de usuario (`PlanPolicy.php`):
-  - Solo el **Creador** puede editar, cancelar o eliminar el plan.
-  - Los **Participantes aceptados** pueden proponer opciones, votar y abandonar el plan (H3).
-  - Los **Invitados pendientes** tienen acceso de solo lectura hasta aceptar o rechazar.
-- Invocada mediante `$this->authorize()` en controladores o directivas `@can` en Blade.
+- Centraliza la seguridad, los permisos y el aislamiento de datos por recurso mediante **Laravel Policies**:
+  - Aplica el **Principio de Menor Privilegio (Zero-Trust)**: La autenticación solo comprueba identidad; ninguna acción sobre un recurso se ejecuta sin verificar explícitamente autorización de pertenencia o rol.
+  - En el dominio de planes (`PlanPolicy.php`):
+    - Solo el **Creador** puede editar, cancelar o eliminar el recurso.
+    - Los **Participantes aceptados** pueden colaborar activamente (proponer opciones, votar y abandonar el plan según H3).
+    - Los **Invitados pendientes** tienen acceso de solo lectura hasta aceptar o rechazar su invitación.
+    - Los **Recursos en estado terminal o cancelado** bloquean de forma terminante cualquier mutación posterior.
+- **Aislamiento Multiusuario y Prevención de Accesos Indebidos (Anti-IDOR):**
+  - Todo endpoint o acción debe garantizar de forma sistemática:
+    1. **Autenticación obligatoria:** Middleware `auth` en `routes/web.php` intercepta peticiones anónimas (redirección `302` a login).
+    2. **Autorización granular en backend:** Invocación explícita de `Gate::authorize()` o `$this->authorize()` en controladores, arrojando código HTTP `403 Forbidden` ante cualquier intento de acceso o mutación por parte de usuarios ajenos o no autorizados.
+    3. **Filtrado estricto en persistencia:** Las consultas y listados Eloquent filtran por el identificador o membresía del usuario autenticado para impedir exposición de datos ajenos.
+    4. **Divulgación ergonómica en frontend:** Directivas `@can` en Blade para ocultar o inhabilitar controles a usuarios sin privilegios (Nielsen H5).
+- Invocada mediante `Gate::authorize()` / `$this->authorize()` en controladores o directivas `@can` en Blade.
 
 ### D. Capa de Persistencia y Modelos (`app/Models/`)
 
