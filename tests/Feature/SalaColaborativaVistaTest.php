@@ -197,4 +197,33 @@ class SalaColaborativaVistaTest extends TestCase
         $responseInvitado->assertSee('Aceptar invitación');
         $responseInvitado->assertSee('Carlos Invitado');
     }
+
+    /**
+     * Caso 7: En un plan cancelado se visualiza el banner de advertencia (H1) y se ocultan controles activos (H5).
+     */
+    public function test_sala_plan_cancelado_muestra_banner_y_deshabilita_acciones(): void
+    {
+        $creador = User::factory()->create();
+        $plan = Plan::factory()->cancelado()->create([
+            'user_id' => $creador->id,
+            'nombre'  => 'Paseo de Montaña Cancelado',
+        ]);
+
+        $opcion = Opcion::factory()->create([
+            'plan_id' => $plan->id,
+            'user_id' => $creador->id,
+            'tipo'    => 'fecha',
+            'valor'   => 'Sábado 20 de Diciembre',
+        ]);
+
+        $response = $this->actingAs($creador)->get(route('planes.detalle', $plan));
+
+        $response->assertStatus(200);
+        $response->assertSee('Plan cancelado');
+        $response->assertSee('modo de solo lectura');
+        $response->assertDontSee('+ Invitar colaborador');
+        $response->assertDontSee('+ Proponer opción');
+        $response->assertDontSee('Editar plan');
+        $response->assertSee('Votación cerrada (plan cancelado)');
+    }
 }

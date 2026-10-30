@@ -290,4 +290,121 @@ class ColaboracionEndpointsTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    /**
+     * Caso: Un plan cancelado impide invitar a nuevos colaboradores.
+     */
+    public function test_plan_cancelado_impide_invitar_colaboradores(): void
+    {
+        $creador = User::factory()->create();
+        $plan = Plan::factory()->cancelado()->create(['user_id' => $creador->id]);
+
+        $response = $this->actingAs($creador)
+            ->post(route('planes.invitar', $plan), [
+                'email' => 'nuevo@ejemplo.com',
+            ]);
+
+        $response->assertStatus(403);
+        $this->assertDatabaseMissing('invitaciones', [
+            'plan_id' => $plan->id,
+            'email'   => 'nuevo@ejemplo.com',
+        ]);
+    }
+
+    /**
+     * Caso: Un plan cancelado impide proponer opciones de fecha o lugar.
+     */
+    public function test_plan_cancelado_impide_proponer_opciones(): void
+    {
+        $creador = User::factory()->create();
+        $plan = Plan::factory()->cancelado()->create(['user_id' => $creador->id]);
+
+        $response = $this->actingAs($creador)
+            ->post(route('planes.opciones.guardar', $plan), [
+                'tipo'        => 'fecha',
+                'valor'       => '2026-12-31 20:00:00',
+                'descripcion' => 'Propuesta bloqueada',
+            ]);
+
+        $response->assertStatus(403);
+        $this->assertDatabaseMissing('opciones', [
+            'plan_id' => $plan->id,
+            'valor'   => '2026-12-31 20:00:00',
+        ]);
+    }
+
+    /**
+     * Caso: Un plan cancelado impide votar o conmutar votos.
+     */
+    public function test_plan_cancelado_impide_votar_opciones(): void
+    {
+        $creador = User::factory()->create();
+        $participante = User::factory()->create();
+        $plan = Plan::factory()->cancelado()->create(['user_id' => $creador->id]);
+
+        $opcion = Opcion::factory()->create([
+            'plan_id' => $plan->id,
+            'user_id' => $creador->id,
+        ]);
+
+        Invitacion::factory()->aceptada()->create([
+            'plan_id' => $plan->id,
+            'user_id' => $participante->id,
+            'email'   => $participante->email,
+        ]);
+
+        $response = $this->actingAs($participante)
+            ->post(route('opciones.votar', $opcion));
+
+        $response->assertStatus(403);
+        $this->assertDatabaseMissing('votos', [
+            'opcion_id' => $opcion->id,
+            'user_id'   => $participante->id,
+        ]);
+    }
+
+    /**
+     * Caso: Un plan cancelado impide editar su configuración.
+     */
+    public function test_plan_cancelado_impide_editar_plan(): void
+    {
+        $creador = User::factory()->create();
+        $plan = Plan::factory()->cancelado()->create(['user_id' => $creador->id]);
+
+        // GET formulario de edición
+        $responseGet = $this->actingAs($creador)
+            ->get(route('planes.editar', $plan));
+        $responseGet->assertStatus(403);
+
+        // PUT actualización
+        $responsePut = $this->actingAs($creador)
+            ->put(route('planes.actualizar', $plan), [
+                'nombre'       => 'Nuevo Nombre Ilegal',
+                'organizador'  => $creador->name,
+                'fecha_limite' => '2026-12-31',
+            ]);
+        $responsePut->assertStatus(403);
+    }
+
+    /**
+     * Caso: Un plan cancelado impide aceptar invitaciones pendientes.
+     */
+    public function test_plan_cancelado_impide_aceptar_invitaciones(): void
+    {
+        $creador = User::factory()->create();
+        $invitado = User::factory()->create();
+        $plan = Plan::factory()->cancelado()->create(['user_id' => $creador->id]);
+
+        Invitacion::factory()->create([
+            'plan_id' => $plan->id,
+            'user_id' => $invitado->id,
+            'email'   => $invitado->email,
+            'estado'  => 'pendiente',
+        ]);
+
+        $response = $this->actingAs($invitado)
+            ->post(route('planes.aceptar', $plan));
+
+        $response->assertStatus(403);
+    }
 }

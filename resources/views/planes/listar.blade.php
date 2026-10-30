@@ -140,8 +140,14 @@
                                 title="Un plan cancelado no puede volver a confirmarse">Confirmar</button>
                     @endif
                     <div class="botones-columna">
-                        {{-- BOTÓN EDITAR --}}
-                        <a href="{{ route('planes.editar', $plan) }}" class="boton boton-editar"> ✏ </a>
+                        {{-- BOTÓN EDITAR (deshabilitado en planes cancelados según Nielsen H5) --}}
+                        @if ($plan->estado === 'cancelado')
+                            <button class="boton boton-editar" disabled
+                                    title="Un plan cancelado no puede editarse"
+                                    style="opacity: 0.4; cursor: not-allowed;"> ✏ </button>
+                        @else
+                            <a href="{{ route('planes.editar', $plan) }}" class="boton boton-editar" title="Editar plan"> ✏ </a>
+                        @endif
 
                         {{-- BOTÓN ELIMINAR
                             Si está confirmado: deshabilitado (primero hay que cancelarlo)

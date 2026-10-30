@@ -20,6 +20,10 @@ class PlanPolicy
      */
     public function aceptar(User $user, Plan $plan): bool
     {
+        if ($plan->estado === 'cancelado') {
+            return false;
+        }
+
         return $this->isInvitado($user, $plan);
     }
 
@@ -28,6 +32,10 @@ class PlanPolicy
      */
     public function update(User $user, Plan $plan): bool
     {
+        if ($plan->estado === 'cancelado') {
+            return false;
+        }
+
         return $this->isCreator($user, $plan);
     }
 
@@ -52,6 +60,10 @@ class PlanPolicy
      */
     public function invitar(User $user, Plan $plan): bool
     {
+        if ($plan->estado === 'cancelado') {
+            return false;
+        }
+
         return $this->isCreator($user, $plan);
     }
 
@@ -60,6 +72,10 @@ class PlanPolicy
      */
     public function proponer(User $user, Plan $plan): bool
     {
+        if ($plan->estado === 'cancelado') {
+            return false;
+        }
+
         return $this->isCreatorOrParticipante($user, $plan);
     }
 
@@ -68,6 +84,10 @@ class PlanPolicy
      */
     public function votar(User $user, Plan $plan): bool
     {
+        if ($plan->estado === 'cancelado') {
+            return false;
+        }
+
         return $this->isCreatorOrParticipante($user, $plan);
     }
 

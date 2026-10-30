@@ -102,6 +102,12 @@
                                 @endif
                             </button>
                         </form>
+                    @else
+                        @if ($plan->estado === 'cancelado')
+                            <div style="font-size: 13px; color: #71717a; text-align: center; padding: 10px; background: #f4f4f5; border-radius: 8px; font-weight: 500;">
+                                Votación cerrada (plan cancelado)
+                            </div>
+                        @endif
                     @endcan
                 </div>
             @endforeach
