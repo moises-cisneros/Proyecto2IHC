@@ -16,7 +16,7 @@ Comando universal para iniciar el entorno:
 docker compose up --build
 ```
 
-*(En Windows también se puede usar el atajo `dev.bat`).*
+*(Para verificar que las herramientas base estén instaladas antes de iniciar, podés ejecutar `node scripts/setup.mjs` o `scripts/setup.ps1`).*
 
 Comando para detener el entorno:
 
@@ -38,7 +38,7 @@ Instalación y configuración:
 
 ```bash
 composer install
-npm install
+pnpm install
 cp .env.example .env
 php artisan key:generate
 php artisan migrate
@@ -51,7 +51,7 @@ php artisan serve
 ```
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ---
@@ -216,7 +216,7 @@ Las credenciales de los usuarios de prueba están documentadas en la sección "U
 
 ## 9. Arquitectura y Organización de Código
 
-* **Referencia obligatoria:** Toda nueva funcionalidad, módulo o refactorización debe alinearse estrictamente con la estructura y responsabilidades definidas en [ARCHITECTURE.md](ARCHITECTURE.md) y las directrices visuales de [DESIGN.md](DESIGN.md).
+* **Referencia obligatoria:** Toda nueva funcionalidad, módulo o refactorización debe alinearse estrictamente con la estructura y responsabilidades definidas en [ARCHITECTURE.md](ARCHITECTURE.md) y las directrices visuales de [resources/DESIGN.md](resources/DESIGN.md).
 * **Backend:** Capas claras:
   * `routes/web.php` para HTTP y middlewares de seguridad (`auth`).
   * `app/Http/Controllers/` para orquestación del flujo web.

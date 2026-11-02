@@ -36,7 +36,7 @@ El comando estándar para levantar todo el entorno en cualquier terminal y siste
 docker compose up --build
 ```
 
-*(En Windows, si preferís un atajo por consola o doble clic, podés usar opcionalmente `dev.bat`).*
+*(Antes de iniciar por primera vez, podés verificar que las herramientas necesarias estén instaladas ejecutando `node scripts/setup.mjs`, `pnpm run setup` o en PowerShell `powershell ./scripts/setup.ps1`).*
 
 Esto inicia automáticamente los servicios:
 
@@ -50,7 +50,7 @@ Para detener los contenedores:
 docker compose down
 ```
 
-*(En Windows también podés usar el atajo `down.bat`).*
+*(Para detener y limpiar volúmenes de datos si necesitás reiniciar desde cero: `docker compose down -v`).*
 
 ---
 
@@ -60,7 +60,7 @@ docker compose down
 
 ```bash
 composer install
-npm install
+pnpm install
 ```
 
 1. Configurar el archivo de entorno y generar la clave:
@@ -83,7 +83,7 @@ php artisan serve
 ```
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 ---
@@ -143,16 +143,15 @@ El repositorio está organizado como una aplicación web monolítica basada en *
 ├── docs/                 # Documentación técnica, evidencias y entregas de clase
 ├── openspec/             # Especificaciones, propuestas y cambios de OpenSpec
 ├── public/               # Raíz pública del servidor web (assets, js/ui.js)
-├── resources/            # Vistas Blade modulares, componentes, Tailwind v4
+├── resources/            # Vistas Blade modulares, componentes, Tailwind v4, DESIGN.md
 ├── routes/               # Definición de rutas web y consola
-├── scripts/              # Scripts de verificación y automatización
+├── scripts/              # Scripts de verificación y automatización (setup, verify-subissue, evidences)
 ├── tests/                # Pruebas automatizadas (Unit / Feature con PHPUnit)
 ├── docker-compose.yml    # Orquestación de servicios (planazo_app, planazo_mysql, planazo_vite)
 ├── Dockerfile            # Imagen base de ejecución PHP/Laravel
 ├── AGENTS.md             # Instrucciones y restricciones para agentes de IA
 ├── ARCHITECTURE.md       # Mapa y capas arquitectónicas del sistema
 ├── CONTRIBUTING.md       # Esta guía
-├── DESIGN.md             # Guía oficial del sistema de diseño y tokens
 └── README.md             # Documentación e inicio rápido
 ```
 

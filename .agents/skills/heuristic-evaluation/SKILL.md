@@ -30,8 +30,8 @@ metadata:
   - Cada sub-issue debe ser conciso pero auto-contenido:
     1. Heurística, severidad y funcionalidad evaluada (`Refs #<issue-padre>`).
     2. **Antes (Problema observable):** Comportamiento actual en código y pantalla.
-    3. **Después (Mejora propuesta):** Solución técnica concreta alineada a `DESIGN.md` (sin librerías superfluas).
-    4. **Criterios de Aceptación:** Checklist de verificación (UI, tests unitarios en Vitest, capturas).
+    3. **Después (Mejora propuesta):** Solución técnica concreta alineada a `resources/DESIGN.md` (sin librerías superfluas).
+    4. **Criterios de Aceptación:** Checklist de verificación (UI, tests automatizados en PHPUnit, capturas).
     5. **Archivos afectados.**
     6. **Commit de cierre:** `fix: <descripción> (Closes #<sub-issue>, Refs #<issue-padre>)`.
 

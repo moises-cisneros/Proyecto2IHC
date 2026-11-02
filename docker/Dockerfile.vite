@@ -1,0 +1,9 @@
+# ============================================================
+#  Planazo — Imagen Vite (Node 24) con pnpm
+# ============================================================
+FROM node:24-alpine
+
+RUN npm install -g pnpm@10
+
+WORKDIR /app
+

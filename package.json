@@ -2,12 +2,11 @@
   "$schema": "https://www.schemastore.org/package.json",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.34.9",
   "scripts": {
-    "build": "vite build",
+    "setup": "node scripts/setup.mjs",
     "dev": "vite",
-    "docker:dev": "docker compose up --build",
-    "docker:stop": "docker compose down",
-    "docker:reset": "docker compose down -v && docker compose up --build",
+    "build": "vite build",
     "test:e2e": "playwright test",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui"

@@ -39,7 +39,7 @@ Si tu objetivo es probar y calificar la aplicación inmediatamente:
    docker compose up --build
    ```
 
-   *(En Windows también podés usar el script `dev.bat`).*
+   *(Para comprobar que todas las herramientas base estén instaladas antes de iniciar, podés ejecutar `node scripts/setup.mjs`, `pnpm run setup` o `powershell ./scripts/setup.ps1`).*
 3. Abre tu navegador en [http://localhost:9300](http://localhost:9300).
 4. Inicia sesión con cualquiera de los usuarios de prueba precargados (por ejemplo: `test@example.com` / `password`).
 
@@ -82,7 +82,7 @@ Si vas a programar, refactorizar o añadir funcionalidades:
 ```bash
 # 1. Instalar dependencias
 composer install
-npm install
+pnpm install
 
 # 2. Configurar variables de entorno y clave de cifrado
 cp .env.example .env
@@ -93,7 +93,7 @@ php artisan migrate
 
 # 4. Iniciar servidores (en terminales separadas)
 php artisan serve    # Servidor HTTP en http://localhost:8000
-npm run dev          # Servidor Vite HMR en http://localhost:5173
+pnpm dev             # Servidor Vite HMR en http://localhost:9373
 ```
 
 #### Sincronización de Habilidades de IA (OpenSpec / Asistentes)
@@ -143,7 +143,6 @@ docker compose exec planazo_app php artisan db:seed
   docker compose down
   ```
 
-  *(En Windows también podés ejecutar `down.bat`).*
 - **Reiniciar desde cero (Limpiar contenedores y base de datos):**
 
   ```bash
@@ -192,6 +191,7 @@ La suite de pruebas unitarias y de integración de Laravel se ejecuta mediante *
 
 - [AGENTS.md](AGENTS.md): Reglas operativas estrictas para agentes de IA, prohibición de atribución de IA, principios IHC (Fitts, Hick, Carga Cognitiva) y flujo de sub-issues.
 - [ARCHITECTURE.md](ARCHITECTURE.md): Arquitectura de capas, modelos Eloquent, controladores y vistas Blade.
+- [resources/DESIGN.md](resources/DESIGN.md): Guía oficial del sistema de diseño, tokens cromáticos y directrices visuales y ergonómicas (IHC).
 - [CONTRIBUTING.md](CONTRIBUTING.md): Guía para colaboradores, ramas y convención de Conventional Commits.
 - [docs/](docs/): Evidencias académicas, historial de tareas de clase y capturas del proyecto recibido.
 

@@ -54,13 +54,13 @@ Al evaluar o implementar una funcionalidad en Planazo:
    * Identificar cómo se resolvía la tarea previo a la mejora (ej. ausencia de historial, acceso oculto en menús, botones de 20px, opciones masivas sin agrupar, o esfuerzo de memoria de trabajo).
    * Registrar la captura en `docs/evidencias/.../<Principio>-antes.png`.
 2. **Diseñar la Solución Ergonómica (El "Después"):**
-   * Aplicar las fórmulas ergonómicas en componentes de frontend (`apps/frontend/src/...`).
+   * Aplicar las fórmulas ergonómicas y directrices visuales de `resources/DESIGN.md` en vistas Blade y componentes (`resources/views/...`).
    * Validar en código: clases de Tailwind (`min-h-[44px]`, `px-4`, `py-2`, `gap-3`), estructura de chips o tarjetas autónomas.
    * Registrar la captura en `docs/evidencias/.../<Principio>-despues.png`.
 3. **Justificación Técnica:**
    * Explicar la reducción concreta de tiempo motriz ($T_{\text{Fitts}}$), tiempo de decisión ($T_{\text{Hick}}$) o carga intrínseca/extrínseca en la memoria de trabajo.
 4. **Verificación Automatizada:**
-   * Escribir pruebas unitarias en Vitest (`*.test.tsx` o `*.test.ts`) que verifiquen el renderizado, accesibilidad de targets y filtrado. Mínimo 4 tests por suite.
+   * Escribir pruebas automatizadas con PHPUnit (`tests/Unit/` o `tests/Feature/`) que verifiquen el comportamiento, renderizado y reglas de negocio. Mínimo 4 tests por suite.
 
 ---
 

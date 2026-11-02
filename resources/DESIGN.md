@@ -1,7 +1,7 @@
 # DESIGN.md — Sistema de Diseño y Guía de Interfaz de Planazo
 
 > **Fuente de verdad visual y ergonómica de Planazo.**  
-> Este documento abstrae los estilos reales del proyecto ([`public/css/app.css`](file:///d:/Proyectos/Proyectos-Moises/Proyecto2IHC/public/css/app.css) y [`resources/css/app.css`](file:///d:/Proyectos/Proyectos-Moises/Proyecto2IHC/resources/css/app.css)) para garantizar coherencia, accesibilidad y apego a los principios de Interacción Humano-Computador (IHC).  
+> Este documento abstrae los estilos reales del proyecto ([`public/css/app.css`](../public/css/app.css) y [`resources/css/app.css`](css/app.css)) para garantizar coherencia, accesibilidad y apego a los principios de Interacción Humano-Computador (IHC).  
 > **Regla de oro:** No implementar estilos al azar ni agregar librerías externas superfluas; reutilizar y extender los tokens aquí definidos.
 
 ---
@@ -21,7 +21,7 @@
 
 ## 2. Paleta de Colores y Tokens
 
-Abstraída de [`public/css/app.css`](file:///d:/Proyectos/Proyectos-Moises/Proyecto2IHC/public/css/app.css):
+Abstraída de [`public/css/app.css`](../public/css/app.css):
 
 | Token semántico | Valor Hex / RGB | Uso específico en la aplicación |
 | :--- | :--- | :--- |

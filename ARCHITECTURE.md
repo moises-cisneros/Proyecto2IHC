@@ -73,21 +73,22 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 ├── resources/
 │   ├── css/                                  # Estilos base Tailwind v4
 │   ├── js/                                   # Entry points de JavaScript
-│   └── views/                                # Plantillas Blade modulares
-│       ├── acceso/                           # Vistas de autenticación (ingresar, registro, etc.)
-│       ├── components/                       # Componentes reutilizables (<dialog> modal nativo, toast-alerta flotante)
-│       ├── layouts/                          # Layouts base (app, acceso, parciales de nav/mensajes)
-│       └── planes/                           # Vistas de gestión, auditoría y sala (listar, historial, detalle)
+│   ├── views/                                # Plantillas Blade modulares
+│   │   ├── acceso/                           # Vistas de autenticación (ingresar, registro, etc.)
+│   │   ├── components/                       # Componentes reutilizables (<dialog> modal nativo, toast-alerta flotante)
+│   │   ├── layouts/                          # Layouts base (app, acceso, parciales de nav/mensajes)
+│   │   └── planes/                           # Vistas de gestión, auditoría y sala (listar, historial, detalle)
+│   └── DESIGN.md                             # Guía oficial del sistema de diseño y tokens
 ├── routes/
 │   ├── web.php                               # Definición de rutas web y middleware auth
 │   └── console.php                           # Comandos de consola de Artisan
+├── scripts/                                  # Scripts de automatización y verificación (setup, verify-subissue, evidences)
 ├── tests/
 │   ├── Feature/                              # Pruebas HTTP, endpoints, auth y flujos completos
 │   └── Unit/                                 # Pruebas de modelos, scopes y reglas de persistencia
 ├── docker-compose.yml                        # Orquestación de servicios (app, mysql, vite)
 ├── AGENTS.md                                 # Directivas operativas para agentes IA
-├── CONTRIBUTING.md                           # Guía para desarrolladores
-└── DESIGN.md                                 # Guía oficial del sistema de diseño y tokens
+└── CONTRIBUTING.md                           # Guía para desarrolladores
 ```
 
 ---
