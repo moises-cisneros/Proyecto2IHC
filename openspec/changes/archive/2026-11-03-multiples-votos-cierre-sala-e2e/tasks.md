@@ -23,7 +23,7 @@
 - [x] 3.5 Crear PR para #36 <!-- id: task-36-pr -->
 
 ## Sub-issue #37: [Evidencias & Matriz] — Capturas antes/después de la feature, auditoría visual y de accesibilidad, y matriz en evidencias/tarea-6.md
-- [ ] 4.1 Capturar y almacenar evidencias de la suite antes y después de la feature en `docs/evidencias/tarea-6/` <!-- id: task-37-capturas -->
-- [ ] 4.2 Redactar y consolidar la matriz comparativa en `evidencias/tarea-6.md` <!-- id: task-37-matriz -->
-- [ ] 4.3 Sincronizar especificaciones en `openspec/specs/` y archivar el cambio en `openspec/changes/archive/` <!-- id: task-37-archive -->
-- [ ] 4.4 Crear PR para #37 <!-- id: task-37-pr -->
+- [x] 4.1 Capturar y almacenar evidencias de la suite antes y después de la feature en `docs/evidencias/tarea-6/` <!-- id: task-37-capturas -->
+- [x] 4.2 Redactar y consolidar la matriz comparativa en `evidencias/tarea-6.md` <!-- id: task-37-matriz -->
+- [x] 4.3 Sincronizar especificaciones en `openspec/specs/` y archivar el cambio en `openspec/changes/archive/` <!-- id: task-37-archive -->
+- [x] 4.4 Crear PR para #37 <!-- id: task-37-pr -->
