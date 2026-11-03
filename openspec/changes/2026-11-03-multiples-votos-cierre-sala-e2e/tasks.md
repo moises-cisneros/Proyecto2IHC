@@ -16,11 +16,11 @@
 - [x] 2.6 Ejecutar suite completa, verificar con `scripts/verify-subissue.mjs 35` y crear PR para #35 <!-- id: task-35-pr -->
 
 ## Sub-issue #36: [E2E / IHC] — Suite Playwright en modo visible basada en tareas humanas y matriz de evidencias
-- [ ] 3.1 Crear prueba E2E `e2e/tarea-6-varios-votos.spec.ts` estructurada como tareas humanas («Anita...») para votos múltiples y toggle reactivo <!-- id: task-36-e2e-multiples -->
-- [ ] 3.2 Añadir caso de prueba E2E para comprobación de inmutabilidad en sala confirmada/cerrada <!-- id: task-36-e2e-cerrada -->
-- [ ] 3.3 Integrar auditoría de accesibilidad con `@axe-core/playwright` en la sala colaborativa <!-- id: task-36-e2e-axe -->
-- [ ] 3.4 Validar ejecución en modo normal y headed (`pnpm run test:e2e:headed`) <!-- id: task-36-e2e-verify -->
-- [ ] 3.5 Crear PR para #36 <!-- id: task-36-pr -->
+- [x] 3.1 Crear prueba E2E `e2e/tarea-6-varios-votos.spec.ts` estructurada como tareas humanas («Anita...») para votos múltiples y toggle reactivo <!-- id: task-36-e2e-multiples -->
+- [x] 3.2 Añadir caso de prueba E2E para comprobación de inmutabilidad en sala confirmada/cerrada <!-- id: task-36-e2e-cerrada -->
+- [x] 3.3 Integrar auditoría de accesibilidad con `@axe-core/playwright` en la sala colaborativa <!-- id: task-36-e2e-axe -->
+- [x] 3.4 Validar ejecución en modo normal y headed (`pnpm run test:e2e:headed`) <!-- id: task-36-e2e-verify -->
+- [x] 3.5 Crear PR para #36 <!-- id: task-36-pr -->
 
 ## Sub-issue #37: [Evidencias & Matriz] — Capturas antes/después de la feature, auditoría visual y de accesibilidad, y matriz en evidencias/tarea-6.md
 - [ ] 4.1 Capturar y almacenar evidencias de la suite antes y después de la feature en `docs/evidencias/tarea-6/` <!-- id: task-37-capturas -->
