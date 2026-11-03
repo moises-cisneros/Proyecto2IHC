@@ -120,17 +120,80 @@ Las configuraciones locales de cada herramienta (`.agent/`, `.claude/`, `.cursor
 
 ## 👤 Usuarios de Prueba Precargados (Seeders)
 
-La base de datos se siembra automáticamente al iniciar Docker con dos cuentas listas para usar sin necesidad de registrarse:
+La base de datos se siembra automáticamente al iniciar Docker con tres cuentas listas para usar sin necesidad de registrarse:
 
 | Usuario | Correo Electrónico | Contraseña | Datos de inicio |
 | :--- | :--- | :--- | :--- |
-| **Usuario 1** | `test@example.com` | `password` | Cuenta 1 de prueba |
-| **Usuario 2** | `test2@example.com` | `password` | Cuenta 2 de prueba |
+| **Test User** | `test@example.com` | `password` | Cuenta 1 de prueba |
+| **Test User 2** | `test2@example.com` | `password` | Cuenta 2 de prueba |
+| **Usuario 1** | `usuario1@example.com` | `password123` | Cuenta 3 de prueba |
 
 Para volver a sembrar los datos manualmente:
 
 ```bash
 docker compose exec planazo_app php artisan db:seed
+```
+
+---
+
+## 🗺️ App Map — Mapa de Flujos de la Aplicación
+
+```mermaid
+flowchart TD
+    F1["1. Acceso y Control de Sesión<br/>(/ingresar, /registro, /recuperar)"] --> F2["2. Creación y Edición de Plan<br/>(/planes, /planes/{id}/editar)"]
+    F2 --> F4["4. Búsqueda y Filtros<br/>(/mis-planes?buscar=&estado=&fecha=)"]
+    F2 --> F3["3. Máquina de Estados<br/>(Pendiente -> Confirmado -> Cancelado)"]
+    F2 --> F6["6. Colaboración Grupal<br/>(Invitar miembros, proponer fechas/lugares)"]
+    F6 --> F7["7. Varios Votos & Cierre<br/>(Aprobación múltiple y congelamiento)"]
+    F2 & F3 & F6 --> F5["5. Historial de Auditoría<br/>(/historial con selector de 4 chips)"]
+```
+
+1. **Flujo 1 (Acceso y Autenticación):** Acceso seguro con cuentas sembradas, registro y recuperación de contraseña.
+2. **Flujo 2 (Creación y Edición):** Registro de planes con organizador automático desde sesión y fecha límite.
+3. **Flujo 3 (Máquina de Estados):** Transición controlada: `pendiente` $\to$ `confirmado` $\to$ `cancelado` (estado terminal inmutable).
+4. **Flujo 4 (Búsqueda y Filtros):** Filtrado dinámico por texto, estado y fechas (próximos 7 días o vencidos).
+5. **Flujo 5 (Historial de Auditoría):** Bitácora cronológica con las 4 dimensiones del evento (Qué, Quién, Cuándo, Resultado).
+6. **Flujo 6 (Colaboración Grupal):** Invitación de amigos por correo, aceptación y propuestas de fechas o lugares.
+7. **Flujo 7 (Varios Votos y Cierre):** Votación por aprobación múltiple, alternancia reactiva de votos y congelamiento ante confirmación o vencimiento.
+
+---
+
+## 🧠 Principios y Avances de Interacción Humano-Computador (IHC)
+
+La aplicación sigue una disciplina estricta de usabilidad, ergonomía y accesibilidad:
+
+- **Ley de Fitts ($T = a + b \log_2(2D/W)$):** Todo botón o control interactivo (votar, proponer, invitar, confirmar) garantiza un área táctil mínima de **44×44px** (`min-height: 44px`). Los controles antagónicos mantienen una separación preventiva de **12px (`gap-3`)**.
+- **Ley de Hick ($T = b \log_2(n + 1)$):** Clasificación en $n=2$ pestañas en la sala de votación (*Fechas propuestas* vs *Lugares propuestos*) y $n=4$ chips temáticos en el historial (*Todos, Estados, Creaciones, Participación*).
+- **Carga Cognitiva ($7 \pm 2$ chunks):** Tarjetas sintéticas con los 4 metadatos esenciales para evitar sobrecarga mental.
+- **10 Heurísticas de Nielsen:**
+  - *H1 (Visibilidad del estado):* Contadores de votos en vivo y badges semánticos con texto e ícono.
+  - *H3 (Control y libertad):* Diálogo modal nativo `<dialog>` accesible para abandono de planes o retiro de votos.
+  - *H4 (Consistencia y estándares):* Cero dependencias externas (sin SweetAlert2 ni NProgress), usando `<dialog>` y `<x-toast-alerta />` flotante nativo de 3 segundos.
+  - *H5 (Prevención de errores):* Inhabilitación de controles y mensajes de sala cerrada para planes confirmados o vencidos.
+  - *H6 (Reconocimiento antes que recuerdo):* Organizador cargado automáticamente desde la sesión activa (`auth()->user()->name`).
+
+---
+
+## 🎭 Pruebas E2E con Playwright (Modo Visible en Escritorio)
+
+Siguiendo el estándar pedagógico de que **«una prueba es una tarea humana»**, cada test E2E narra el recorrido real de un usuario («Anita...», «Carlos...») utilizando localizadores semánticos accesibles (`getByRole`, `getByLabel`, `getByText`) sin clases CSS técnicas.
+
+### Instalación y Configuración Inicial de Playwright
+
+Para que Playwright pueda controlar y abrir la ventana del navegador en tu sistema operativo, es necesario descargar los binarios de Chromium (se ejecuta una única vez tras clonar el repositorio):
+
+```bash
+pnpm dlx playwright install chromium
+```
+
+### Ejecución Visible en Tiempo Real (Headed Mode)
+
+```bash
+# Abre la ventana de Chromium en tu pantalla para ver la interacción en vivo:
+pnpm run test:e2e:headed
+
+# Abre el UI Runner interactivo paso a paso de Playwright:
+pnpm run test:e2e:ui
 ```
 
 ---
@@ -159,13 +222,14 @@ docker compose exec planazo_app php artisan db:seed
   - `/ingresar` ➔ Formulario de inicio de sesión (`login`).
   - `/registro` ➔ Creación de nueva cuenta de usuario.
   - `/recuperar` y `/restablecer/{token}` ➔ Recuperación de contraseña por correo.
-- **Gestión de Planes (Zona Autenticada):**
+- **Gestión de Planes y Colaboración (Zona Autenticada):**
   - `/mis-planes` ➔ Listado interactivo de planes personales con filtros por estado y fecha.
-  - `/planes` (POST) ➔ Creación de un nuevo plan (descripción, fecha límite).
-  - `/planes/{plan}/editar` y `PUT /planes/{plan}` ➔ Edición de plan existente.
-  - `DELETE /planes/{plan}` ➔ Eliminación de plan con diálogo de confirmación.
-  - `PUT /planes/{plan}/estado` ➔ Transición de estados del plan:
-    - `pendiente` ➔ `confirmado` ➔ `cancelado`.
+  - `/planes` (POST) ➔ Creación de un nuevo plan (descripción, fecha límite y organizador automático).
+  - `/planes/{plan}` ➔ Sala colaborativa del plan: invitación a miembros, propuestas de fechas/lugares y votación grupal.
+  - `/planes/{plan}/editar` y `PUT /planes/{plan}` ➔ Edición de plan existente (organizador inmutable).
+  - `DELETE /planes/{plan}` ➔ Eliminación de plan con diálogo modal accesible.
+  - `PUT /planes/{plan}/estado` ➔ Transición de estados del plan (`pendiente` ➔ `confirmado` ➔ `cancelado`).
+  - `/historial` ➔ Bitácora cronológica e inmutable de eventos con selector de 4 categorías (Hick).
 
 ---
 
