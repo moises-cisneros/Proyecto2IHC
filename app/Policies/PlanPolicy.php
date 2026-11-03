@@ -72,7 +72,11 @@ class PlanPolicy
      */
     public function proponer(User $user, Plan $plan): bool
     {
-        if ($plan->estado === 'cancelado') {
+        if ($plan->estado !== 'pendiente') {
+            return false;
+        }
+
+        if ($plan->fecha_limite && $plan->fecha_limite < now()->startOfDay()) {
             return false;
         }
 
@@ -84,7 +88,11 @@ class PlanPolicy
      */
     public function votar(User $user, Plan $plan): bool
     {
-        if ($plan->estado === 'cancelado') {
+        if ($plan->estado !== 'pendiente') {
+            return false;
+        }
+
+        if ($plan->fecha_limite && $plan->fecha_limite < now()->startOfDay()) {
             return false;
         }
 
