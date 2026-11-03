@@ -58,6 +58,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Planes creados por el usuario.
+     */
+    public function planes(): HasMany
+    {
+        return $this->hasMany(Plan::class);
+    }
+
+    /**
      * Invitaciones asociadas al usuario.
      */
     public function invitaciones(): HasMany
