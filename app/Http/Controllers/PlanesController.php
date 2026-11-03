@@ -100,12 +100,10 @@ class PlanesController extends Controller
 
         $request->validate([
             'nombre'       => 'required|max:255',
-            'organizador'  => 'required|max:255',
             'fecha_limite' => 'required|date',
         ], $this->mensajes);
 
         $plan->nombre       = $request->nombre;
-        $plan->organizador  = $request->organizador;
         $plan->fecha_limite = $request->fecha_limite;
         $plan->save();
 
@@ -147,10 +145,10 @@ class PlanesController extends Controller
             'estado' => 'required|in:pendiente,confirmado,cancelado',
         ]);
 
-        //  un plan cancelado NO puede volver a confirmarse
-        if ($plan->estado === 'cancelado' && $request->estado === 'confirmado') {
+        // Regla de negocio: un plan cancelado NO puede reactivarse
+        if ($plan->estado === 'cancelado' && $request->estado !== 'cancelado') {
             return redirect()->route('planes.listar')
-                             ->with('error', 'Un plan cancelado no puede volver a confirmarse.');
+                             ->with('error', 'Un plan cancelado no puede reactivarse.');
         }
 
         $plan->estado = $request->estado;

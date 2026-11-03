@@ -25,13 +25,14 @@
         </div>
 
         <div class="campo">
-            <label for="organizador">Organizador</label>
-            <input type="text" id="organizador" name="organizador"
-                   value="{{ old('organizador', $plan->organizador) }}"
-                   placeholder="Nombre del organizador">
-            @error('organizador')
-                <span class="campo-error">{{ $message }}</span>
-            @enderror
+            <label>Organizador</label>
+            <div class="inline-flex items-center gap-2 px-3 py-2 bg-stone-100 border border-stone-200 rounded-lg text-sm text-stone-700">
+                <svg class="w-4 h-4 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span class="font-medium">{{ $plan->organizador }}</span>
+                <span class="text-xs text-stone-400 ml-auto">(Solo lectura)</span>
+            </div>
         </div>
 
         <div class="campo">
