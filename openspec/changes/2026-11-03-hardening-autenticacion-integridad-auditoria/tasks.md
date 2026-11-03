@@ -17,11 +17,11 @@
 
 ## Sub-issue 3: Historial / Auditoría (#32)
 
-- [ ] 3.1 Registrar eventos de `invitacion` en `ColaboracionController::invitar`
-- [ ] 3.2 Registrar eventos de `propuesta` en `ColaboracionController::guardarOpcion`
-- [ ] 3.3 Registrar eventos de `voto` en `ColaboracionController::votar`
-- [ ] 3.4 Registrar eventos de desvinculación en `ColaboracionController::abandonar`
-- [ ] 3.5 Crear suite de pruebas `tests/Feature/TrazabilidadColaboracionTest.php` (4 casos de prueba) y validar con PHPUnit en Docker
+- [x] 3.1 Registrar eventos de `invitacion` en `ColaboracionController::invitar`
+- [x] 3.2 Registrar eventos de `propuesta` en `ColaboracionController::guardarOpcion`
+- [x] 3.3 Registrar eventos de `voto` en `ColaboracionController::votar`
+- [x] 3.4 Registrar eventos de desvinculación en `ColaboracionController::abandonar`
+- [x] 3.5 Crear suite de pruebas `tests/Feature/TrazabilidadColaboracionTest.php` (4 casos de prueba) y validar con PHPUnit en Docker
 
 ## Cierre y Archivo del SDD
 
