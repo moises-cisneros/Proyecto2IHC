@@ -10,10 +10,10 @@
 
 ## Sub-issue 2: Controlador / Seguridad (#31)
 
-- [ ] 2.1 Implementar `$request->session()->invalidate()` y `$request->session()->regenerateToken()` en `AutentificacionController::salir`
-- [ ] 2.2 Unificar respuesta genérica neutra en `AutentificacionController::enviarCorreo` para neutralizar ataques de enumeración
-- [ ] 2.3 Proteger rutas de acceso con middleware `guest` y aplicar rate limiting en `routes/web.php`
-- [ ] 2.4 Crear suite de pruebas `tests/Feature/HardeningAutenticacionTest.php` (4 casos de prueba) y validar con PHPUnit en Docker
+- [x] 2.1 Implementar `$request->session()->invalidate()` y `$request->session()->regenerateToken()` en `AutentificacionController::salir`
+- [x] 2.2 Unificar respuesta genérica neutra en `AutentificacionController::enviarCorreo` para neutralizar ataques de enumeración
+- [x] 2.3 Proteger rutas de acceso con middleware `guest` y aplicar rate limiting en `routes/web.php`
+- [x] 2.4 Crear suite de pruebas `tests/Feature/HardeningAutenticacionTest.php` (4 casos de prueba) y validar con PHPUnit en Docker
 
 ## Sub-issue 3: Historial / Auditoría (#32)
 
