@@ -62,6 +62,14 @@ class ColaboracionController extends Controller
         $invitacion->user_id = $usuarioExistente?->id;
         $invitacion->save();
 
+        // Registrar en historial de actividades
+        $plan->actividades()->create([
+            'user_id' => auth()->id(),
+            'accion' => 'invitacion',
+            'descripcion' => "Invitación enviada a {$request->email}",
+            'estado_resultante' => $plan->estado,
+        ]);
+
         return back()->with('exito', 'Invitación enviada correctamente.');
     }
 
@@ -118,6 +126,14 @@ class ColaboracionController extends Controller
             'descripcion' => $request->descripcion,
         ]);
 
+        // Registrar en historial de actividades
+        $plan->actividades()->create([
+            'user_id' => auth()->id(),
+            'accion' => 'propuesta',
+            'descripcion' => auth()->user()->name . " propuso una nueva opción de {$request->tipo}: {$request->valor}",
+            'estado_resultante' => $plan->estado,
+        ]);
+
         return back()->with('exito', 'Opción propuesta correctamente.');
     }
 
@@ -135,12 +151,26 @@ class ColaboracionController extends Controller
         if ($votoExistente) {
             $votoExistente->delete();
             $mensaje = 'Voto retirado.';
+
+            $opcion->plan->actividades()->create([
+                'user_id' => auth()->id(),
+                'accion' => 'voto',
+                'descripcion' => auth()->user()->name . " retiró su voto de la opción {$opcion->valor}",
+                'estado_resultante' => $opcion->plan->estado,
+            ]);
         } else {
             Voto::create([
                 'opcion_id' => $opcion->id,
                 'user_id'   => auth()->id(),
             ]);
             $mensaje = '¡Voto registrado!';
+
+            $opcion->plan->actividades()->create([
+                'user_id' => auth()->id(),
+                'accion' => 'voto',
+                'descripcion' => auth()->user()->name . " votó por la opción {$opcion->valor}",
+                'estado_resultante' => $opcion->plan->estado,
+            ]);
         }
 
         return back()->with('exito', $mensaje);
@@ -154,6 +184,14 @@ class ColaboracionController extends Controller
         Gate::authorize('abandonar', $plan);
 
         $usuario = auth()->user();
+
+        // 0. Registrar actividad en historial antes de desvincular
+        $plan->actividades()->create([
+            'user_id' => $usuario->id,
+            'accion' => 'participacion',
+            'descripcion' => "{$usuario->name} abandonó el plan",
+            'estado_resultante' => $plan->estado,
+        ]);
 
         // 1. Limpiar invitaciones/membresía del usuario para este plan
         $plan->invitaciones()
