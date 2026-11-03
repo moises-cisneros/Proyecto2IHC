@@ -25,5 +25,5 @@
 
 ## Cierre y Archivo del SDD
 
-- [ ] 4.1 Ejecutar suite completa de pruebas PHPUnit (`69+` tests) y script de verificación `scripts/verify-subissue.mjs`
-- [ ] 4.2 Sincronizar especificaciones en `openspec/specs/` y archivar el cambio en `openspec/changes/archive/`
+- [x] 4.1 Ejecutar suite completa de pruebas PHPUnit (`69+` tests) y script de verificación `scripts/verify-subissue.mjs`
+- [x] 4.2 Sincronizar especificaciones en `openspec/specs/` y archivar el cambio en `openspec/changes/archive/`
