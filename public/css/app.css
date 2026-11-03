@@ -68,16 +68,43 @@ body {
 }
 
 .boton-editar {
-    color: #1c1c1a;
+    color: #ffffff;
     background: #a3a60b;
-    border: 1px solid #e3e3df;
+    border: 1px solid #8e9109;
+    border-radius: 50px;
+    padding: 8px 14px;
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-sizing: border-box;
+    transition: background-color 0.2s;
+}
+
+.boton-editar:hover:not(:disabled) {
+    background: #8e9109;
 }
 
 .boton-rojo {
-    padding: 3px;
-    width: 30px;
-    border-radius: 10px;
+    color: #ffffff;
     background-color: rgb(185, 14, 19);
+    border: 1px solid rgb(160, 12, 16);
+    border-radius: 50px;
+    padding: 8px 14px;
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.boton-rojo:hover:not(:disabled) {
+    background-color: rgb(150, 10, 14);
 }
 
 
@@ -421,18 +448,12 @@ dialog h2,
     margin-top: 8px;
 }
 
-.botones-columna {
+/* ── Acciones horizontales fluidas (Fitts) ── */
+.acciones {
     display: flex;
-    flex-direction: column;
-}
-
-.botones-columna a {
-    text-align: center;
-    padding: 3px;
-    width: 30px;
-    border-radius: 10px;
-    background-color: orange;
-    margin-bottom: 5px;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
 /* ── Badge informativo de organizador (solo lectura en creación) ── */

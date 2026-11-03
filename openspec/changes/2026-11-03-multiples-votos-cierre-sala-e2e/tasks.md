@@ -8,12 +8,12 @@
 - [x] 1.5 Ejecutar suite completa, verificar con `scripts/verify-subissue.mjs 34` y crear PR para #34 <!-- id: task-34-pr -->
 
 ## Sub-issue #35: [Interfaz / Blade] — Sala colaborativa cerrada, prevención de errores (H5), directivas @can y refinamiento estético
-- [ ] 2.1 Refactorizar modal de propuestas en `_sala_votacion.blade.php` con selector e input `<input type="datetime-local">` para fechas (H5) <!-- id: task-35-input-h5 -->
-- [ ] 2.2 Agregar banner de sala cerrada y deshabilitar botones de voto en planes confirmados (`@can`/`@cannot`) <!-- id: task-35-banner-cierre -->
-- [ ] 2.3 Permitir invitar en planes confirmados pero ocultar en cancelados en `_participantes.blade.php` <!-- id: task-35-invitar-confirmado -->
-- [ ] 2.4 Corregir botonera de acciones en `resources/views/planes/listar.blade.php` a disposición horizontal ergonómica (Fitts 44px) <!-- id: task-35-botonera-fitts -->
-- [ ] 2.5 Crear suite PHPUnit `tests/Feature/SalaColaborativaCerradaTest.php` con al menos 4 casos de prueba <!-- id: task-35-tests -->
-- [ ] 2.6 Ejecutar suite completa, verificar con `scripts/verify-subissue.mjs 35` y crear PR para #35 <!-- id: task-35-pr -->
+- [x] 2.1 Refactorizar modal de propuestas en `_sala_votacion.blade.php` con selector e input `<input type="datetime-local">` para fechas (H5) <!-- id: task-35-input-h5 -->
+- [x] 2.2 Agregar banner de sala cerrada y deshabilitar botones de voto en planes confirmados (`@can`/`@cannot`) <!-- id: task-35-banner-cierre -->
+- [x] 2.3 Permitir invitar en planes confirmados pero ocultar en cancelados en `_participantes.blade.php` <!-- id: task-35-invitar-confirmado -->
+- [x] 2.4 Corregir botonera de acciones en `resources/views/planes/listar.blade.php` a disposición horizontal ergonómica (Fitts 44px) <!-- id: task-35-botonera-fitts -->
+- [x] 2.5 Crear suite PHPUnit `tests/Feature/SalaColaborativaCerradaTest.php` con al menos 4 casos de prueba <!-- id: task-35-tests -->
+- [x] 2.6 Ejecutar suite completa, verificar con `scripts/verify-subissue.mjs 35` y crear PR para #35 <!-- id: task-35-pr -->
 
 ## Sub-issue #36: [E2E / IHC] — Suite Playwright en modo visible basada en tareas humanas y matriz de evidencias
 - [ ] 3.1 Crear prueba E2E `e2e/tarea-6-varios-votos.spec.ts` estructurada como tareas humanas («Anita...») para votos múltiples y toggle reactivo <!-- id: task-36-e2e-multiples -->
