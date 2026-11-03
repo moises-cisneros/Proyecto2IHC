@@ -115,10 +115,10 @@ class AutentificacionController extends Controller
         }
 
         if ($estado == Password::RESET_LINK_SENT) {
-            return back()->with('exito', 'Te enviamos un enlace a tu correo.');
+            return back()->with('exito', 'Si el correo ingresado está registrado, te enviamos un enlace de recuperación.');
         }
 
-        return back()->with('error', 'No existe una cuenta con ese correo.');
+        return back()->with('exito', 'Si el correo ingresado está registrado, te enviamos un enlace de recuperación.');
     }
 
     /*
@@ -172,9 +172,13 @@ class AutentificacionController extends Controller
     |--------------------------------------------------------------------------
     */
 
-    public function salir()
+    public function salir(Request $request)
     {
         Auth::logout();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
         return redirect()->route('login');
     }
 }

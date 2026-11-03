@@ -10,17 +10,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/ingresar');
 
-Route::get( '/ingresar', [AutentificacionController::class, 'mostrarIngreso'])->name('login');
-Route::post('/ingresar', [AutentificacionController::class, 'ingresar']       )->name('ingresar');
+Route::middleware('guest')->group(function () {
+    Route::get( '/ingresar', [AutentificacionController::class, 'mostrarIngreso'])->name('login');
+    Route::post('/ingresar', [AutentificacionController::class, 'ingresar']       )->middleware('throttle:5,1')->name('ingresar');
 
-Route::get( '/registro', [AutentificacionController::class, 'mostrarRegistro'])->name('registro');
-Route::post('/registro', [AutentificacionController::class, 'registrar']       )->name('registrar');
+    Route::get( '/registro', [AutentificacionController::class, 'mostrarRegistro'])->name('registro');
+    Route::post('/registro', [AutentificacionController::class, 'registrar']       )->name('registrar');
 
-Route::get( '/recuperar', [AutentificacionController::class, 'mostrarRecuperar'])->name('recuperar');
-Route::post('/recuperar', [AutentificacionController::class, 'enviarCorreo']     )->name('enviar.correo');
+    Route::get( '/recuperar', [AutentificacionController::class, 'mostrarRecuperar'])->name('recuperar');
+    Route::post('/recuperar', [AutentificacionController::class, 'enviarCorreo']     )->middleware('throttle:5,1')->name('enviar.correo');
 
-Route::get( '/restablecer/{token}', [AutentificacionController::class, 'mostrarRestablecer'])->name('password.reset');
-Route::post('/restablecer',         [AutentificacionController::class, 'restablecer']        )->name('restablecer');
+    Route::get( '/restablecer/{token}', [AutentificacionController::class, 'mostrarRestablecer'])->name('password.reset');
+    Route::post('/restablecer',         [AutentificacionController::class, 'restablecer']        )->name('restablecer');
+});
 
 
 Route::middleware('auth')->group(function () {
