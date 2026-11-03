@@ -331,11 +331,37 @@ body {
     color: #6f6f6a;
 }
 
-/* Celda de acciones: pone los botones en fila */
+/* Enlace al detalle del plan: limpio y sin subrayado estático */
+.enlace-plan {
+    color: #1c1c1a;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.15s ease, text-decoration 0.15s ease;
+}
+
+.enlace-plan:hover {
+    color: #4a4a49;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+.enlace-plan:focus-visible {
+    outline: 2px solid #60605f;
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* Celda de acciones en tabla: botones en fila horizontal sin quiebre */
 .acciones {
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.acciones-grupo {
     display: flex;
-    gap: 8px;
     align-items: center;
+    gap: 8px;
+    flex-wrap: nowrap;
 }
 
 /* Texto cuando no hay planes */
