@@ -10,7 +10,7 @@
                     class="boton"
                     style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; font-weight: 600;"
                     onclick="document.getElementById('modal-invitar').showModal()"
-                    aria-label="Invitar a un nuevo colaborador">
+                    aria-label="+ Invitar colaborador">
                 + Invitar colaborador
             </button>
         @endcan

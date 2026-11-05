@@ -43,7 +43,7 @@ body {
 
 /* ── Contenedor central ───────────────────────────────────────── */
 .contenedor {
-    max-width: 800px;
+    max-width: 1024px;
     margin: 0 auto;
     padding: 24px 16px;
 }
@@ -313,6 +313,7 @@ body {
 /* ── Tabla de planes ──────────────────────────────────────────── */
 .tabla {
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
     background: #ffffff;
     border: 1px solid #e3e3df;
@@ -321,9 +322,14 @@ body {
 
 .tabla th,
 .tabla td {
-    padding: 12px;
+    padding: 12px 14px;
     text-align: left;
     border-bottom: 1px solid #e3e3df;
+    vertical-align: middle;
+}
+
+.tabla tbody tr {
+    height: 68px;
 }
 
 .tabla th {
@@ -351,15 +357,17 @@ body {
     border-radius: 4px;
 }
 
-/* Celda de acciones en tabla: botones en fila horizontal sin quiebre */
+/* Celda de acciones en tabla: botones en fila horizontal sin quiebre y alineados */
 .acciones {
     white-space: nowrap;
     vertical-align: middle;
+    text-align: right;
 }
 
 .acciones-grupo {
-    display: flex;
+    display: inline-flex;
     align-items: center;
+    justify-content: flex-end;
     gap: 8px;
     flex-wrap: nowrap;
 }
@@ -403,6 +411,10 @@ dialog {
     border-radius: 12px;
     background: #ffffff;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+dialog:not([open]) {
+    display: none !important;
 }
 
 dialog::backdrop {

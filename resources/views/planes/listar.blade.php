@@ -68,11 +68,11 @@
 <table class="tabla">
     <thead>
         <tr>
-            <th>Plan</th>
-            <th>Organizador</th>
-            <th>Fecha límite</th>
-            <th>Estado</th>
-            <th style="white-space: nowrap; width: 1%;">Acciones</th>
+            <th style="width: 28%;">Plan</th>
+            <th style="width: 18%;">Organizador</th>
+            <th style="width: 14%;">Fecha límite</th>
+            <th style="width: 12%;">Estado</th>
+            <th style="width: 28%; text-align: right;">Acciones</th>
         </tr>
     </thead>
     <tbody>
@@ -81,19 +81,26 @@
         @forelse ($planes as $plan)
         <tr>
 
-            {{-- Nombre y organizador con touch target Fitts >=44px --}}
-            <td>
-                <a href="{{ route('planes.detalle', $plan) }}" class="enlace-plan" style="min-height: 44px; display: inline-flex; align-items: center;">
+            {{-- Nombre y organizador con touch target Fitts >=44px y elipsis estricta --}}
+            <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                <a href="{{ route('planes.detalle', $plan) }}"
+                   class="enlace-plan"
+                   style="min-height: 44px; display: inline-flex; align-items: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                   title="{{ $plan->nombre }}">
                     {{ $plan->nombre }}
                 </a>
             </td>
-            <td>{{ $plan->organizador }}</td>
+            <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                {{ $plan->organizador }}
+            </td>
 
             {{-- Fecha formateada como dd/mm/yyyy --}}
-            <td>{{ $plan->fecha_limite->format('d/m/Y') }}</td>
+            <td style="white-space: nowrap;">
+                {{ $plan->fecha_limite->format('d/m/Y') }}
+            </td>
 
             {{-- Chip de color según el estado --}}
-            <td>
+            <td style="white-space: nowrap;">
                 <span class="estado estado-{{ $plan->estado }}">
                     @if ($plan->estado === 'pendiente')  Pendiente
                     @elseif ($plan->estado === 'confirmado') Confirmado
@@ -122,7 +129,7 @@
                         </a>
                     @endcan
 
-                    {{-- 1. Botón de cambio de estado (Confirmar / Cancelar) --}}
+                    {{-- 1. Botón de cambio de estado (Confirmar / Cancelar con ancho homogéneo de 104px para evitar desalineación) --}}
                     @can('cambiarEstado', $plan)
                         @if ($plan->estado == 'pendiente')
                             <form method="POST" action="{{ route('planes.estado', $plan) }}" style="margin: 0;">
@@ -130,7 +137,7 @@
                                 @method('PUT')
                                 <input type="hidden" name="estado" value="confirmado">
                                 <button type="submit" class="boton boton-claro"
-                                    style="min-height: 44px; border-radius: 50px; padding: 8px 18px; font-weight: 500; white-space: nowrap;"
+                                    style="min-height: 44px; width: 104px; min-width: 104px; border-radius: 50px; padding: 8px 12px; font-weight: 500; white-space: nowrap; text-align: center; justify-content: center; display: inline-flex; align-items: center; box-sizing: border-box;"
                                     data-confirm="¿Confirmar el plan &laquo;{{ $plan->nombre }}&raquo;?"
                                     data-title="Confirmar plan"
                                     data-btn-ok="Sí, confirmar"
@@ -142,7 +149,7 @@
                                 @method('PUT')
                                 <input type="hidden" name="estado" value="cancelado">
                                 <button type="submit" class="boton boton-claro"
-                                    style="min-height: 44px; border-radius: 50px; padding: 8px 18px; font-weight: 500; white-space: nowrap;"
+                                    style="min-height: 44px; width: 104px; min-width: 104px; border-radius: 50px; padding: 8px 12px; font-weight: 500; white-space: nowrap; text-align: center; justify-content: center; display: inline-flex; align-items: center; box-sizing: border-box;"
                                     data-confirm="¿Cancelar el plan &laquo;{{ $plan->nombre }}&raquo;? No podrá volver a confirmarse."
                                     data-title="Cancelar plan"
                                     data-btn-ok="Sí, cancelar"
@@ -151,7 +158,7 @@
                         @else
                             {{-- Plan cancelado: no puede volver a confirmarse --}}
                             <button class="boton boton-claro" disabled
-                                    style="min-height: 44px; border-radius: 50px; padding: 8px 18px; font-weight: 500; white-space: nowrap;"
+                                    style="min-height: 44px; width: 104px; min-width: 104px; border-radius: 50px; padding: 8px 12px; font-weight: 500; white-space: nowrap; text-align: center; justify-content: center; display: inline-flex; align-items: center; box-sizing: border-box;"
                                     title="Un plan cancelado no puede volver a confirmarse">Confirmar</button>
                         @endif
                     @endcan

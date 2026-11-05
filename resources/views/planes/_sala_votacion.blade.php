@@ -12,6 +12,9 @@
                     ¡Plan confirmado! Deliberación y votación finalizadas.
                 </span>
             </div>
+            <p style="margin: 0 0 12px 0; color: #2e5939; font-size: 14px;">
+                Votación finalizada. Este plan ha sido confirmado y la deliberación se encuentra cerrada.
+            </p>
 
             <div style="display: flex; flex-wrap: wrap; gap: 24px; margin-top: 6px; font-size: 15px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
@@ -19,7 +22,7 @@
                     <div>
                         <span style="font-weight: 600; color: #4a4a49;">Fecha acordada:</span>
                         @php
-                            $fechaTexto = $plan->opcionFechaGanadora?->valor;
+                            $fechaTexto = $plan->propuestaFechaGanadora?->valor;
                             if ($fechaTexto) {
                                 try {
                                     $fechaTexto = \Carbon\Carbon::parse($fechaTexto)->translatedFormat('d/m/Y H:i \h\r\s');
@@ -37,7 +40,7 @@
                     <div>
                         <span style="font-weight: 600; color: #4a4a49;">Lugar acordado:</span>
                         <span style="font-weight: 700; color: #1c1c1a;">
-                            {{ $plan->opcionLugarGanadora?->valor ?? $plan->lugar ?? 'Por definir' }}
+                            {{ $plan->propuestaLugarGanadora?->valor ?? $plan->lugar ?? 'Por definir' }}
                         </span>
                     </div>
                 </div>
@@ -64,7 +67,7 @@
                         class="boton"
                         style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; font-weight: 600; border-radius: 50px; background: #25663a; color: #ffffff;"
                         onclick="document.getElementById('modal-confirmar-plan').showModal()"
-                        aria-label="Cerrar votación y confirmar el plan">
+                        aria-label="✓ Cerrar votación y confirmar">
                     ✓ Cerrar votación y confirmar
                 </button>
             @endcan

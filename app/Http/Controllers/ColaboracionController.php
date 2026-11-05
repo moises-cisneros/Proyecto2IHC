@@ -26,8 +26,8 @@ class ColaboracionController extends Controller
             'opciones.votos',
             'invitaciones.user',
             'participantes',
-            'opcionFechaGanadora',
-            'opcionLugarGanadora',
+            'propuestaFechaGanadora',
+            'propuestaLugarGanadora',
         ]);
 
         $pestanaActiva = $request->input('tab', 'fechas');

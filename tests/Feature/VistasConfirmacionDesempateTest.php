@@ -57,6 +57,7 @@ class VistasConfirmacionDesempateTest extends TestCase
             'plan_id' => $plan->id,
             'user_id' => $participante->id,
             'email' => $participante->email,
+            'token' => 'token-test-participante-1',
             'estado' => 'aceptada',
         ]);
 
@@ -122,8 +123,8 @@ class VistasConfirmacionDesempateTest extends TestCase
 
         $plan->update([
             'estado' => 'confirmado',
-            'propuesta_fecha_ganadora_id' => $opcionFecha->id,
-            'propuesta_lugar_ganadora_id' => $opcionLugar->id,
+            'propuesta_fecha_id' => $opcionFecha->id,
+            'propuesta_lugar_id' => $opcionLugar->id,
             'motivo_desempate' => 'Mayor disponibilidad de salas de conferencia',
             'fecha_confirmacion' => now(),
         ]);
@@ -132,6 +133,7 @@ class VistasConfirmacionDesempateTest extends TestCase
             'plan_id' => $plan->id,
             'user_id' => $participante->id,
             'email' => $participante->email,
+            'token' => 'token-test-participante-1',
             'estado' => 'aceptada',
         ]);
 
