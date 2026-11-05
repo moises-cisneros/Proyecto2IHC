@@ -36,6 +36,7 @@ Route::middleware('auth')->group(function () {
     Route::put(   '/planes/{plan}',          [PlanesController::class, 'actualizar']   )->name('planes.actualizar');
     Route::delete('/planes/{plan}',          [PlanesController::class, 'eliminar']     )->name('planes.eliminar');
     Route::put(   '/planes/{plan}/estado',   [PlanesController::class, 'cambiarEstado'])->name('planes.estado');
+    Route::post(  '/planes/{plan}/confirmar',[PlanesController::class, 'confirmar'])->name('planes.confirmar');
 
     Route::post(  '/planes/{plan}/invitar',  [ColaboracionController::class, 'invitar']      )->name('planes.invitar');
     Route::post(  '/planes/{plan}/aceptar',  [ColaboracionController::class, 'aceptar']      )->name('planes.aceptar');
