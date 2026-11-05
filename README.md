@@ -186,7 +186,7 @@ Para que Playwright pueda controlar y abrir la ventana del navegador en tu siste
 pnpm dlx playwright install chromium
 ```
 
-### Ejecución Visible en Tiempo Real (Headed Mode)
+### Ejecución Rápida
 
 ```bash
 # Abre la ventana de Chromium en tu pantalla para ver la interacción en vivo:
@@ -195,6 +195,8 @@ pnpm run test:e2e:headed
 # Abre el UI Runner interactivo paso a paso de Playwright:
 pnpm run test:e2e:ui
 ```
+
+*(Para ejecución de pruebas puntuales, filtrado por nombres y el protocolo detallado para crear nuevas pruebas E2E, consultá [AGENTS.md](AGENTS.md) y [CONTRIBUTING.md](CONTRIBUTING.md)).*
 
 ---
 

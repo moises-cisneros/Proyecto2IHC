@@ -189,31 +189,37 @@ Las credenciales de los usuarios de prueba están documentadas en la sección "U
 
 ---
 
-## 8. Pruebas Automatizadas (PHPUnit)
+## 8. Pruebas Automatizadas (PHPUnit y Playwright E2E)
 
-* **Obligatoriedad:** Toda nueva funcionalidad, regla de dominio o cambio de estado (Sub-issues 1 y 2) **debe incluir pruebas automatizadas con un mínimo de 4 casos de prueba**.
-* **Ubicación y alcance:**
-  * `tests/Unit/`: Pruebas de lógica pura, modelos Eloquent, scopes de búsqueda y transiciones de estado (ej: `tests/Unit/FiltradoPlanesTest.php`).
-  * `tests/Feature/`: Pruebas de integración HTTP, controladores, validación de endpoints, redirecciones y sesión (ej: `tests/Feature/ExampleTest.php`).
-  * Prohibido sobre-testear archivos triviales; los tests deben apuntar a módulos con lógica crítica o flujos clave.
-* **Convención de nomenclatura:** Archivos con sufijo `*Test.php`, clases que extiendan `Tests\TestCase` y métodos con prefijo `test_*`.
+### 8.1 Pruebas Backend (PHPUnit)
+
+* **Obligatoriedad:** Toda nueva funcionalidad, regla de dominio o cambio de estado (Sub-issues 1 y 2) **debe incluir pruebas automatizadas con un mínimo de 4 casos de prueba** (incluyendo casos negativos de seguridad: 302 y 403 Forbidden).
+* **Estructura y Ubicación:**
+  * `tests/Unit/<Entidad>Test.php`: Pruebas de lógica pura, modelos Eloquent, scopes de búsqueda y transiciones de estado (ej: `tests/Unit/PlanTest.php`, `tests/Unit/FiltroPlanesTest.php`).
+  * `tests/Feature/<Modulo>Test.php`: Pruebas de integración HTTP, controladores, validación de endpoints, redirecciones y sesión (ej: `tests/Feature/GestionPlanesTest.php`, `tests/Feature/VotacionTest.php`).
+* **Nomenclatura de Métodos:**
+  * Patrón semántico estricto: `test_<accion_o_metodo>_<condicion_o_escenario>_<resultado_esperado>()`
+  * Ejemplos:
+    * `test_crear_plan_con_fecha_pasada_retorna_error_de_validacion()`
+    * `test_usuario_no_autenticado_al_acceder_a_sala_es_redirigido_a_login()`
+    * `test_participante_no_autorizado_recibe_403_al_intentar_confirmar_plan()`
 * **Ejecución en Docker (Comandos para copiar y pegar):**
-  * Ejecutar toda la suite de pruebas:
+  * Suite completa:
 
     ```bash
     docker compose exec planazo_app php artisan test
     ```
 
-  * Ejecutar un archivo de prueba específico:
+  * Archivo específico:
 
     ```bash
-    docker compose exec planazo_app php artisan test tests/Unit/FiltradoPlanesTest.php
+    docker compose exec planazo_app php artisan test tests/Feature/<NombreDelTest>.php
     ```
 
-  * Ejecutar un test puntual por nombre de método o filtro:
+  * Filtrar por método o patrón:
 
     ```bash
-    docker compose exec planazo_app php artisan test --filter test_filtra_por_nombre
+    docker compose exec planazo_app php artisan test --filter <nombre_del_metodo>
     ```
 
 * **Ejecución en local (si tenés PHP en el host):**
@@ -221,6 +227,65 @@ Las credenciales de los usuarios de prueba están documentadas en la sección "U
   ```bash
   php artisan test
   ```
+
+### 8.2 Pruebas E2E (Playwright)
+
+Siguiendo el principio de que **«una prueba es una tarea humana»**, los tests E2E simulan los flujos reales de usuario interactuando con la interfaz mediante localizadores semánticos y accesibles.
+
+* **Estructura de Nomenclatura para Archivos E2E (`e2e/`):**
+  Los nombres de archivos deben ser en `kebab-case` descriptivos y responder a dos categorías según el alcance:
+  1. **Flujos Generales de Dominio:** `e2e/<modulo>-<escenario-o-flujo>.spec.ts`
+     * Ejemplos: `e2e/planes-creacion-flujo-completo.spec.ts`, `e2e/sala-votacion-desempate.spec.ts`, `e2e/acceso-seguridad-roles.spec.ts`.
+  2. **Casos Asignados por Tarea Docente o Feedback Externo:** `e2e/<prefijo-de-tarea>-<descripcion-kebab>.spec.ts`
+     * Ejemplos: `e2e/tarea-<N>-<flujo>.spec.ts`, `e2e/feedback-<origen>-<foco>.spec.ts`.
+* **Nomenclatura del Caso de Prueba (`test(...)`):**
+  * Usar narrativa humana orientada al rol y la intención:
+    * `test('Como organizador, puedo desempatar seleccionando la opción ganadora con motivo obligatorio', async ({ page }) => { ... })`
+    * `test('Usuario sin sesión es redirigido a login al intentar acceder a una sala privada', async ({ page }) => { ... })`
+* **Comandos de Ejecución:**
+  * **Suite completa (Headless):**
+
+    ```bash
+    pnpm run test:e2e
+    ```
+
+  * **Suite completa visible (Headed):**
+
+    ```bash
+    pnpm run test:e2e:headed
+    ```
+
+  * **Prueba puntual por archivo:**
+
+    ```bash
+    pnpm run test:e2e e2e/<archivo-a-probar>.spec.ts
+    # O en modo visible:
+    pnpm run test:e2e:headed e2e/<archivo-a-probar>.spec.ts
+    ```
+
+  * **Filtrar por nombre o patrón (`-g` o `--grep`):**
+
+    ```bash
+    pnpm run test:e2e:headed -g "<patrón-o-palabra-clave>"
+    ```
+
+  * **UI Runner Interactivo (con inspección de DOM y time-travel debugging):**
+
+    ```bash
+    pnpm run test:e2e:ui
+    ```
+
+* **Protocolo Obligatorio para Crear Nuevas Pruebas E2E:**
+  Toda nueva prueba E2E debe ceñirse a las siguientes directivas:
+  1. **Ubicación y Formato:** Archivo en `e2e/<modulo-o-tarea>-<escenario>.spec.ts`.
+  2. **Localizadores Semánticos y Accesibles:** Prohibido el uso de clases CSS o selectores técnicos frágiles (`.btn-primary`, `#submit-id`). Usar exclusivamente métodos accesibles de Playwright: `getByRole`, `getByLabel`, `getByText`, `getByPlaceholder`.
+  3. **Generación de Evidencias Gráficas:** Si la tarea exige capturas, exportarlas programáticamente siguiendo la convención:
+
+     ```typescript
+     await page.screenshot({ path: 'docs/evidencias/<carpeta-tarea>/<secuencia>-<descripcion>.png' });
+     ```
+
+  4. **Aislamiento e Inmutabilidad de Datos:** Como Playwright ejecuta con `workers: 1` para no corromper la BD, cada test debe manejar su estado (logueo explícito o reseteo de contexto) y probarse de forma aislada antes de enviarse a revisión.
 
 ---
 

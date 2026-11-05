@@ -203,27 +203,41 @@ El desarrollo en Planazo sigue la metodología **Spec-Driven Development (SDD)**
   * `chore: <descripción>` para tareas de mantenimiento o configuración.
 * **Sin atribución de IA (regla clave):** Ningún commit, pull request, issue, comentario ni documento puede mencionar, referenciar o atribuir contribución a una IA (por ejemplo `Co-Authored-By: Claude ...`, "Generated with ...", "con ayuda de ChatGPT", etc.). La autoría es siempre de la persona que contribuye.
 * **PHP & Buenas Prácticas:** Seguir PSR-12, controladores limpios y validaciones estrictas.
-* **Pruebas Automatizadas (PHPUnit):**
-  * Toda nueva funcionalidad o regla de negocio (Sub-issues 1 y 2) debe incluir al menos 4 tests unitarios o de feature.
-  * **Ubicación:** `tests/Unit/` (modelos, scopes y lógica de negocio) y `tests/Feature/` (rutas HTTP, controladores y sesión).
-  * Ejecutar la suite completa:
+* **Pruebas Automatizadas (PHPUnit y Playwright E2E):**
+  * **Backend (PHPUnit):**
+    * Toda nueva funcionalidad o regla de negocio (Sub-issues 1 y 2) debe incluir al menos 4 tests unitarios o de feature (incluyendo casos negativos 302 y 403).
+    * **Ubicación y Archivos:** `tests/Unit/<Entidad>Test.php` (lógica pura y modelos) y `tests/Feature/<Modulo>Test.php` (rutas HTTP, controladores y sesión).
+    * **Nomenclatura de Métodos:** `test_<accion>_<condicion>_<resultado_esperado>()` (ej: `test_crear_plan_con_fecha_pasada_retorna_error_de_validacion`).
+    * Ejecutar la suite completa:
 
-    ```bash
-    docker compose exec planazo_app php artisan test
-    ```
+      ```bash
+      docker compose exec planazo_app php artisan test
+      ```
 
-  * Ejecutar un archivo puntual:
+    * Ejecutar un archivo puntual:
 
-    ```bash
-    docker compose exec planazo_app php artisan test tests/Unit/FiltradoPlanesTest.php
-    ```
+      ```bash
+      docker compose exec planazo_app php artisan test tests/Feature/<NombreDelTest>.php
+      ```
 
-  * Filtrar por nombre de test:
+    * Filtrar por nombre de test:
 
-    ```bash
-    docker compose exec planazo_app php artisan test --filter test_filtra_por_nombre
-    ```
+      ```bash
+      docker compose exec planazo_app php artisan test --filter <nombre_del_metodo>
+      ```
 
+  * **E2E (Playwright):**
+    * Toda prueba de interacción usuario-sistema reside en `e2e/` con extensión `.spec.ts` y debe construirse con localizadores semánticos (`getByRole`, `getByLabel`, `getByText`).
+    * **Nomenclatura de Archivos:**
+      * Flujos de dominio: `e2e/<modulo>-<escenario-o-flujo>.spec.ts` (ej: `e2e/planes-creacion-flujo-completo.spec.ts`).
+      * Asignaciones por tarea docente/feedback: `e2e/<prefijo-de-tarea>-<descripcion-kebab>.spec.ts` (ej: `e2e/tarea-<N>-<flujo>.spec.ts`).
+    * **Nomenclatura de Casos:** `test('Como <rol>, puedo <accion> para <beneficio>', async ({ page }) => { ... })`.
+    * Ejecutar suite completa (headless): `pnpm run test:e2e`
+    * Ejecutar suite completa visible: `pnpm run test:e2e:headed`
+    * Ejecutar una prueba puntual: `pnpm run test:e2e e2e/<archivo-a-probar>.spec.ts` (o con `test:e2e:headed`)
+    * Filtrar por nombre: `pnpm run test:e2e:headed -g "<patrón>"`
+    * Inspector interactivo: `pnpm run test:e2e:ui`
+    * Capturas de pantalla para evidencias docentes: `await page.screenshot({ path: 'docs/evidencias/<carpeta-tarea>/<secuencia>-<descripcion>.png' })`.
 * **Validación:** Antes de enviar un pull request o finalizar una tarea, verifica que las pruebas pasen sin errores.
 
 ---
