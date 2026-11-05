@@ -1,6 +1,6 @@
 # Matriz de Evidencias — Tarea 7: Confirmar Plan a partir de Votación, Resolución de Empates y Mejora por Feedback
 
-Este documento constituye la memoria técnica y entrega formal de la **Tarea 7 (Confirmar Plan a partir de Votación y Resolución de Empates con Mejora por Feedback)** del proyecto Planazo, desarrollada bajo estricto apego a `AGENTS.md`, `ARCHITECTURE.md`, `resources/DESIGN.md` y las directivas docentes de la Clase 19.
+Este documento constituye la memoria técnica y entrega formal de la **Tarea 7 (Confirmar Plan a partir de Votación y Resolución de Empates con Mejora por Feedback)** del proyecto Planazo, desarrollada bajo las directivas de la Clase 19.
 
 ---
 
@@ -26,11 +26,11 @@ Confirmar plan a partir de votación:
 ## 🔗 Enlaces a Feedbacks Recibidos (Clase 19)
 
 1. **Feedback 1 — UniSport (Laura Céspedes / Juan Carlos):**
-   * [Feedback en repositorio UniSport](https://github.com/alvaroSG34/Segundo-Proyecto-IHC/blob/main/docs/clase-19-feedback-a-otro-proyecto/Laura%20Cespedes/feeback.md)
-   * *Hallazgo:* Fricción cognitiva al seleccionar fecha/hora; ausencia de confirmación visible al interactuar con el selector, lo que ocasionaba pérdidas accidentales de la fecha elegida al cambiar de contexto.
+   - [Feedback en repositorio UniSport](https://github.com/alvaroSG34/Segundo-Proyecto-IHC/blob/main/docs/clase-19-feedback-a-otro-proyecto/Laura%20Cespedes/feeback.md)
+   - *Hallazgo:* Fricción cognitiva al seleccionar fecha/hora; ausencia de confirmación visible al interactuar con el selector, lo que ocasionaba pérdidas accidentales de la fecha elegida al cambiar de contexto.
 2. **Feedback 2 — Mascota al Día (Choque Benavides):**
-   * [Feedback en repositorio Mascota al Día](https://github.com/AlexTiclla/segundoProyectoIHC/blob/main/clase-19-feedback-a-otro-proyecto/choque-Benavides/feedback.md)
-   * *Hallazgo:* Ausencia de validación preventiva de fechas anteriores a la actual en la creación y edición de planes, permitiendo crear planes vencidos sin retroalimentación de error.
+   - [Feedback en repositorio Mascota al Día](https://github.com/AlexTiclla/segundoProyectoIHC/blob/main/clase-19-feedback-a-otro-proyecto/choque-Benavides/feedback.md)
+   - *Hallazgo:* Ausencia de validación preventiva de fechas anteriores a la actual en la creación y edición de planes, permitiendo crear planes vencidos sin retroalimentación de error.
 
 ---
 
@@ -63,51 +63,61 @@ Confirmar plan a partir de votación:
 ## 🖼️ Galería de Evidencias Gráficas
 
 ### 1. Bloqueo de Fechas Pasadas (Feedback Mascota al Día)
+
 Restricción en interfaz y rechazo en backend con mensaje descriptivo de error al intentar guardar un plan con fecha anterior a la actual.
-![Feedback Fechas Bloqueadas](../docs/evidencias/tarea-7/01-feedback-fechas-bloqueadas.png)
+![Feedback Fechas Bloqueadas](tarea-7/01-feedback-fechas-bloqueadas.png)
 
 ---
 
 ### 2. Selector de Fecha con Confirmación Explícita (Feedback UniSport)
+
 Uso del botón «Aceptar fecha» y feedback verde inmediato de fecha retenida (`✓ Fecha confirmada: 2026-12-28 16:30`) antes de enviar la propuesta.
-![Feedback Selector Fecha](../docs/evidencias/tarea-7/02-feedback-selector-fecha-aceptar.png)
+![Feedback Selector Fecha](tarea-7/02-feedback-selector-fecha-aceptar.png)
 
 ---
 
 ### 3. Votación que Culmina en Empate
+
 Sala colaborativa abierta con opciones de fechas y lugares líderes igualadas a 1 voto cada una tras la votación de Anita y Carlos.
-![Votacion en Empate](../docs/evidencias/tarea-7/03-votacion-empate.png)
+![Votacion en Empate](tarea-7/03-votacion-empate.png)
 
 ---
 
 ### 4. Modal de Desempate con Motivo Obligatorio
+
 El organizador abre el modal `<dialog>`, selecciona entre las opciones en paridad (Ley de Hick) y redacta la justificación obligatoria ($\ge 5$ caracteres).
-![Modal Desempate Motivo](../docs/evidencias/tarea-7/04-modal-desempate-motivo.png)
+![Modal Desempate Motivo](tarea-7/04-modal-desempate-motivo.png)
 
 ---
 
 ### 5. Sala Confirmada con Veredicto Público (Vista Organizador)
+
 Banner público cálido desplegando la fecha y lugar acordados junto a la justificación del organizador y botones de votación inhabilitados.
-![Sala Confirmada Organizador](../docs/evidencias/tarea-7/05-sala-confirmada-organizador.png)
+![Sala Confirmada Organizador](tarea-7/05-sala-confirmada-organizador.png)
 
 ---
 
 ### 6. Vista del Participante Inmutable
+
 El participante accede a la sala confirmada: visualiza el veredicto y el motivo, los botones de votar están inhabilitados y el botón de sugerir opciones está oculto.
-![Vista Participante Inmutable](../docs/evidencias/tarea-7/06-vista-participante-inmutable.png)
+![Vista Participante Inmutable](tarea-7/06-vista-participante-inmutable.png)
 
 ---
 
 ## 🧪 Cobertura de Pruebas Automatizadas
 
 ### A. Pruebas Backend (PHPUnit)
+
 Ejecución de suites en `tests/Unit/` y `tests/Feature/`:
-* `tests/Unit/ValidacionFechasPlanTest.php`: 4 pruebas de validación de fechas pasadas y presentes en Form Requests.
-* `tests/Unit/PersistenciaDesempateTest.php`: 4 pruebas unitarias de persistencia, campos de desempate y métodos `tieneEmpateFechas()`, `tieneEmpateLugares()`.
-* `tests/Feature/ConfirmarPlanTest.php`: 6 pruebas de integración HTTP (ganador indiscutido, desempate con motivo, validación sin motivo, rechazo 403 para participantes, redirección 302 a login y bloqueo de planes no pendientes).
-* `tests/Feature/VistasConfirmacionDesempateTest.php`: 4 pruebas de renderizado Blade (visibilidad para creador, protección para invitados, acceso en listado y renderizado de veredicto público).
+
+- `tests/Unit/ValidacionFechasPlanTest.php`: 4 pruebas de validación de fechas pasadas y presentes en Form Requests.
+- `tests/Unit/PersistenciaDesempateTest.php`: 4 pruebas unitarias de persistencia, campos de desempate y métodos `tieneEmpateFechas()`, `tieneEmpateLugares()`.
+- `tests/Feature/ConfirmarPlanTest.php`: 6 pruebas de integración HTTP (ganador indiscutido, desempate con motivo, validación sin motivo, rechazo 403 para participantes, redirección 302 a login y bloqueo de planes no pendientes).
+- `tests/Feature/VistasConfirmacionDesempateTest.php`: 4 pruebas de renderizado Blade (visibilidad para creador, protección para invitados, acceso en listado y renderizado de veredicto público).
 
 ### B. Pruebas E2E (Playwright)
-* `e2e/feedback-1-selector-fechas.spec.ts`: Flujo humano de propuesta de fecha con confirmación explícita y retención de valor.
-* `e2e/feedback-2-fechas-pasadas.spec.ts`: Flujo de intento de evasión de fechas pasadas con verificación de rechazo del backend.
-* `e2e/tarea-7-confirmacion-desempate.spec.ts`: Ciclo completo multiusuario de votación en empate, desempate con motivo obligatorio y verificación de inmutabilidad.
+
+- `e2e/feedback-1-selector-fechas.spec.ts`: Flujo humano de propuesta de fecha con confirmación explícita y retención de valor.
+
+- `e2e/feedback-2-fechas-pasadas.spec.ts`: Flujo de intento de evasión de fechas pasadas con verificación de rechazo del backend.
+- `e2e/tarea-7-confirmacion-desempate.spec.ts`: Ciclo completo multiusuario de votación en empate, desempate con motivo obligatorio y verificación de inmutabilidad.
