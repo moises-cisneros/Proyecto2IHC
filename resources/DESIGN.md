@@ -157,6 +157,35 @@ Abstraída de [`public/css/app.css`](../public/css/app.css):
   4. **Elemento involucrado:** Nombre del plan con enlace directo a su sala (`/planes/{plan}`).
 * **Forma y Contraste:** Tarjeta blanca con borde `#e3e3df`, radio de `12px` y padding `16px`.
 
+### Modal de Desempate y Confirmación de Plan (`<dialog id="modal-confirmar-plan">`)
+
+* **Propósito y Autorización:** Componente exclusivo del organizador (restringido por `@can('confirmar', $plan)`) para cerrar la deliberación y formalizar la fecha y el lugar definitivos del plan.
+* **Geometría y Ergonomía:** Modal nativo `<dialog>`, ancho máximo de `520px` (`w-full max-w-[520px]`), fondo blanco `#ffffff`, bordes redondeados `16px`, padding `28px`, y backdrop oscuro `rgba(0, 0, 0, 0.4)`. Cierre por tecla `Escape` y botón visible «Cancelar» con separación antagónica $\ge 12$px (`gap-3`) y altura mínima de **44px** (Ley de Fitts).
+* **Divulgación Progresiva y Ley de Hick ($n \le 4$):**
+  * **Ganador Indiscutido:** Si una opción de fecha o lugar tiene la mayor cantidad de votos sin empates, se muestra como veredicto preseleccionado claro, eliminando fricción cognitiva.
+  * **Resolución de Empate:** Si existe empate en el primer lugar de votos entre 2 o más opciones, se despliega un selector delimitado exclusivamente al subconjunto de opciones empatadas (evitando listar opciones descartadas con menos votos).
+* **Motivo Obligatorio en Empate:** Cuando hay empate en fecha o lugar, se exige un campo `<textarea name="motivo_desempate" required>` con longitud mínima de 5 caracteres para documentar la justificación pública de la decisión del organizador ante el grupo.
+
+### Banner de Veredicto Público en Planes Confirmados
+
+* **Propósito y Accesibilidad (Nielsen H1 y H5):** Notifica de forma inmediata y visible a todos los participantes e invitados el resultado final de la votación, evitando incertidumbre o intentos de seguir votando.
+* **Tokens Visuales:** Contenedor destacado en color de éxito cálido (fondo `#edf7ef`, borde `#c2e2c8`, texto `#1c1c1a`, ícono de verificación `#25663a`).
+* **Elementos de Veredicto:**
+  1. Opción de Fecha acordada con ícono de calendario.
+  2. Opción de Lugar o Destino acordado con ícono de ubicación.
+  3. Bloque de Justificación del Organizador: si hubo resolución de desempate, se despliega una cita destacada: *«Decisión del organizador: [Motivo registrado]»*.
+* **Inmutabilidad Visual:** En sala confirmada, los botones de votación se inhabilitan (`disabled` con texto explicativo) y el botón de sugerir nuevas opciones se oculta para todos los usuarios.
+
+### Acceso Ergonómico a la Sala en Listado (`listar.blade.php`)
+
+* **Control Compacto de Fitts ($\ge 44\times 44$px):** Tanto organizadores como participantes disponen de un affordance táctil directo para ingresar a la sala sin desbordar el layout de `800px` de la tabla:
+  * Enlace accesible en el nombre del plan con altura mínima táctil de 44px.
+  * Botón compacto de acceso a sala con ícono nítido (`44×44px`, `border-radius: 50px`) en la celda de acciones para el organizador, y botón claro «Ver sala» para participantes.
+
+### Avatar Acotado de Cabecera (`_cabecera.blade.php`)
+
+* **Proporcionalidad Visual y Carga Cognitiva:** El avatar del organizador en la cabecera se mantiene en dimensiones estándar y acotadas ($\le 48\times 48$px, óptimo 36px–40px) alineado horizontalmente con su nombre y el chip de estado, evitando saturar la jerarquía visual del título del plan.
+
 ### Barra de Filtros Temáticos de Historial (`planes/historial.blade.php`)
 
 * **Ley de Hick ($n = 4$):** Conjunto acotado de 4 chips semánticos mutuamente excluyentes: `Todos`, `Estados`, `Creaciones` y `Participación`.
