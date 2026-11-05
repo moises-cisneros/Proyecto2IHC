@@ -11,11 +11,11 @@
 
 ## Sub-issue #47: [Backend / Persistencia] — Migración, campos de opción ganadora, motivo de desempate y estado confirmado (Refs #45)
 
-- [ ] 2.1 Crear migración para añadir `propuesta_fecha_id`, `propuesta_lugar_id`, `motivo_desempate` y `fecha_confirmacion` en tabla `planes` <!-- id: task-47-migration -->
-- [ ] 2.2 Actualizar `$fillable`, casts y relaciones `propuestaFechaGanadora()` / `propuestaLugarGanadora()` en `app/Models/Plan.php` <!-- id: task-47-model-relations -->
-- [ ] 2.3 Implementar métodos de dominio `tieneEmpateFechas()`, `tieneEmpateLugares()`, `obtenerPropuestasEmpatadas()` y `obtenerGanadorIndiscutido()` en `Plan.php` <!-- id: task-47-model-methods -->
-- [ ] 2.4 Crear suite PHPUnit `tests/Unit/PersistenciaDesempateTest.php` con al menos 4 casos de prueba <!-- id: task-47-tests -->
-- [ ] 2.5 Ejecutar verificación con `scripts/verify-subissue.mjs 47`, crear PR y mergear a main <!-- id: task-47-pr -->
+- [x] 2.1 Crear migración para añadir `propuesta_fecha_id`, `propuesta_lugar_id`, `motivo_desempate` y `fecha_confirmacion` en tabla `planes` <!-- id: task-47-migration -->
+- [x] 2.2 Actualizar `$fillable`, casts y relaciones `propuestaFechaGanadora()` / `propuestaLugarGanadora()` en `app/Models/Plan.php` <!-- id: task-47-model-relations -->
+- [x] 2.3 Implementar métodos de dominio `tieneEmpateFechas()`, `tieneEmpateLugares()`, `obtenerPropuestasEmpatadas()` y `obtenerGanadorIndiscutido()` en `Plan.php` <!-- id: task-47-model-methods -->
+- [x] 2.4 Crear suite PHPUnit `tests/Unit/PersistenciaDesempateTest.php` con al menos 4 casos de prueba <!-- id: task-47-tests -->
+- [x] 2.5 Ejecutar verificación con `scripts/verify-subissue.mjs 47`, crear PR y mergear a main <!-- id: task-47-pr -->
 
 ## Sub-issue #50: [Controlador / Lógica] — Endpoint de cierre, resolución de empate con motivo y autorización estricta (Refs #45)
 
