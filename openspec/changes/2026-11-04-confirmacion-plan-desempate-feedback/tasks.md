@@ -19,11 +19,11 @@
 
 ## Sub-issue #50: [Controlador / Lógica] — Endpoint de cierre, resolución de empate con motivo y autorización estricta (Refs #45)
 
-- [ ] 3.1 Definir habilidad `confirmar` en `app/Policies/PlanPolicy.php` para restringir el cierre al organizador en estado pendiente <!-- id: task-50-policy -->
-- [ ] 3.2 Crear Form Request `ConfirmarPlanRequest` con validación de pertenencia al plan y motivo obligatorio ($\ge 5$ caracteres) en empate <!-- id: task-50-request -->
-- [ ] 3.3 Implementar endpoint `POST /planes/{plan}/confirmar` en `routes/web.php` y acción en `PlanesController::confirmar` o controlador dedicado <!-- id: task-50-controller -->
-- [ ] 3.4 Crear suite PHPUnit `tests/Feature/ConfirmarPlanTest.php` con al menos 4 casos de prueba (incluyendo rechazo 403) <!-- id: task-50-tests -->
-- [ ] 3.5 Ejecutar verificación con `scripts/verify-subissue.mjs 50`, crear PR y mergear a main <!-- id: task-50-pr -->
+- [x] 3.1 Definir habilidad `confirmar` en `app/Policies/PlanPolicy.php` para restringir el cierre al organizador en estado pendiente <!-- id: task-50-policy -->
+- [x] 3.2 Crear Form Request `ConfirmarPlanRequest` con validación de pertenencia al plan y motivo obligatorio ($\ge 5$ caracteres) en empate <!-- id: task-50-request -->
+- [x] 3.3 Implementar endpoint `POST /planes/{plan}/confirmar` en `routes/web.php` y acción en `PlanesController::confirmar` o controlador dedicado <!-- id: task-50-controller -->
+- [x] 3.4 Crear suite PHPUnit `tests/Feature/ConfirmarPlanTest.php` con al menos 4 casos de prueba (incluyendo rechazo 403) <!-- id: task-50-tests -->
+- [x] 3.5 Ejecutar verificación con `scripts/verify-subissue.mjs 50`, crear PR y mergear a main <!-- id: task-50-pr -->
 
 ## Sub-issue #48: [Interfaz / Blade] — Modal de desempate con motivo, banner de veredicto público y controles protegidos (Refs #45)
 

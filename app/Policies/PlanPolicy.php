@@ -56,6 +56,18 @@ class PlanPolicy
     }
 
     /**
+     * Determine whether the user can confirm the plan from the collaborative room.
+     */
+    public function confirmar(User $user, Plan $plan): bool
+    {
+        if (!$this->isCreator($user, $plan)) {
+            return false;
+        }
+
+        return $plan->estado === 'pendiente';
+    }
+
+    /**
      * Determine whether the user can invite collaborators to the plan.
      */
     public function invitar(User $user, Plan $plan): bool

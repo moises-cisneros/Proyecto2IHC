@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\ConfirmarPlanRequest;
 use App\Http\Requests\StorePlanRequest;
 use App\Http\Requests\UpdatePlanRequest;
 use App\Models\Plan;
@@ -144,5 +145,42 @@ class PlanesController extends Controller
 
         return redirect()->route('planes.listar')
                          ->with('exito', 'El plan ahora está ' . $plan->estado . '.');
+    }
+
+    /**
+     * Confirmar el plan a partir de la votación (resolviendo empates si aplica)
+     *
+     * @param  ConfirmarPlanRequest  $request
+     * @param  Plan  $plan
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function confirmar(ConfirmarPlanRequest $request, Plan $plan)
+    {
+        Gate::authorize('confirmar', $plan);
+
+        $plan->propuesta_fecha_id = $request->propuesta_fecha_id;
+        $plan->propuesta_lugar_id = $request->propuesta_lugar_id;
+        $plan->motivo_desempate   = $request->motivo_desempate;
+        $plan->estado             = 'confirmado';
+        $plan->fecha_confirmacion = now();
+        $plan->save();
+
+        // Registrar en historial de actividades
+        $descripcionHistorial = auth()->user()->name . " confirmó el plan a partir de la votación";
+        if ($plan->motivo_desempate) {
+            $descripcionHistorial .= " resolviendo el empate.";
+        } else {
+            $descripcionHistorial .= ".";
+        }
+
+        $plan->actividades()->create([
+            'user_id' => auth()->id(),
+            'accion' => 'estado',
+            'descripcion' => $descripcionHistorial,
+            'estado_resultante' => 'confirmado',
+        ]);
+
+        return redirect()->route('planes.detalle', $plan)
+                         ->with('exito', '¡Plan confirmado con éxito! La votación ha concluido.');
     }
 }
