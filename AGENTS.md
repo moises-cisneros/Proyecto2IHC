@@ -163,10 +163,10 @@ Las credenciales de los usuarios de prueba están documentadas en la sección "U
   * **Autenticación (Identidad):** Toda ruta o endpoint privado debe estar protegido bajo el middleware `auth`. Los accesos anónimos deben ser interceptados y redirigidos (`302`) a login sin filtrar datos ni ejecutar lógica de negocio.
   * **Autorización y Aislamiento de Datos (Permisos y Pertenencia):** La autenticación valida *quién es* el usuario, pero **nunca** presupone permiso para operar sobre un recurso. Toda acción (lectura de detalles, creación, actualización, cambio de estado, eliminación o interacción colaborativa) debe responder al principio de diseño:
     *«¿Qué mecanismo garantiza que un usuario autenticado pero no autorizado o ajeno al recurso quede estrictamente bloqueado?»*
-    - **Controladores / Backend:** Es obligatorio invocar `Gate::authorize()` o `$this->authorize()` antes de procesar cualquier mutación o consulta sobre recursos de dominio, vinculándolos formalmente a sus correspondientes Policies (`app/Policies/`).
-    - **Aislamiento Multiusuario:** Las consultas y listados deben filtrar rigurosamente por pertenencia, membresía o invitación activa para evitar fugas de información (*IDOR / Insecure Direct Object References*).
-    - **Bloqueo por Estado:** Recursos en estados cerrados, cancelados o terminales deben inhabilitar cualquier mutación posterior en sus respectivas policies.
-    - **Interfaz (Blade):** Todo botón, enlace o formulario interactivo debe protegerse con directivas `@can` para no exponer controles a usuarios sin privilegios (prevención de errores Nielsen H5).
+    * **Controladores / Backend:** Es obligatorio invocar `Gate::authorize()` o `$this->authorize()` antes de procesar cualquier mutación o consulta sobre recursos de dominio, vinculándolos formalmente a sus correspondientes Policies (`app/Policies/`).
+    * **Aislamiento Multiusuario:** Las consultas y listados deben filtrar rigurosamente por pertenencia, membresía o invitación activa para evitar fugas de información (*IDOR / Insecure Direct Object References*).
+    * **Bloqueo por Estado:** Recursos en estados cerrados, cancelados o terminales deben inhabilitar cualquier mutación posterior en sus respectivas policies.
+    * **Interfaz (Blade):** Todo botón, enlace o formulario interactivo debe protegerse con directivas `@can` para no exponer controles a usuarios sin privilegios (prevención de errores Nielsen H5).
   * **Testing de Seguridad Obligatorio (Casos Negativos):** Toda suite de pruebas que involucre controladores, endpoints o lógica de negocio (Sub-issues 1 y 2) **debe incluir obligatoriamente casos de prueba negativos**:
     1. Acceso de usuario no autenticado (comprobación de redirección `302` a login).
     2. Acceso o mutación de usuario autenticado ajeno o sin permisos (comprobación de código HTTP `403 Forbidden`).
@@ -176,6 +176,16 @@ Las credenciales de los usuarios de prueba están documentadas en la sección "U
   ```bash
   node scripts/verify-subissue.mjs
   ```
+
+* **REGLA CLAVE — Taxonomía Obligatoria de Etiquetas (Labels):**
+  Al crear o actualizar issues, sub-issues y pull requests, los agentes deben asignar rigurosamente las etiquetas según su categoría (definida en detalle en [CONTRIBUTING.md](CONTRIBUTING.md)):
+  * **Issues Madre:** Etiqueta `requisito` (y `refactor` o `seguridad` si corresponde).
+  * **Sub-issues y PRs:** Etiqueta base `sub-issue` combinada obligatoriamente con la etiqueta de la capa arquitectónica:
+    * `backend` (persistencia, migraciones, modelos, lógica de dominio)
+    * `controlador` (endpoints, validación, Form Requests, queries HTTP)
+    * `interfaz` (vistas Blade, componentes UI, CSS Tailwind)
+    * `testing` y `documentation` (suites PHPUnit, Playwright E2E, matrices de evidencia)
+  * **Etiquetas Transversales:** Asignar `seguridad` (auth, policies), `ihc` (ergonomía, heurísticas) o `accessibility` (WCAG, ARIA) según los componentes impactados.
 
 ---
 

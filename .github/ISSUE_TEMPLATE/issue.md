@@ -37,3 +37,10 @@ assignees: ''
 
 > **Vinculación jerárquica en GitHub (Árbol nativo):**  
 > `gh api -X POST /repos/:owner/:repo/issues/:padre/sub_issues -F sub_issue_id=:id_global`
+
+---
+
+### Etiquetas Sugeridas (Labels en GitHub)
+
+- **Tipo de Requisito:** `requisito` (por defecto para consignas docentes) o `enhancement` / `bug` / `refactor`.
+- **Transversales (si aplican):** `seguridad` (si define políticas o hardening), `ihc` (si es consigna de usabilidad), `documentation`.

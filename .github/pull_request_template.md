@@ -26,3 +26,7 @@ Refs #
 - [ ] Cumple con la arquitectura definida en `ARCHITECTURE.md`
 - [ ] **Seguridad (Auth & Policy):** Rutas protegidas por `auth`, autorización estricta en controlador con `Gate::authorize()` / `PlanPolicy` y tests de rechazo `403/302` incluidos
 - [ ] Sub-issue vinculado al árbol nativo de GitHub (`gh api`)
+- [ ] **Etiquetas (Labels) asignadas en el PR:**
+  - [ ] Tipo: `sub-issue` (o `refactor`, `enhancement`, `bug`, `documentation`)
+  - [ ] Capa: `backend` | `controlador` | `interfaz` | `testing`
+  - [ ] Transversal (opcional): `seguridad` | `ihc` | `accessibility`

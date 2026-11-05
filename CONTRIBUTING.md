@@ -248,6 +248,7 @@ Cuando el docente asigne un issue con un requerimiento:
    ```bash
    gh api -X POST /repos/:owner/:repo/issues/:padre/sub_issues -F sub_issue_id=:id_global
    ```
+
 6. **Validación obligatoria de Autenticación y Autorización (Principio de Menor Privilegio):** Todo sub-issue de backend o controlador debe auditar explícitamente el control de acceso del módulo o endpoint a implementar, garantizando que usuarios anónimos (redirección `302`) o usuarios autenticados sin privilegios o ajenos al recurso reciban un rechazo estricto (`403 Forbidden`). Es obligatorio incluir pruebas automatizadas con casos negativos (`assertStatus(403)` / `assertStatus(302)`).
 
 ### Evaluación Heurística (IHC)
@@ -272,6 +273,34 @@ Para el diseño y evaluación ergonómica de flujos e interfaces:
   * **Criterios de Aceptación:** Qué comportamiento define que la tarea está terminada.
   * **Seguridad y Control de Acceso:** Explicitar middleware `auth`, comprobaciones en Policy y garantía de que usuarios ajenos o sin los privilegios requeridos queden completamente aislados.
   * **Pruebas esperadas:** Qué casos de prueba unitaria deben cubrirse con PHPUnit (mínimo 4 si involucra reglas de negocio o transiciones de estado, incluyendo casos negativos con `assertStatus(403)` / `302`).
+
+### Taxonomía de Etiquetas (Labels)
+
+El repositorio utiliza una taxonomía de etiquetas organizada en tres niveles para categorizar issues, sub-issues y pull requests de forma sistemática:
+
+| Categoría | Etiqueta | Color | Descripción y Ámbito de Aplicación |
+| :--- | :--- | :--- | :--- |
+| **Tipo de Tarea** | `requisito` | `#0E8A16` (Verde) | Requisito docente o tarea madre principal. Permanece abierta hasta la revisión formal. |
+| | `sub-issue` | `#1D76DB` (Azul) | Sub-issue atómico vinculado a un requisito o tarea. |
+| | `enhancement` | `#A2EEEF` (Celeste) | Nueva funcionalidad o mejora general fuera de consignas obligatorias. |
+| | `bug` | `#D73A4A` (Rojo) | Corrección de fallas o comportamientos inesperados. |
+| | `refactor` | `#D4C5F9` (Lila) | Refactorización de código y reducción de deuda técnica. |
+| | `documentation` | `#0075CA` (Azul oscuro) | Documentación técnica, matrices de evidencias y guías académicas. |
+| **Capa Arquitectónica** | `backend` | `#FBCA04` (Ámbar) | Modelos Eloquent, migraciones, base de datos y reglas de dominio. |
+| | `controlador` | `#E99695` (Salmón) | Controladores, Form Requests, queries, endpoints y flujos HTTP. |
+| | `interfaz` | `#7057FF` (Morado) | Vistas Blade, componentes UI, estilos Tailwind y maquetación accesible. |
+| | `testing` | `#0052CC` (Azul marino) | Suites PHPUnit, Playwright E2E y pruebas automatizadas. |
+| **Transversal / Dominio** | `seguridad` | `#B60205` (Bordó) | Autenticación, autorización (`Gate::authorize()`, `PlanPolicy`) y control de acceso. |
+| | `ihc` | `#5319E7` (Índigo) | Principios ergonómicos (Fitts, Hick, Carga Cognitiva) y heurísticas de Nielsen. |
+| | `accessibility` | `#F143AB` (Fucsia) | Accesibilidad web (WCAG 2.1 AA, roles ARIA y contraste). |
+| **Mantenimiento** | `duplicate` | `#CFD3D7` (Gris) | Tarea o PR duplicada. |
+| | `wontfix` | `#FFFFFF` (Blanco) | Elemento descartado que no se implementará. |
+
+#### Reglas de Asignación Obligatoria
+
+1. **Issues Madre:** Asignar `requisito` (y opcionalmente `refactor` o `seguridad` si el alcance del requerimiento lo involucra directamente).
+2. **Sub-issues Atómicos:** Asignar `sub-issue` junto con la etiqueta de la capa arquitectónica correspondiente (`backend`, `controlador`, `interfaz`, o `testing` + `documentation`). Agregar etiquetas transversales (`seguridad`, `ihc`, `accessibility`) según los componentes implementados.
+3. **Pull Requests:** Asignar `sub-issue` y las etiquetas de capa y transversales que correspondan al código entregado.
 
 ### Pull Requests (PRs) y Verificación de Sub-issues
 

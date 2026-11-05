@@ -37,3 +37,19 @@ assignees: ''
 - [ ] Caso 2:
 - [ ] Caso 3:
 - [ ] Caso 4 (Seguridad / Rechazo 403 o 302):
+
+---
+
+### Etiquetas Requeridas (Labels a asignar en GitHub)
+
+- **Base obligatoria:** `sub-issue`
+- **Etiqueta por capa (elegir la correspondiente):**
+  - Backend / Persistencia $\rightarrow$ `backend`
+  - Controlador / Lógica $\rightarrow$ `controlador`
+  - Interfaz / Blade $\rightarrow$ `interfaz`
+  - Pruebas y Evidencias $\rightarrow$ `testing` y `documentation`
+- **Etiquetas transversales complementarias (si aplican):**
+  - Validación o endurecimiento de permisos/auth $\rightarrow$ `seguridad`
+  - Diseño ergonómico (Fitts, Hick, heurísticas) $\rightarrow$ `ihc`
+  - Estándares WCAG o lectores de pantalla $\rightarrow$ `accessibility`
+  - Deuda técnica / refactorización $\rightarrow$ `refactor`
