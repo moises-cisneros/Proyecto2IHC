@@ -37,8 +37,8 @@
 
 ## Sub-issue #49: [Pruebas y Evidencias] — Suite Playwright para escenario de desempate y documentación en evidencias/tarea-7.md (Refs #45)
 
-- [ ] 5.1 Implementar suite E2E `e2e/feedback-1-selector-fechas.spec.ts` y capturar evidencia <!-- id: task-49-e2e-feedback1 -->
-- [ ] 5.2 Implementar suite E2E `e2e/feedback-2-fechas-pasadas.spec.ts` y capturar evidencia <!-- id: task-49-e2e-feedback2 -->
-- [ ] 5.3 Implementar suite E2E `e2e/tarea-7-confirmacion-desempate.spec.ts` para el escenario mínimo y capturar evidencias <!-- id: task-49-e2e-tarea7 -->
-- [ ] 5.4 Redactar memoria formal en `evidencias/tarea-7.md` con enlaces, hashes de commits y galería de capturas <!-- id: task-49-evidencias -->
-- [ ] 5.5 Ejecutar verificación con `scripts/verify-subissue.mjs 49`, crear PR y mergear a main <!-- id: task-49-pr -->
+- [x] 5.1 Implementar suite E2E `e2e/feedback-1-selector-fechas.spec.ts` y capturar evidencia <!-- id: task-49-e2e-feedback1 -->
+- [x] 5.2 Implementar suite E2E `e2e/feedback-2-fechas-pasadas.spec.ts` y capturar evidencia <!-- id: task-49-e2e-feedback2 -->
+- [x] 5.3 Implementar suite E2E `e2e/tarea-7-confirmacion-desempate.spec.ts` para el escenario mínimo y capturar evidencias <!-- id: task-49-e2e-tarea7 -->
+- [x] 5.4 Redactar memoria formal en `evidencias/tarea-7.md` con enlaces, hashes de commits y galería de capturas <!-- id: task-49-evidencias -->
+- [x] 5.5 Ejecutar verificación con `scripts/verify-subissue.mjs 49`, crear PR y mergear a main <!-- id: task-49-pr -->
