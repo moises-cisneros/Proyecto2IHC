@@ -27,12 +27,12 @@
 
 ## Sub-issue #48: [Interfaz / Blade] — Modal de desempate con motivo, banner de veredicto público y controles protegidos (Refs #45)
 
-- [ ] 4.1 Documentar nuevos componentes y especificaciones en `resources/DESIGN.md` antes de implementar en Blade <!-- id: task-48-design -->
-- [ ] 4.2 Agregar botón «Cerrar votación y confirmar» en sala bajo `@can('confirmar', $plan)` <!-- id: task-48-boton-cierre -->
-- [ ] 4.3 Construir modal nativo `<dialog>` de desempate con selector de opciones empatadas (Hick) y motivo obligatorio <!-- id: task-48-modal-dialog -->
-- [ ] 4.4 Implementar banner accesible de veredicto público con motivo del organizador en planes confirmados <!-- id: task-48-banner-veredicto -->
-- [ ] 4.5 Proveer acceso a la sala en `listar.blade.php` sin desbordar el layout de 800px y redimensionar avatar en `_cabecera.blade.php` <!-- id: task-48-ergonomia-fitts -->
-- [ ] 4.6 Crear suite PHPUnit `tests/Feature/VistasConfirmacionDesempateTest.php` con al menos 4 casos de prueba <!-- id: task-48-tests -->
+- [x] 4.1 Documentar nuevos componentes y especificaciones en `resources/DESIGN.md` antes de implementar en Blade <!-- id: task-48-design -->
+- [x] 4.2 Agregar botón «Cerrar votación y confirmar» en sala bajo `@can('confirmar', $plan)` <!-- id: task-48-boton-cierre -->
+- [x] 4.3 Construir modal nativo `<dialog>` de desempate con selector de opciones empatadas (Hick) y motivo obligatorio <!-- id: task-48-modal-dialog -->
+- [x] 4.4 Implementar banner accesible de veredicto público con motivo del organizador en planes confirmados <!-- id: task-48-banner-veredicto -->
+- [x] 4.5 Proveer acceso a la sala en `listar.blade.php` sin desbordar el layout de 800px y redimensionar avatar en `_cabecera.blade.php` <!-- id: task-48-ergonomia-fitts -->
+- [x] 4.6 Crear suite PHPUnit `tests/Feature/VistasConfirmacionDesempateTest.php` con al menos 4 casos de prueba <!-- id: task-48-tests -->
 - [ ] 4.7 Ejecutar verificación con `scripts/verify-subissue.mjs 48`, crear PR y mergear a main <!-- id: task-48-pr -->
 
 ## Sub-issue #49: [Pruebas y Evidencias] — Suite Playwright para escenario de desempate y documentación en evidencias/tarea-7.md (Refs #45)

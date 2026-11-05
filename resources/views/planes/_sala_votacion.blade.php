@@ -1,15 +1,54 @@
 <div class="seccion-votacion" style="background: #ffffff; border: 1px solid #e3e3df; border-radius: 16px; padding: 24px;">
-    {{-- Banner accesible de cierre de sala cuando el plan está confirmado (H5) --}}
+    {{-- Banner accesible de veredicto público cuando el plan está confirmado (CA-04, Nielsen H1 y H5) --}}
     @if ($plan->estado === 'confirmado')
         <div role="status"
-             class="banner-cierre-sala"
-             style="background: #eef2ff; border: 1px solid #c7d2fe; border-left: 4px solid #4f46e5; border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; display: flex; align-items: center; gap: 12px; color: #312e81;">
-            <svg style="width: 22px; height: 22px; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            <div>
-                <strong style="font-weight: 700;">Votación finalizada.</strong> Este plan ha sido confirmado y la deliberación se encuentra cerrada.
+             class="banner-veredicto-confirmado"
+             style="background: #edf7ef; border: 1px solid #c2e2c8; border-left: 5px solid #25663a; border-radius: 12px; padding: 18px 22px; margin-bottom: 24px; color: #1c1c1a;">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 12px;">
+                <svg style="width: 24px; height: 24px; color: #25663a; flex-shrink: 0;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span style="font-size: 17px; font-weight: 700; color: #25663a;">
+                    ¡Plan confirmado! Deliberación y votación finalizadas.
+                </span>
             </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 24px; margin-top: 6px; font-size: 15px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 18px;" aria-hidden="true">📅</span>
+                    <div>
+                        <span style="font-weight: 600; color: #4a4a49;">Fecha acordada:</span>
+                        @php
+                            $fechaTexto = $plan->opcionFechaGanadora?->valor;
+                            if ($fechaTexto) {
+                                try {
+                                    $fechaTexto = \Carbon\Carbon::parse($fechaTexto)->translatedFormat('d/m/Y H:i \h\r\s');
+                                } catch (\Throwable $e) {}
+                            }
+                        @endphp
+                        <span style="font-weight: 700; color: #1c1c1a;">
+                            {{ $fechaTexto ?? ($plan->fecha_limite ? $plan->fecha_limite->format('d/m/Y') : 'Acordada') }}
+                        </span>
+                    </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 18px;" aria-hidden="true">📍</span>
+                    <div>
+                        <span style="font-weight: 600; color: #4a4a49;">Lugar acordado:</span>
+                        <span style="font-weight: 700; color: #1c1c1a;">
+                            {{ $plan->opcionLugarGanadora?->valor ?? $plan->lugar ?? 'Por definir' }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            @if ($plan->motivo_desempate)
+                <div style="margin-top: 14px; padding: 12px 16px; background: #ffffff; border: 1px solid #c2e2c8; border-radius: 8px; font-size: 14px; color: #1c1c1a;">
+                    <span style="font-weight: 700; color: #25663a;">Decisión del organizador:</span>
+                    <span>&laquo;{{ $plan->motivo_desempate }}&raquo;</span>
+                </div>
+            @endif
         </div>
     @endif
 
@@ -19,15 +58,27 @@
             <p style="margin: 0; color: #6f6f6a; font-size: 14px;">Elige entre fechas y lugares sugeridos o propón una nueva alternativa.</p>
         </div>
 
-        @can('proponer', $plan)
-            <button type="button"
-                    class="boton"
-                    style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; font-weight: 600; border-radius: 50px;"
-                    onclick="abrirModalConTipo('{{ $pestanaActiva === 'fechas' ? 'fecha' : 'lugar' }}')"
-                    aria-label="Proponer nueva fecha o lugar">
-                + Proponer opción
-            </button>
-        @endcan
+        <div style="display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+            @can('confirmar', $plan)
+                <button type="button"
+                        class="boton"
+                        style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; font-weight: 600; border-radius: 50px; background: #25663a; color: #ffffff;"
+                        onclick="document.getElementById('modal-confirmar-plan').showModal()"
+                        aria-label="Cerrar votación y confirmar el plan">
+                    ✓ Cerrar votación y confirmar
+                </button>
+            @endcan
+
+            @can('proponer', $plan)
+                <button type="button"
+                        class="boton {{ Auth::user()->can('confirmar', $plan) ? 'boton-claro' : '' }}"
+                        style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; font-weight: 600; border-radius: 50px;"
+                        onclick="abrirModalConTipo('{{ $pestanaActiva === 'fechas' ? 'fecha' : 'lugar' }}')"
+                        aria-label="Proponer nueva fecha o lugar">
+                    + Proponer opción
+                </button>
+            @endcan
+        </div>
     </div>
 
     {{-- Pestañas semánticas de Hick: n=2 alternativas equiprobables (Fechas vs Lugares) con formato píldora y resaltado cálido #ffe683 --}}
@@ -318,4 +369,140 @@
         }
     });
 </script>
+@endcan
+
+{{-- Modal accesible para confirmar plan y resolver empates (Nielsen H3, H5, Hick) --}}
+@can('confirmar', $plan)
+@php
+    $empateFechas = $plan->tieneEmpateFechas();
+    $empateLugares = $plan->tieneEmpateLugares();
+    $hayEmpate = $empateFechas || $empateLugares;
+    $candidatosFecha = $plan->obtenerPropuestasEmpatadas('fecha');
+    $candidatosLugar = $plan->obtenerPropuestasEmpatadas('lugar');
+@endphp
+<dialog id="modal-confirmar-plan" style="border: none; border-radius: 16px; padding: 28px; width: 100%; max-width: 520px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+    <form method="POST" action="{{ route('planes.confirmar', $plan) }}">
+        @csrf
+        <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: #1c1c1a;">
+            Confirmar Plan y Cerrar Votación
+        </h2>
+        <p style="margin: 0 0 20px 0; font-size: 14px; color: #6f6f6a; line-height: 1.5;">
+            Al confirmar el plan, se cerrará la votación para todos los colaboradores y se formalizará la fecha y lugar definitivos.
+        </p>
+
+        {{-- Bloque Selección de Fecha --}}
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 8px;">
+                📅 Fecha definitiva
+            </label>
+            @if ($candidatosFecha->isEmpty())
+                <div style="padding: 10px 14px; background: #fbfbf9; border: 1px solid #e3e3df; border-radius: 8px; font-size: 14px; color: #6f6f6a;">
+                    No hay fechas propuestas en la sala (se conservará la fecha límite del plan).
+                </div>
+            @elseif ($empateFechas)
+                <div style="padding: 10px 14px; background: #fff4d6; border: 1px solid #ffe683; border-radius: 8px; margin-bottom: 10px; font-size: 13px; color: #8a6100; font-weight: 600;">
+                    ⚖️ Existe un empate en las fechas más votadas. Elige la opción ganadora:
+                </div>
+                <select name="propuesta_fecha_id" required style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; min-height: 44px; box-sizing: border-box;">
+                    <option value="">-- Selecciona la fecha definitiva --</option>
+                    @foreach ($candidatosFecha as $cf)
+                        @php
+                            $textoF = $cf->valor;
+                            try {
+                                $textoF = \Carbon\Carbon::parse($cf->valor)->translatedFormat('d/m/Y H:i \h\r\s');
+                            } catch (\Throwable $e) {}
+                        @endphp
+                        <option value="{{ $cf->id }}">
+                            {{ $textoF }} ({{ $cf->votos->count() }} votos)
+                        </option>
+                    @endforeach
+                </select>
+            @else
+                @php
+                    $ganadorF = $candidatosFecha->first();
+                    $textoGanadorF = $ganadorF->valor;
+                    try {
+                        $textoGanadorF = \Carbon\Carbon::parse($ganadorF->valor)->translatedFormat('d/m/Y H:i \h\r\s');
+                    } catch (\Throwable $e) {}
+                @endphp
+                <input type="hidden" name="propuesta_fecha_id" value="{{ $ganadorF->id }}">
+                <div style="padding: 12px 16px; background: #edf7ef; border: 1px solid #c2e2c8; border-radius: 10px; font-size: 14px; color: #25663a; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600;">✓ Ganador indiscutido: {{ $textoGanadorF }}</span>
+                    <span style="font-weight: 700; background: #ffffff; padding: 2px 10px; border-radius: 50px; font-size: 12px;">
+                        {{ $ganadorF->votos->count() }} votos
+                    </span>
+                </div>
+            @endif
+        </div>
+
+        {{-- Bloque Selección de Lugar --}}
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 8px;">
+                📍 Lugar o destino definitivo
+            </label>
+            @if ($candidatosLugar->isEmpty())
+                <div style="padding: 10px 14px; background: #fbfbf9; border: 1px solid #e3e3df; border-radius: 8px; font-size: 14px; color: #6f6f6a;">
+                    No hay lugares propuestos en la sala (se conservará el lugar registrado en el plan).
+                </div>
+            @elseif ($empateLugares)
+                <div style="padding: 10px 14px; background: #fff4d6; border: 1px solid #ffe683; border-radius: 8px; margin-bottom: 10px; font-size: 13px; color: #8a6100; font-weight: 600;">
+                    ⚖️ Existe un empate en los lugares más votados. Elige la opción ganadora:
+                </div>
+                <select name="propuesta_lugar_id" required style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; min-height: 44px; box-sizing: border-box;">
+                    <option value="">-- Selecciona el lugar definitivo --</option>
+                    @foreach ($candidatosLugar as $cl)
+                        <option value="{{ $cl->id }}">
+                            {{ $cl->valor }} ({{ $cl->votos->count() }} votos)
+                        </option>
+                    @endforeach
+                </select>
+            @else
+                @php
+                    $ganadorL = $candidatosLugar->first();
+                @endphp
+                <input type="hidden" name="propuesta_lugar_id" value="{{ $ganadorL->id }}">
+                <div style="padding: 12px 16px; background: #edf7ef; border: 1px solid #c2e2c8; border-radius: 10px; font-size: 14px; color: #25663a; display: flex; justify-content: space-between; align-items: center;">
+                    <span style="font-weight: 600;">✓ Ganador indiscutido: {{ $ganadorL->valor }}</span>
+                    <span style="font-weight: 700; background: #ffffff; padding: 2px 10px; border-radius: 50px; font-size: 12px;">
+                        {{ $ganadorL->votos->count() }} votos
+                    </span>
+                </div>
+            @endif
+        </div>
+
+        {{-- Campo Motivo de Desempate (obligatorio si hay empate, opcional si no) --}}
+        <div style="margin-bottom: 24px;">
+            <label for="motivo_desempate" style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 6px;">
+                Motivo del desempate {{ $hayEmpate ? '(obligatorio)' : '(opcional)' }}
+            </label>
+            <textarea id="motivo_desempate"
+                      name="motivo_desempate"
+                      rows="3"
+                      minlength="5"
+                      placeholder="{{ $hayEmpate ? 'Explica a los colaboradores el motivo por el cual elegiste esta opción...' : 'Comentario o aclaración para los colaboradores (opcional)' }}"
+                      {{ $hayEmpate ? 'required' : '' }}
+                      style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; box-sizing: border-box;"></textarea>
+            @if ($hayEmpate)
+                <p style="margin: 4px 0 0 0; font-size: 12px; color: #8a6100;">
+                    Debido al empate, se requiere registrar una justificación clara (mínimo 5 caracteres) visible públicamente.
+                </p>
+            @endif
+        </div>
+
+        {{-- Separación antagónica de botones >= 12px (gap-3, Ley de Fitts) --}}
+        <div style="display: flex; justify-content: flex-end; gap: 12px;">
+            <button type="button"
+                    class="boton boton-claro"
+                    style="min-height: 44px; min-width: 44px; padding: 10px 18px; border-radius: 50px;"
+                    onclick="document.getElementById('modal-confirmar-plan').close()">
+                Cancelar
+            </button>
+            <button type="submit"
+                    class="boton"
+                    style="min-height: 44px; min-width: 44px; padding: 10px 22px; border-radius: 50px; background: #25663a; color: #ffffff;">
+                Confirmar y cerrar votación
+            </button>
+        </div>
+    </form>
+</dialog>
 @endcan

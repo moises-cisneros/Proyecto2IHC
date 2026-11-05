@@ -81,9 +81,9 @@
         @forelse ($planes as $plan)
         <tr>
 
-            {{-- Nombre y organizador --}}
+            {{-- Nombre y organizador con touch target Fitts >=44px --}}
             <td>
-                <a href="{{ route('planes.detalle', $plan) }}" class="enlace-plan">
+                <a href="{{ route('planes.detalle', $plan) }}" class="enlace-plan" style="min-height: 44px; display: inline-flex; align-items: center;">
                     {{ $plan->nombre }}
                 </a>
             </td>
@@ -105,6 +105,23 @@
             {{-- Columna de acciones ergonómica (Fitts >=44px, gap: 8px, fila horizontal estricta) --}}
             <td class="acciones">
                 <div class="acciones-grupo">
+                    {{-- 0. Botón ergonómico de acceso a la sala (Fitts >= 44x44px sin desbordamiento) --}}
+                    @can('cambiarEstado', $plan)
+                        <a href="{{ route('planes.detalle', $plan) }}"
+                           class="boton boton-claro"
+                           style="min-height: 44px; min-width: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center;"
+                           title="Entrar a la sala de votación"
+                           aria-label="Entrar a la sala de votación del plan {{ $plan->nombre }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: block;">
+                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                            <span class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">Entrar a la sala</span>
+                        </a>
+                    @endcan
+
                     {{-- 1. Botón de cambio de estado (Confirmar / Cancelar) --}}
                     @can('cambiarEstado', $plan)
                         @if ($plan->estado == 'pendiente')

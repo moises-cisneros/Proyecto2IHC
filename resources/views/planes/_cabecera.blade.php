@@ -11,10 +11,15 @@
                 </span>
             </div>
             
-            <div style="display: flex; gap: 20px; flex-wrap: wrap; color: #6f6f6a; font-size: 14px; margin-top: 8px;">
-                <div>
-                    <span style="font-weight: 600; color: #1c1c1a;">Organizador:</span>
-                    <span>{{ $plan->organizador }}</span>
+            <div style="display: flex; gap: 20px; align-items: center; flex-wrap: wrap; color: #6f6f6a; font-size: 14px; margin-top: 8px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #1c1c1a; color: #ffffff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0;" aria-hidden="true">
+                        {{ strtoupper(substr($plan->organizador, 0, 1)) }}
+                    </div>
+                    <div>
+                        <span style="font-weight: 600; color: #1c1c1a;">Organizador:</span>
+                        <span>{{ $plan->organizador }}</span>
+                    </div>
                 </div>
                 <div>
                     <span style="font-weight: 600; color: #1c1c1a;">Fecha límite de votación:</span>
