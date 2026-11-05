@@ -23,7 +23,7 @@
 
         <div class="campo">
             <label for="fecha_limite">Fecha límite</label>
-            <input type="date" id="fecha_limite" name="fecha_limite" value="{{ old('fecha_limite') }}">
+            <input type="date" id="fecha_limite" name="fecha_limite" value="{{ old('fecha_limite') }}" min="{{ now()->format('Y-m-d') }}">
             @error('fecha_limite')
                 <span class="campo-error">{{ $message }}</span>
             @enderror

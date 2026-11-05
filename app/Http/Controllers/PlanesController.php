@@ -2,18 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StorePlanRequest;
+use App\Http\Requests\UpdatePlanRequest;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class PlanesController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | \
-    /
-    |--------------------------------------------------------------------------
-    */
+    /**
+     * Mensajes de validación personalizados
+     */
     private array $mensajes = [
         'nombre.required'       => 'Escribe el nombre del plan.',
         'organizador.required'  => 'Escribe el nombre del organizador.',
@@ -21,12 +20,9 @@ class PlanesController extends Controller
         'fecha_limite.date'     => 'La fecha no es válida.',
     ];
 
-    /*
-    |--------------------------------------------------------------------------
-    \/
-    /
-    |--------------------------------------------------------------------------
-    */
+    /**
+     * Listar los planes del usuario logueado y los que tiene invitación / participación
+     */
     public function listar(Request $request)
     {
         // Leemos los filtros del query string (?buscar=...&estado=...&fecha=...)
@@ -52,19 +48,14 @@ class PlanesController extends Controller
         return view('planes.listar', compact('planes', 'buscar', 'estado', 'fecha'));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | /
-    /
-    |--------------------------------------------------------------------------
-    */
-    public function guardar(Request $request)
+    /**
+     * Guardar un nuevo plan
+     *
+     * @param  StorePlanRequest  $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function guardar(StorePlanRequest $request)
     {
-        $request->validate([
-            'nombre'       => 'required|max:255',
-            'fecha_limite' => 'required|date',
-        ], $this->mensajes);
-
         $plan = new Plan();
         $plan->nombre       = $request->nombre;
         $plan->organizador  = auth()->user()->name;
@@ -75,12 +66,12 @@ class PlanesController extends Controller
         return redirect()->route('planes.listar')->with('exito', '¡Plan creado!');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | 
-    /
-    |--------------------------------------------------------------------------
-    */
+    /**
+     * Editar un plan existente
+     *
+     * @param  Plan  $plan
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function editar(Plan $plan)
     {
         Gate::authorize('update', $plan);
@@ -88,20 +79,16 @@ class PlanesController extends Controller
         return view('planes.editar', compact('plan'));
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | /
-    /
-    |--------------------------------------------------------------------------
-    */
-    public function actualizar(Request $request, Plan $plan)
+    /**
+     * Actualizar un plan existente
+     *
+     * @param  UpdatePlanRequest  $request
+     * @param  Plan  $plan
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function actualizar(UpdatePlanRequest $request, Plan $plan)
     {
         Gate::authorize('update', $plan);
-
-        $request->validate([
-            'nombre'       => 'required|max:255',
-            'fecha_limite' => 'required|date',
-        ], $this->mensajes);
 
         $plan->nombre       = $request->nombre;
         $plan->fecha_limite = $request->fecha_limite;
@@ -110,12 +97,12 @@ class PlanesController extends Controller
         return redirect()->route('planes.listar')->with('exito', '¡Plan actualizado!');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    |
-    /
-    |--------------------------------------------------------------------------
-    */
+    /**
+     * Eliminar un plan existente
+     *
+     * @param  Plan  $plan
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function eliminar(Plan $plan)
     {
         Gate::authorize('delete', $plan);
@@ -131,12 +118,13 @@ class PlanesController extends Controller
         return redirect()->route('planes.listar')->with('exito', 'Plan eliminado.');
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | 
-    \
-    |--------------------------------------------------------------------------
-    */
+    /**
+     * Cambiar el estado de un plan
+     *
+     * @param  Request  $request
+     * @param  Plan  $plan
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function cambiarEstado(Request $request, Plan $plan)
     {
         Gate::authorize('cambiarEstado', $plan);
