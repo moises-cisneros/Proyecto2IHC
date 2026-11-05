@@ -38,7 +38,8 @@
             <label for="fecha_limite">Fecha límite</label>
             {{-- format('Y-m-d') porque el input type=date espera ese formato --}}
             <input type="date" id="fecha_limite" name="fecha_limite"
-                   value="{{ old('fecha_limite', $plan->fecha_limite->format('Y-m-d')) }}">
+                   value="{{ old('fecha_limite', $plan->fecha_limite->format('Y-m-d')) }}"
+                   min="{{ now()->format('Y-m-d') }}">
             @error('fecha_limite')
                 <span class="campo-error">{{ $message }}</span>
             @enderror

@@ -168,16 +168,34 @@
             </select>
         </div>
 
-        {{-- Campo estructurado fecha/hora (Nielsen H5 para evitar errores tipográficos) --}}
+        {{-- Campo estructurado fecha/hora con confirmación explícita (Nielsen H3 y H5 - Feedback UniSport) --}}
         <div id="contenedor-campo-fecha" style="margin-bottom: 16px; {{ $pestanaActiva === 'lugares' ? 'display: none;' : '' }}">
             <label for="input-fecha-opcion" style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 6px;">
                 Fecha y hora propuesta
             </label>
-            <input type="datetime-local"
-                   id="input-fecha-opcion"
-                   {{ $pestanaActiva === 'fechas' ? 'name="valor"' : '' }}
-                   style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; box-sizing: border-box; min-height: 44px;">
-            <p style="margin: 4px 0 0 0; font-size: 12px; color: #6f6f6a;">Selecciona el momento exacto para deliberar con el grupo.</p>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <input type="datetime-local"
+                       id="input-fecha-opcion"
+                       min="{{ now()->format('Y-m-d\TH:i') }}"
+                       {{ $pestanaActiva === 'fechas' ? 'name="valor"' : '' }}
+                       onchange="retenerFechaTemporal(this.value)"
+                       style="flex: 1; min-width: 220px; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; box-sizing: border-box; min-height: 44px;">
+                <button type="button"
+                        id="btn-aceptar-fecha"
+                        class="boton boton-claro"
+                        onclick="confirmarFechaSeleccionada()"
+                        style="min-height: 44px; min-width: 44px; padding: 10px 16px; border-radius: 10px; font-weight: 600; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap;">
+                    <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                    Aceptar fecha
+                </button>
+            </div>
+            <div id="feedback-fecha-confirmada" style="display: none; margin-top: 8px; padding: 8px 12px; background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 8px; font-size: 13px; color: #1b5e20; font-weight: 600; align-items: center; gap: 6px;">
+                <span>✓ Fecha confirmada:</span>
+                <span id="texto-fecha-confirmada" style="font-weight: 700;"></span>
+            </div>
+            <p style="margin: 4px 0 0 0; font-size: 12px; color: #6f6f6a;">Selecciona el momento exacto y pulsa «Aceptar fecha» para fijar tu elección.</p>
         </div>
 
         {{-- Campo texto para lugar o destino --}}
@@ -222,6 +240,31 @@
 </dialog>
 
 <script>
+    var fechaSeleccionadaRetenida = '';
+
+    function retenerFechaTemporal(val) {
+        if (val) {
+            fechaSeleccionadaRetenida = val;
+        }
+    }
+
+    function confirmarFechaSeleccionada() {
+        var inputFecha = document.getElementById('input-fecha-opcion');
+        var feedbackDiv = document.getElementById('feedback-fecha-confirmada');
+        var textoSpan = document.getElementById('texto-fecha-confirmada');
+
+        if (!inputFecha || !inputFecha.value) {
+            alert('Por favor selecciona una fecha y hora antes de pulsar Aceptar fecha.');
+            return;
+        }
+
+        fechaSeleccionadaRetenida = inputFecha.value;
+        if (feedbackDiv && textoSpan) {
+            textoSpan.textContent = inputFecha.value.replace('T', ' ');
+            feedbackDiv.style.display = 'flex';
+        }
+    }
+
     function actualizarInputPropuesta(tipo) {
         var contenedorFecha = document.getElementById('contenedor-campo-fecha');
         var inputFecha = document.getElementById('input-fecha-opcion');
@@ -233,6 +276,9 @@
             if (inputFecha) {
                 inputFecha.setAttribute('name', 'valor');
                 inputFecha.required = true;
+                if (fechaSeleccionadaRetenida && !inputFecha.value) {
+                    inputFecha.value = fechaSeleccionadaRetenida;
+                }
             }
             if (contenedorLugar) contenedorLugar.style.display = 'none';
             if (inputLugar) {
