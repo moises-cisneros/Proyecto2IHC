@@ -22,11 +22,16 @@ class PlanesController extends Controller
     ];
 
     /**
-     * Listar los planes del usuario logueado y los que tiene invitación / participación
+     * Listar los planes segmentados por rol (organizador vs invitado) y agrupados por temporalidad.
      */
     public function listar(Request $request)
     {
-        // Leemos los filtros del query string (?buscar=...&estado=...&fecha=...)
+        // Segmentación por propósito/rol: 'creados' (default) o 'invitaciones'
+        $seccion = in_array($request->input('seccion'), ['creados', 'invitaciones'], true)
+            ? $request->input('seccion')
+            : 'creados';
+
+        // Leemos los filtros adicionales del query string (?buscar=...&estado=...&fecha=...)
         $buscar = $request->input('buscar', '');
         $estado = $request->input('estado', '');
         $fecha  = $request->input('fecha', '');
@@ -34,19 +39,59 @@ class PlanesController extends Controller
         $userId = auth()->id();
         $userEmail = auth()->user()->email;
 
-        // Traemos los planes del usuario logueado o en los que tiene invitación / participación
-        $planes = Plan::where(function ($query) use ($userId, $userEmail) {
-            $query->where('user_id', $userId)
-                  ->orWhereHas('invitaciones', function ($q) use ($userId, $userEmail) {
-                      $q->where('user_id', $userId)
-                        ->orWhere('email', $userEmail);
-                  });
-        })
-        ->filtrar($buscar, $estado, $fecha)
-        ->orderBy('fecha_limite', 'asc')
-        ->get();
+        // Consulta filtrada según la sección seleccionada
+        if ($seccion === 'invitaciones') {
+            $query = Plan::whereHas('invitaciones', function ($q) use ($userId, $userEmail) {
+                $q->where('user_id', $userId)
+                  ->orWhere('email', $userEmail);
+            });
+        } else {
+            $query = Plan::where('user_id', $userId);
+        }
 
-        return view('planes.listar', compact('planes', 'buscar', 'estado', 'fecha'));
+        $planes = $query->filtrar($buscar, $estado, $fecha)
+            ->orderBy('fecha_limite', 'asc')
+            ->get();
+
+        // Agrupación temporal por urgencia respecto a hoy
+        $hoyFecha = today();
+
+        $vencidos = $planes->filter(function ($plan) use ($hoyFecha) {
+            return $plan->fecha_limite && $plan->fecha_limite->lt($hoyFecha);
+        })->values();
+
+        $hoy = $planes->filter(function ($plan) use ($hoyFecha) {
+            return $plan->fecha_limite && $plan->fecha_limite->equalTo($hoyFecha);
+        })->values();
+
+        $proximos = $planes->filter(function ($plan) use ($hoyFecha) {
+            return $plan->fecha_limite && $plan->fecha_limite->gt($hoyFecha);
+        })->values();
+
+        $contadores = [
+            'vencidos' => $vencidos->count(),
+            'hoy'      => $hoy->count(),
+            'proximos' => $proximos->count(),
+        ];
+
+        $totalVencidos = $vencidos->count();
+        $totalHoy      = $hoy->count();
+        $totalProximos = $proximos->count();
+
+        return view('planes.listar', compact(
+            'planes',
+            'vencidos',
+            'hoy',
+            'proximos',
+            'contadores',
+            'totalVencidos',
+            'totalHoy',
+            'totalProximos',
+            'seccion',
+            'buscar',
+            'estado',
+            'fecha'
+        ));
     }
 
     /**
