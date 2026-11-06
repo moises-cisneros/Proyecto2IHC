@@ -4,273 +4,199 @@
 
 @section('contenido')
 
+    <div class="encabezado-planes">
+        <h1>Mis planes</h1>
+        @if ($seccion === 'creados')
+            <button class="boton" onclick="document.getElementById('modal-crear').showModal()">
+                + Crear plan
+            </button>
+        @endif
+    </div>
 
-<div class="encabezado-planes">
-    <h1>Mis planes</h1>
-    <button class="boton" onclick="document.getElementById('modal-crear').showModal()">
-        + Crear plan
-    </button>
-</div>
+    {{-- Pestañas de Navegación por Propósito y Rol (Arquitectura de Información - Nivel 1) --}}
+    <div class="pestanas-roles" role="tablist" aria-label="Secciones de planes por rol"
+        style="display: flex; gap: 12px; margin-bottom: 20px;">
+        <a href="{{ route('planes.listar', array_merge(request()->except('seccion'), ['seccion' => 'creados'])) }}"
+            role="tab" aria-selected="{{ $seccion === 'creados' ? 'true' : 'false' }}"
+            class="boton {{ $seccion === 'creados' ? '' : 'boton-claro' }}"
+            style="min-height: 44px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; padding: 10px 20px; border-radius: 50px;"
+            aria-label="Ver mis planes creados como organizador">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M19 8v6" />
+                <path d="M22 11h-6" />
+            </svg>
+            <span>Mis planes creados</span>
+        </a>
 
-<form method="GET" action="{{ route('planes.listar') }}" class="filtros">
+        <a href="{{ route('planes.listar', array_merge(request()->except('seccion'), ['seccion' => 'invitaciones'])) }}"
+            role="tab" aria-selected="{{ $seccion === 'invitaciones' ? 'true' : 'false' }}"
+            class="boton {{ $seccion === 'invitaciones' ? '' : 'boton-claro' }}"
+            style="min-height: 44px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; padding: 10px 20px; border-radius: 50px;"
+            aria-label="Ver planes donde participo como invitado">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+            <span>Planes donde participo</span>
+        </a>
+    </div>
 
-    <input type="text"
-           name="buscar"
-           placeholder="Buscar por nombre"
-           value="{{ $buscar }}">
+    <form method="GET" action="{{ route('planes.listar') }}" class="filtros">
+        <input type="hidden" name="seccion" value="{{ $seccion }}">
 
-    <select name="estado">
-        <option value="">Todos los estados</option>
-        <option value="pendiente"  {{ $estado === 'pendiente'  ? 'selected' : '' }}>Pendiente</option>
-        <option value="confirmado" {{ $estado === 'confirmado' ? 'selected' : '' }}>Confirmado</option>
-        <option value="cancelado"  {{ $estado === 'cancelado'  ? 'selected' : '' }}>Cancelado</option>
-    </select>
+        <input type="text" name="buscar" placeholder="Buscar por nombre" value="{{ $buscar }}">
 
-    <select name="fecha">
-        <option value="">Cualquier fecha</option>
-        <option value="7dias"    {{ $fecha === '7dias'    ? 'selected' : '' }}>Próximos 7 días</option>
-        <option value="vencidos" {{ $fecha === 'vencidos' ? 'selected' : '' }}>Ya vencidos</option>
-    </select>
+        <select name="estado">
+            <option value="">Todos los estados</option>
+            <option value="pendiente" {{ $estado === 'pendiente' ? 'selected' : '' }}>Pendiente</option>
+            <option value="confirmado" {{ $estado === 'confirmado' ? 'selected' : '' }}>Confirmado</option>
+            <option value="cancelado" {{ $estado === 'cancelado' ? 'selected' : '' }}>Cancelado</option>
+        </select>
 
-    <button type="submit" class="boton">Filtrar</button>
+        <select name="fecha">
+            <option value="">Cualquier fecha</option>
+            <option value="7dias" {{ $fecha === '7dias' ? 'selected' : '' }}>Próximos 7 días</option>
+            <option value="vencidos" {{ $fecha === 'vencidos' ? 'selected' : '' }}>Ya vencidos</option>
+        </select>
 
-    {{-- Solo muestra "Limpiar" si hay algún filtro activo --}}
+        <button type="submit" class="boton">Filtrar</button>
+
+        {{-- Solo muestra "Limpiar" si hay algún filtro activo --}}
+        @if ($buscar || $estado || $fecha)
+            <a href="{{ route('planes.listar', ['seccion' => $seccion]) }}" class="boton boton-claro">Limpiar</a>
+        @endif
+    </form>
+
     @if ($buscar || $estado || $fecha)
-        <a href="{{ route('planes.listar') }}" class="boton boton-claro">Limpiar</a>
+        <div class="filtros-activos">
+            <span>Filtros activos:</span>
+
+            {{-- Chip de búsqueda: al clicar, se quita solo el buscar --}}
+            @if ($buscar)
+                <a href="{{ route('planes.listar', array_filter(['seccion' => $seccion, 'estado' => $estado, 'fecha' => $fecha])) }}"
+                    class="chip">"{{ $buscar }}" ×</a>
+            @endif
+
+            {{-- Chip de estado --}}
+            @if ($estado)
+                <a href="{{ route('planes.listar', array_filter(['seccion' => $seccion, 'buscar' => $buscar, 'fecha' => $fecha])) }}"
+                    class="chip">{{ ucfirst($estado) }} ×</a>
+            @endif
+
+            {{-- Chip de fecha --}}
+            @if ($fecha)
+                <a href="{{ route('planes.listar', array_filter(['seccion' => $seccion, 'buscar' => $buscar, 'estado' => $estado])) }}"
+                    class="chip">{{ $fecha === '7dias' ? 'Próximos 7 días' : 'Ya vencidos' }} ×</a>
+            @endif
+        </div>
     @endif
 
-</form>
+    @if ($planes->isEmpty())
+        {{-- Estado vacío general de la sección --}}
+        <div
+            style="background: #ffffff; border: 1px solid #e3e3df; border-radius: 12px; padding: 40px 20px; text-align: center; margin-top: 24px;">
+            <p style="font-size: 16px; color: #6f6f6a; margin: 0 0 16px 0;">
+                @if ($buscar || $estado || $fecha)
+                    Ningún plan coincide con los filtros aplicados en esta sección.
+                @elseif ($seccion === 'invitaciones')
+                    Todavía no tienes invitaciones a planes. Cuando otros organizadores te inviten, los verás aquí.
+                @else
+                    Todavía no tienes planes creados. ¡Crea el primero para empezar a coordinar!
+                @endif
+            </p>
+            @if ($seccion === 'creados' && !$buscar && !$estado && !$fecha)
+                <button class="boton" onclick="document.getElementById('modal-crear').showModal()">
+                    + Crear mi primer plan
+                </button>
+            @endif
+        </div>
+    @else
+        {{-- Bloques Cronológicos por Urgencia (Arquitectura de Información - Nivel 2) --}}
 
-@if ($buscar || $estado || $fecha)
-<div class="filtros-activos">
-    <span>Filtros activos:</span>
+        {{-- 1. HOY --}}
+        <section class="seccion-cronologica" aria-labelledby="bloque-hoy" style="margin-top: 24px;">
+            <div
+                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #e3e3df;">
+                <h2 id="bloque-hoy"
+                    style="font-size: 16px; font-weight: 700; margin: 0; display: inline-flex; align-items: center; gap: 8px;">
+                    <span>Hoy</span>
+                    <span class="badge"
+                        style="background: #ffe683; color: #1c1c1a; padding: 2px 10px; border-radius: 50px; font-size: 12px; font-weight: 700;">
+                        {{ $totalHoy }}
+                    </span>
+                </h2>
+                <span style="font-size: 13px; color: #6f6f6a;">Planes con fecha límite programada para hoy</span>
+            </div>
 
-    {{-- Chip de búsqueda: al clicar, se quita solo el buscar --}}
-    @if ($buscar)
-        <a href="{{ route('planes.listar', array_filter(['estado' => $estado, 'fecha' => $fecha])) }}"
-           class="chip">"{{ $buscar }}" ×</a>
-    @endif
-
-    {{-- Chip de estado --}}
-    @if ($estado)
-        <a href="{{ route('planes.listar', array_filter(['buscar' => $buscar, 'fecha' => $fecha])) }}"
-           class="chip">{{ ucfirst($estado) }} ×</a>
-    @endif
-
-    {{-- Chip de fecha --}}
-    @if ($fecha)
-        <a href="{{ route('planes.listar', array_filter(['buscar' => $buscar, 'estado' => $estado])) }}"
-           class="chip">{{ $fecha === '7dias' ? 'Próximos 7 días' : 'Ya vencidos' }} ×</a>
-    @endif
-</div>
-@endif
-
-<table class="tabla">
-    <thead>
-        <tr>
-            <th style="width: 28%;">Plan</th>
-            <th style="width: 18%;">Organizador</th>
-            <th style="width: 14%;">Fecha límite</th>
-            <th style="width: 12%;">Estado</th>
-            <th style="width: 28%; text-align: right;">Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-
-        {{-- @forelse itera los planes; si no hay ninguno, cae en @empty --}}
-        @forelse ($planes as $plan)
-        <tr>
-
-            {{-- Nombre y organizador con touch target Fitts >=44px y elipsis estricta --}}
-            <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                <a href="{{ route('planes.detalle', $plan) }}"
-                   class="enlace-plan"
-                   style="min-height: 44px; display: inline-flex; align-items: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
-                   title="{{ $plan->nombre }}">
-                    {{ $plan->nombre }}
-                </a>
-            </td>
-            <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-                {{ $plan->organizador }}
-            </td>
-
-            {{-- Fecha formateada como dd/mm/yyyy --}}
-            <td style="white-space: nowrap;">
-                {{ $plan->fecha_limite->format('d/m/Y') }}
-            </td>
-
-            {{-- Chip de color según el estado --}}
-            <td style="white-space: nowrap;">
-                <span class="estado estado-{{ $plan->estado }}">
-                    @if ($plan->estado === 'pendiente')  Pendiente
-                    @elseif ($plan->estado === 'confirmado') Confirmado
-                    @else Cancelado
-                    @endif
-                </span>
-            </td>
-
-            {{-- Columna de acciones ergonómica (Fitts >=44px, gap: 8px, fila horizontal estricta) --}}
-            <td class="acciones">
-                <div class="acciones-grupo">
-                    {{-- 0. Botón ergonómico de acceso a la sala (Fitts >= 44x44px sin desbordamiento) --}}
-                    @can('cambiarEstado', $plan)
-                        <a href="{{ route('planes.detalle', $plan) }}"
-                           class="boton boton-claro"
-                           style="min-height: 44px; min-width: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center;"
-                           title="Entrar a la sala de votación"
-                           aria-label="Entrar a la sala de votación del plan {{ $plan->nombre }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: block;">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                            </svg>
-                            <span class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">Entrar a la sala</span>
-                        </a>
-                    @endcan
-
-                    {{-- 1. Botón de cambio de estado (Confirmar / Cancelar con ancho homogéneo de 104px para evitar desalineación) --}}
-                    @can('cambiarEstado', $plan)
-                        @if ($plan->estado == 'pendiente')
-                            <form method="POST" action="{{ route('planes.estado', $plan) }}" style="margin: 0;">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="estado" value="confirmado">
-                                <button type="submit" class="boton boton-claro"
-                                    style="min-height: 44px; width: 104px; min-width: 104px; border-radius: 50px; padding: 8px 12px; font-weight: 500; white-space: nowrap; text-align: center; justify-content: center; display: inline-flex; align-items: center; box-sizing: border-box;"
-                                    data-confirm="¿Confirmar el plan &laquo;{{ $plan->nombre }}&raquo;?"
-                                    data-title="Confirmar plan"
-                                    data-btn-ok="Sí, confirmar"
-                                    data-btn-cancel="Mantener pendiente">Confirmar</button>
-                            </form>
-                        @elseif ($plan->estado == 'confirmado')
-                            <form method="POST" action="{{ route('planes.estado', $plan) }}" style="margin: 0;">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="estado" value="cancelado">
-                                <button type="submit" class="boton boton-claro"
-                                    style="min-height: 44px; width: 104px; min-width: 104px; border-radius: 50px; padding: 8px 12px; font-weight: 500; white-space: nowrap; text-align: center; justify-content: center; display: inline-flex; align-items: center; box-sizing: border-box;"
-                                    data-confirm="¿Cancelar el plan &laquo;{{ $plan->nombre }}&raquo;? No podrá volver a confirmarse."
-                                    data-title="Cancelar plan"
-                                    data-btn-ok="Sí, cancelar"
-                                    data-btn-cancel="Mantener plan">Cancelar</button>
-                            </form>
-                        @else
-                            {{-- Plan cancelado: no puede volver a confirmarse --}}
-                            <button class="boton boton-claro" disabled
-                                    style="min-height: 44px; width: 104px; min-width: 104px; border-radius: 50px; padding: 8px 12px; font-weight: 500; white-space: nowrap; text-align: center; justify-content: center; display: inline-flex; align-items: center; box-sizing: border-box;"
-                                    title="Un plan cancelado no puede volver a confirmarse">Confirmar</button>
-                        @endif
-                    @endcan
-
-                    {{-- 2. Botón EDITAR (✏ SVG nítido de alta definición) --}}
-                    @can('update', $plan)
-                        <a href="{{ route('planes.editar', $plan) }}"
-                           class="boton boton-editar"
-                           style="min-height: 44px; min-width: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center;"
-                           title="Editar plan"
-                           aria-label="Editar plan {{ $plan->nombre }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: block;">
-                                <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-                                <path d="m15 5 4 4"/>
-                            </svg>
-                            <span class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">Editar plan</span>
-                        </a>
-                    @else
-                        @can('cambiarEstado', $plan)
-                            {{-- Creador pero plan cancelado: deshabilitado (Nielsen H5) --}}
-                            @if ($plan->estado === 'cancelado')
-                                <button class="boton boton-editar" disabled
-                                        style="min-height: 44px; min-width: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center; opacity: 0.4; cursor: not-allowed;"
-                                        title="Un plan cancelado no puede editarse"
-                                        aria-label="Editar no disponible en plan cancelado">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: block;">
-                                        <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-                                        <path d="m15 5 4 4"/>
-                                    </svg>
-                                    <span class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">Editar plan</span>
-                                </button>
-                            @endif
-                        @endcan
-                    @endcan
-
-                    {{-- 3. Botón ELIMINAR (🗑 SVG nítido de alta definición) --}}
-                    @can('delete', $plan)
-                        @if ($plan->estado == 'confirmado')
-                            <button class="boton boton-rojo" disabled
-                                    style="min-height: 44px; min-width: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center; opacity: 0.4; cursor: not-allowed;"
-                                    title="Cancela el plan antes de eliminarlo"
-                                    aria-label="Eliminar no disponible en plan confirmado">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: block;">
-                                    <path d="M3 6h18"/>
-                                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                                    <line x1="10" x2="10" y1="11" y2="17"/>
-                                    <line x1="14" x2="14" y1="11" y2="17"/>
-                                </svg>
-                                <span class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">Eliminar plan</span>
-                            </button>
-                        @else
-                            <form method="POST" action="{{ route('planes.eliminar', $plan) }}" style="margin: 0;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="boton boton-rojo"
-                                    style="min-height: 44px; min-width: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center;"
-                                    data-confirm="¿Eliminar &laquo;{{ $plan->nombre }}&raquo;? Esta acción no se puede deshacer."
-                                    data-title="Eliminar plan"
-                                    data-btn-ok="Sí, eliminar"
-                                    data-btn-cancel="Volver"
-                                    data-type="danger"
-                                    title="Eliminar plan"
-                                    aria-label="Eliminar plan {{ $plan->nombre }}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="display: block;">
-                                        <path d="M3 6h18"/>
-                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-                                        <line x1="10" x2="10" y1="11" y2="17"/>
-                                        <line x1="14" x2="14" y1="11" y2="17"/>
-                                    </svg>
-                                    <span class="sr-only" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">Eliminar plan</span>
-                                </button>
-                            </form>
-                        @endif
-                    @endcan
-
-                    {{-- 4. Acciones para participantes o invitados --}}
-                    @cannot('cambiarEstado', $plan)
-                        @can('aceptar', $plan)
-                            <form method="POST" action="{{ route('planes.aceptar', $plan) }}" style="margin: 0; display: inline-block;">
-                                @csrf
-                                <button type="submit" class="boton" style="min-height: 44px; padding: 8px 18px; font-size: 13px; border-radius: 50px; white-space: nowrap;">
-                                    Aceptar invitación
-                                </button>
-                            </form>
-                        @else
-                            <a href="{{ route('planes.detalle', $plan) }}" class="boton boton-claro" style="min-height: 44px; display: inline-flex; align-items: center; padding: 8px 18px; font-size: 13px; border-radius: 50px; white-space: nowrap;">
-                                Ver sala
-                            </a>
-                        @endcan
-                    @endcannot
+            @if ($hoy->isEmpty())
+                <div
+                    style="background: #ffffff; border: 1px dashed #d1d1cd; border-radius: 8px; padding: 12px 16px; text-align: center; color: #6f6f6a; font-size: 14px; margin-bottom: 20px;">
+                    No tienes planes para hoy en esta sección.
                 </div>
-            </td>
-        </tr>
-        @empty
-            {{-- Cuando no hay planes (o no coinciden los filtros) --}}
-            <tr>
-                <td colspan="5" class="vacio">
-                    @if ($buscar || $estado || $fecha)
-                        Ningún plan coincide con los filtros aplicados.
-                    @else
-                        Todavía no tienes planes. ¡Crea el primero!
-                    @endif
-                </td>
-            </tr>
-        @endforelse
+            @else
+                @include('planes._tabla_seccion', ['items' => $hoy])
+            @endif
+        </section>
 
-    </tbody>
-</table>
+        {{-- 2. PRÓXIMOS --}}
+        <section class="seccion-cronologica" aria-labelledby="bloque-proximos" style="margin-top: 24px;">
+            <div
+                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #e3e3df;">
+                <h2 id="bloque-proximos"
+                    style="font-size: 16px; font-weight: 700; margin: 0; display: inline-flex; align-items: center; gap: 8px;">
+                    <span>Próximos</span>
+                    <span class="badge"
+                        style="background: #e3e3df; color: #1c1c1a; padding: 2px 10px; border-radius: 50px; font-size: 12px; font-weight: 700;">
+                        {{ $totalProximos }}
+                    </span>
+                </h2>
+                <span style="font-size: 13px; color: #6f6f6a;">Planes futuros en curso</span>
+            </div>
 
-{{-- Modal accesible para crear nuevo plan con organizador automático --}}
-@include('planes._modal_crear')
+            @if ($proximos->isEmpty())
+                <div
+                    style="background: #ffffff; border: 1px dashed #d1d1cd; border-radius: 8px; padding: 12px 16px; text-align: center; color: #6f6f6a; font-size: 14px; margin-bottom: 20px;">
+                    No tienes planes futuros programados en esta sección.
+                </div>
+            @else
+                @include('planes._tabla_seccion', ['items' => $proximos])
+            @endif
+        </section>
+
+        {{-- 3. VENCIDOS --}}
+        <section class="seccion-cronologica" aria-labelledby="bloque-vencidos" style="margin-top: 24px;">
+            <div
+                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #e3e3df;">
+                <h2 id="bloque-vencidos"
+                    style="font-size: 16px; font-weight: 700; margin: 0; display: inline-flex; align-items: center; gap: 8px;">
+                    <span>Vencidos</span>
+                    <span class="badge"
+                        style="background: #ffd2d2; color: #9c0000; padding: 2px 10px; border-radius: 50px; font-size: 12px; font-weight: 700;">
+                        {{ $totalVencidos }}
+                    </span>
+                </h2>
+                <span style="font-size: 13px; color: #6f6f6a;">Planes cuya fecha límite ya expiró</span>
+            </div>
+
+            @if ($vencidos->isEmpty())
+                <div
+                    style="background: #ffffff; border: 1px dashed #d1d1cd; border-radius: 8px; padding: 12px 16px; text-align: center; color: #6f6f6a; font-size: 14px; margin-bottom: 20px;">
+                    No tienes planes vencidos en esta sección.
+                </div>
+            @else
+                @include('planes._tabla_seccion', ['items' => $vencidos])
+            @endif
+        </section>
+
+    @endif
+
+    {{-- Modal accesible para crear nuevo plan con organizador automático --}}
+    @include('planes._modal_crear')
 
 @endsection

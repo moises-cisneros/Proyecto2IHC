@@ -26,24 +26,28 @@ class PlanesController extends Controller
      */
     public function listar(Request $request)
     {
-        // Segmentación por propósito/rol: 'creados' (default) o 'invitaciones'
-        $seccion = in_array($request->input('seccion'), ['creados', 'invitaciones'], true)
-            ? $request->input('seccion')
-            : 'creados';
+        $userId = auth()->id();
+        $userEmail = auth()->user()->email;
 
         // Leemos los filtros adicionales del query string (?buscar=...&estado=...&fecha=...)
         $buscar = $request->input('buscar', '');
         $estado = $request->input('estado', '');
         $fecha  = $request->input('fecha', '');
 
-        $userId = auth()->id();
-        $userEmail = auth()->user()->email;
+        // Segmentación por propósito/rol: 'creados' (default) o 'invitaciones'
+        // Si no se especifica y el usuario no tiene planes creados pero sí invitaciones, orienta a 'invitaciones'
+        if ($request->filled('seccion') && in_array($request->input('seccion'), ['creados', 'invitaciones'], true)) {
+            $seccion = $request->input('seccion');
+        } else {
+            $tieneCreados = Plan::where('user_id', $userId)->exists();
+            $seccion = $tieneCreados ? 'creados' : 'invitaciones';
+        }
 
         // Consulta filtrada según la sección seleccionada
         if ($seccion === 'invitaciones') {
             $query = Plan::whereHas('invitaciones', function ($q) use ($userId, $userEmail) {
                 $q->where('user_id', $userId)
-                  ->orWhere('email', $userEmail);
+                    ->orWhere('email', $userEmail);
             });
         } else {
             $query = Plan::where('user_id', $userId);
@@ -156,7 +160,7 @@ class PlanesController extends Controller
         // Regla de negocio: no se puede eliminar un plan confirmado
         if ($plan->estado === 'confirmado') {
             return redirect()->route('planes.listar')
-                             ->with('error', 'Un plan confirmado no puede eliminarse. Primero cancélalo.');
+                ->with('error', 'Un plan confirmado no puede eliminarse. Primero cancélalo.');
         }
 
         $plan->delete();
@@ -182,14 +186,14 @@ class PlanesController extends Controller
         // Regla de negocio: un plan cancelado NO puede reactivarse
         if ($plan->estado === 'cancelado' && $request->estado !== 'cancelado') {
             return redirect()->route('planes.listar')
-                             ->with('error', 'Un plan cancelado no puede reactivarse.');
+                ->with('error', 'Un plan cancelado no puede reactivarse.');
         }
 
         $plan->estado = $request->estado;
         $plan->save();
 
         return redirect()->route('planes.listar')
-                         ->with('exito', 'El plan ahora está ' . $plan->estado . '.');
+            ->with('exito', 'El plan ahora está ' . $plan->estado . '.');
     }
 
     /**
@@ -226,6 +230,6 @@ class PlanesController extends Controller
         ]);
 
         return redirect()->route('planes.detalle', $plan)
-                         ->with('exito', '¡Plan confirmado con éxito! La votación ha concluido.');
+            ->with('exito', '¡Plan confirmado con éxito! La votación ha concluido.');
     }
 }
