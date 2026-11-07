@@ -2,8 +2,9 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 
 test.describe('Tarea 7 — Confirmación de Plan, Resolución de Empates con Motivo y Veredicto Público', () => {
-
-    test('Como organizador y participante, completamos el ciclo de desempate con motivo obligatorio y congelamiento de sala', async ({ browser }) => {
+    test('Como organizador y participante, completamos el ciclo de desempate con motivo obligatorio y congelamiento de sala', async ({
+        browser,
+    }) => {
         test.setTimeout(60000);
         fs.mkdirSync('docs/evidencias/tarea-7', { recursive: true });
 
@@ -35,13 +36,19 @@ test.describe('Tarea 7 — Confirmación de Plan, Resolución de Empates con Mot
         await expect(pageOrganizador.getByText('Invitación enviada')).toBeVisible();
 
         // Proponer Fecha A
-        await pageOrganizador.getByRole('button', { name: /Proponer/ }).first().click();
+        await pageOrganizador
+            .getByRole('button', { name: /Proponer/ })
+            .first()
+            .click();
         await pageOrganizador.locator('#input-fecha-opcion').fill('2026-12-20T12:00');
         await pageOrganizador.getByRole('button', { name: 'Guardar propuesta' }).click();
         await expect(pageOrganizador.getByText('Opción propuesta correctamente.')).toBeVisible();
 
         // Proponer Fecha B
-        await pageOrganizador.getByRole('button', { name: /Proponer/ }).first().click();
+        await pageOrganizador
+            .getByRole('button', { name: /Proponer/ })
+            .first()
+            .click();
         await pageOrganizador.locator('#input-fecha-opcion').fill('2026-12-21T12:00');
         await pageOrganizador.getByRole('button', { name: 'Guardar propuesta' }).click();
         await expect(pageOrganizador.getByText('Opción propuesta correctamente.')).toBeVisible();
@@ -52,12 +59,18 @@ test.describe('Tarea 7 — Confirmación de Plan, Resolución de Empates con Mot
 
         // Proponer Lugares
         await pageOrganizador.getByRole('tab', { name: /Lugares propuestos/ }).click();
-        await pageOrganizador.getByRole('button', { name: /Proponer/ }).first().click();
+        await pageOrganizador
+            .getByRole('button', { name: /Proponer/ })
+            .first()
+            .click();
         await pageOrganizador.getByLabel('Tipo de sugerencia').selectOption('lugar');
         await pageOrganizador.getByLabel('Lugar o destino propuesto').fill('Pizzería Napoli');
         await pageOrganizador.getByRole('button', { name: 'Guardar propuesta' }).click();
 
-        await pageOrganizador.getByRole('button', { name: /Proponer/ }).first().click();
+        await pageOrganizador
+            .getByRole('button', { name: /Proponer/ })
+            .first()
+            .click();
         await pageOrganizador.getByLabel('Tipo de sugerencia').selectOption('lugar');
         await pageOrganizador.getByLabel('Lugar o destino propuesto').fill('Tacos del Rey');
         await pageOrganizador.getByRole('button', { name: 'Guardar propuesta' }).click();
@@ -87,7 +100,9 @@ test.describe('Tarea 7 — Confirmación de Plan, Resolución de Empates con Mot
 
         // Carlos vota por Fecha B
         await pageParticipante.getByRole('button', { name: /Votar por 21\/12\/2026 12:00/ }).click();
-        await expect(pageParticipante.getByRole('button', { name: /Retirar voto de 21\/12\/2026 12:00/ })).toBeVisible();
+        await expect(
+            pageParticipante.getByRole('button', { name: /Retirar voto de 21\/12\/2026 12:00/ })
+        ).toBeVisible();
 
         // Carlos vota por Tacos del Rey
         await pageParticipante.getByRole('tab', { name: /Lugares propuestos/ }).click();
@@ -113,7 +128,9 @@ test.describe('Tarea 7 — Confirmación de Plan, Resolución de Empates con Mot
         await modalConfirmar.locator('select[name="propuesta_lugar_id"]').selectOption({ index: 1 });
 
         // Redacción de justificación pública obligatoria
-        await modalConfirmar.locator('#motivo_desempate').fill('Mayor facilidad de estacionamiento y cercanía para la mayoría del equipo.');
+        await modalConfirmar
+            .locator('#motivo_desempate')
+            .fill('Mayor facilidad de estacionamiento y cercanía para la mayoría del equipo.');
 
         // Evidencia 04: Modal de desempate con motivo
         await pageOrganizador.screenshot({ path: 'docs/evidencias/tarea-7/04-modal-desempate-motivo.png' });
@@ -123,7 +140,9 @@ test.describe('Tarea 7 — Confirmación de Plan, Resolución de Empates con Mot
 
         // Verificación de veredicto público en vista del organizador
         await expect(pageOrganizador.getByText('¡Plan confirmado! Deliberación y votación finalizadas.')).toBeVisible();
-        await expect(pageOrganizador.getByText('Mayor facilidad de estacionamiento y cercanía para la mayoría del equipo.')).toBeVisible();
+        await expect(
+            pageOrganizador.getByText('Mayor facilidad de estacionamiento y cercanía para la mayoría del equipo.')
+        ).toBeVisible();
 
         // Evidencia 05: Sala confirmada vista por el organizador
         await pageOrganizador.screenshot({ path: 'docs/evidencias/tarea-7/05-sala-confirmada-organizador.png' });
@@ -132,8 +151,12 @@ test.describe('Tarea 7 — Confirmación de Plan, Resolución de Empates con Mot
         // FASE 4: Participante verifica inmutabilidad y veredicto
         // -------------------------------------------------------------
         await pageParticipante.reload();
-        await expect(pageParticipante.getByText('¡Plan confirmado! Deliberación y votación finalizadas.')).toBeVisible();
-        await expect(pageParticipante.getByText('Mayor facilidad de estacionamiento y cercanía para la mayoría del equipo.')).toBeVisible();
+        await expect(
+            pageParticipante.getByText('¡Plan confirmado! Deliberación y votación finalizadas.')
+        ).toBeVisible();
+        await expect(
+            pageParticipante.getByText('Mayor facilidad de estacionamiento y cercanía para la mayoría del equipo.')
+        ).toBeVisible();
         await expect(pageParticipante.getByText('Votación cerrada (plan confirmado)').first()).toBeVisible();
         await expect(pageParticipante.getByRole('button', { name: '+ Proponer opción' })).toHaveCount(0);
 
@@ -143,5 +166,4 @@ test.describe('Tarea 7 — Confirmación de Plan, Resolución de Empates con Mot
         await contextoOrganizador.close();
         await contextoParticipante.close();
     });
-
 });

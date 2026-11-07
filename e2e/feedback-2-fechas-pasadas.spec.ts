@@ -2,8 +2,9 @@ import { test, expect } from '@playwright/test';
 import fs from 'fs';
 
 test.describe('Feedback Mascota al Día — Bloqueo de fechas pasadas en creación y edición', () => {
-
-    test('Como usuario Choque Benavides, al intentar crear un plan con fecha pasada, la interfaz lo restringe y el backend rechaza con mensaje visible', async ({ page }) => {
+    test('Como usuario Choque Benavides, al intentar crear un plan con fecha pasada, la interfaz lo restringe y el backend rechaza con mensaje visible', async ({
+        page,
+    }) => {
         // 1. Acceso a la aplicación
         await page.goto('/ingresar');
         await page.getByLabel('Correo electrónico').fill('usuario1@example.com');
@@ -32,12 +33,13 @@ test.describe('Feedback Mascota al Día — Bloqueo de fechas pasadas en creaci�
         await page.getByRole('button', { name: 'Guardar' }).click();
 
         // 6. El backend intercepta la petición y responde con error visible (Nielsen H9)
-        const mensajeError = page.locator('.campo-error').filter({ hasText: 'La fecha del plan debe ser igual o posterior a la fecha actual.' });
+        const mensajeError = page
+            .locator('.campo-error')
+            .filter({ hasText: 'La fecha del plan debe ser igual o posterior a la fecha actual.' });
         await expect(mensajeError).toBeVisible();
 
         // 7. Captura de evidencia para la entrega
         fs.mkdirSync('docs/evidencias/tarea-7', { recursive: true });
         await page.screenshot({ path: 'docs/evidencias/tarea-7/01-feedback-fechas-bloqueadas.png' });
     });
-
 });

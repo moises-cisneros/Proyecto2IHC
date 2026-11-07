@@ -6,7 +6,6 @@ import path from 'path';
 const authFile = path.resolve('storage/framework/cache/e2e-auth-anita.json');
 
 test.describe.serial('Tarea 6 — Votos Múltiples, Cierre de Sala y Verificación Ergonómica', () => {
-
     test('Anita inicia sesión con credenciales sembradas y accede a la sala colaborativa', async ({ page }) => {
         // 1. Anita navega al formulario de acceso
         await page.goto('/ingresar');
@@ -28,7 +27,9 @@ test.describe.serial('Tarea 6 — Votos Múltiples, Cierre de Sala y Verificaci�
     test.describe('Acciones colaborativas en sala', () => {
         test.use({ storageState: authFile });
 
-        test('Anita vota por una fecha, vota por un lugar y el conteo se actualiza (voto múltiple)', async ({ page }) => {
+        test('Anita vota por una fecha, vota por un lugar y el conteo se actualiza (voto múltiple)', async ({
+            page,
+        }) => {
             await page.goto('/mis-planes');
 
             // 1. Creación de un plan para la deliberación colaborativa
@@ -43,7 +44,10 @@ test.describe.serial('Tarea 6 — Votos Múltiples, Cierre de Sala y Verificaci�
             await expect(page.getByRole('heading', { name: 'Sala de Votación y Propuestas' })).toBeVisible();
 
             // 3. Propuesta de una fecha estructurada (H5)
-            await page.getByRole('button', { name: /Proponer/ }).first().click();
+            await page
+                .getByRole('button', { name: /Proponer/ })
+                .first()
+                .click();
             await page.getByLabel('Tipo de sugerencia').selectOption('fecha');
             await page.getByLabel('Fecha y hora propuesta').fill('2026-12-24T20:00');
             await page.getByRole('button', { name: 'Guardar propuesta' }).click();
@@ -51,8 +55,14 @@ test.describe.serial('Tarea 6 — Votos Múltiples, Cierre de Sala y Verificaci�
 
             // 4. Propuesta de un lugar
             await page.getByRole('tab', { name: /Lugares propuestos/ }).click();
-            await expect(page.getByRole('tab', { name: /Lugares propuestos/ })).toHaveAttribute('aria-selected', 'true');
-            await page.getByRole('button', { name: /Proponer/ }).first().click();
+            await expect(page.getByRole('tab', { name: /Lugares propuestos/ })).toHaveAttribute(
+                'aria-selected',
+                'true'
+            );
+            await page
+                .getByRole('button', { name: /Proponer/ })
+                .first()
+                .click();
             await page.getByLabel('Tipo de sugerencia').selectOption('lugar');
             await page.getByLabel('Lugar o destino propuesto').fill('Terraza Mirador');
             await page.getByRole('button', { name: 'Guardar propuesta' }).click();
@@ -76,7 +86,10 @@ test.describe.serial('Tarea 6 — Votos Múltiples, Cierre de Sala y Verificaci�
             await expect(page.getByText('1 voto').first()).toBeVisible();
 
             await page.getByRole('tab', { name: /Lugares propuestos/ }).click();
-            await expect(page.getByRole('tab', { name: /Lugares propuestos/ })).toHaveAttribute('aria-selected', 'true');
+            await expect(page.getByRole('tab', { name: /Lugares propuestos/ })).toHaveAttribute(
+                'aria-selected',
+                'true'
+            );
             await expect(page.getByRole('button', { name: /Retirar voto de Terraza Mirador/ })).toBeVisible();
         });
 
@@ -94,8 +107,14 @@ test.describe.serial('Tarea 6 — Votos Múltiples, Cierre de Sala y Verificaci�
 
             // 2. Anita propone un lugar
             await page.getByRole('tab', { name: /Lugares propuestos/ }).click();
-            await expect(page.getByRole('tab', { name: /Lugares propuestos/ })).toHaveAttribute('aria-selected', 'true');
-            await page.getByRole('button', { name: /Proponer/ }).first().click();
+            await expect(page.getByRole('tab', { name: /Lugares propuestos/ })).toHaveAttribute(
+                'aria-selected',
+                'true'
+            );
+            await page
+                .getByRole('button', { name: /Proponer/ })
+                .first()
+                .click();
             await page.getByLabel('Tipo de sugerencia').selectOption('lugar');
             await page.getByLabel('Lugar o destino propuesto').fill('Restaurante El Valle');
             await page.getByRole('button', { name: 'Guardar propuesta' }).click();
@@ -113,7 +132,9 @@ test.describe.serial('Tarea 6 — Votos Múltiples, Cierre de Sala y Verificaci�
             await expect(page.locator('.badge-votos').filter({ hasText: '0 votos' })).toBeVisible();
         });
 
-        test('Anita ingresa a un plan confirmado y comprueba que la votación está cerrada y el conteo no puede cambiar', async ({ page }) => {
+        test('Anita ingresa a un plan confirmado y comprueba que la votación está cerrada y el conteo no puede cambiar', async ({
+            page,
+        }) => {
             await page.goto('/mis-planes');
 
             // 1. Creación del plan
@@ -125,7 +146,10 @@ test.describe.serial('Tarea 6 — Votos Múltiples, Cierre de Sala y Verificaci�
 
             // 2. Entra a la sala y crea una opción previa al cierre
             await page.getByRole('link', { name: nombrePlan }).first().click();
-            await page.getByRole('button', { name: /Proponer/ }).first().click();
+            await page
+                .getByRole('button', { name: /Proponer/ })
+                .first()
+                .click();
             await page.getByLabel('Tipo de sugerencia').selectOption('fecha');
             await page.getByLabel('Fecha y hora propuesta').fill('2026-12-30T19:00');
             await page.getByRole('button', { name: 'Guardar propuesta' }).click();
@@ -147,7 +171,9 @@ test.describe.serial('Tarea 6 — Votos Múltiples, Cierre de Sala y Verificaci�
             // 5. Comprueba el banner accesible de cierre
             const bannerCierre = page.getByRole('status');
             await expect(bannerCierre).toBeVisible();
-            await expect(bannerCierre).toContainText('Votación finalizada. Este plan ha sido confirmado y la deliberación se encuentra cerrada.');
+            await expect(bannerCierre).toContainText(
+                'Votación finalizada. Este plan ha sido confirmado y la deliberación se encuentra cerrada.'
+            );
 
             // 6. Comprueba que el botón de proponer opción está completamente ausente
             await expect(page.getByRole('button', { name: /Proponer/ })).toHaveCount(0);
@@ -171,16 +197,11 @@ test.describe.serial('Tarea 6 — Votos Múltiples, Cierre de Sala y Verificaci�
             await expect(page.getByRole('heading', { name: 'Sala de Votación y Propuestas' })).toBeVisible();
 
             // Auditoría automatizada con AxeCore
-            const resultadosAxe = await new AxeBuilder({ page })
-                .withTags(['wcag2a', 'wcag2aa'])
-                .analyze();
+            const resultadosAxe = await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa']).analyze();
 
-            const violacionesCriticas = resultadosAxe.violations.filter(
-                (v) => v.impact === 'critical'
-            );
+            const violacionesCriticas = resultadosAxe.violations.filter((v) => v.impact === 'critical');
 
             expect(violacionesCriticas).toHaveLength(0);
         });
     });
-
 });

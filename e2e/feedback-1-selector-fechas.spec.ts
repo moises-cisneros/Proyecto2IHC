@@ -2,8 +2,9 @@ import { test, expect } from '@playwright/test';
 import fs from 'node:fs';
 
 test.describe('Feedback UniSport — Selector de fechas con confirmación explícita', () => {
-
-    test('Como participante Juan Carlos, al proponer una fecha utilizo el botón explícito «Aceptar fecha» y la selección se retiene sin pérdidas', async ({ page }) => {
+    test('Como participante Juan Carlos, al proponer una fecha utilizo el botón explícito «Aceptar fecha» y la selección se retiene sin pérdidas', async ({
+        page,
+    }) => {
         // 1. Acceso a la aplicación con cuenta válida
         await page.goto('/ingresar');
         await page.getByLabel('Correo electrónico').fill('usuario1@example.com');
@@ -24,7 +25,10 @@ test.describe('Feedback UniSport — Selector de fechas con confirmación explí
         await expect(page.getByRole('heading', { name: 'Sala de Votación y Propuestas' })).toBeVisible();
 
         // 4. Apertura del modal de propuesta
-        await page.getByRole('button', { name: /Proponer/ }).first().click();
+        await page
+            .getByRole('button', { name: /Proponer/ })
+            .first()
+            .click();
         await expect(page.getByRole('heading', { name: 'Proponer nueva opción' })).toBeVisible();
 
         // 5. Interacción con el selector de fecha y clic en «Aceptar fecha»
@@ -49,5 +53,4 @@ test.describe('Feedback UniSport — Selector de fechas con confirmación explí
         await expect(page.getByText('Opción propuesta correctamente.')).toBeVisible();
         await expect(page.getByText('28/12/2026 16:30 hrs', { exact: true })).toBeVisible();
     });
-
 });
