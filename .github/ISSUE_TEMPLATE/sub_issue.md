@@ -44,12 +44,12 @@ assignees: ''
 
 - **Base obligatoria:** `sub-issue`
 - **Etiqueta por capa (elegir la correspondiente):**
-  - Backend / Persistencia $\rightarrow$ `backend`
-  - Controlador / Lógica $\rightarrow$ `controlador`
-  - Interfaz / Blade $\rightarrow$ `interfaz`
-  - Pruebas y Evidencias $\rightarrow$ `testing` y `documentation`
+  - Backend / Persistencia $\to$ `backend`
+  - Controlador / Lógica $\to$ `controlador`
+  - Interfaz / Blade $\to$ `interfaz`
+  - Pruebas y Evidencias $\to$ `testing` y `documentation`
 - **Etiquetas transversales complementarias (si aplican):**
-  - Validación o endurecimiento de permisos/auth $\rightarrow$ `seguridad`
-  - Diseño ergonómico (Fitts, Hick, heurísticas) $\rightarrow$ `ihc`
-  - Estándares WCAG o lectores de pantalla $\rightarrow$ `accessibility`
-  - Deuda técnica / refactorización $\rightarrow$ `refactor`
+  - Validación o endurecimiento de permisos/auth $\to$ `seguridad`
+  - Diseño ergonómico (Fitts, Hick, heurísticas) $\to$ `ihc`
+  - Estándares WCAG o lectores de pantalla $\to$ `accessibility`
+  - Deuda técnica / refactorización $\to$ `refactor`

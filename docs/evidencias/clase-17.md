@@ -34,15 +34,15 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 
 ### Consola corriendo
 
-![Consola con los contenedores Docker iniciando](evidencias/clase17/ConsolaCorriendo.png)
+![Consola con los contenedores Docker iniciando](clase-17/ConsolaCorriendo.png)
 
 ### Proyecto iniciado en el navegador
 
-![Pantalla de inicio (login) del proyecto corriendo](evidencias/clase17/ProyectoIniciado.png)
+![Pantalla de inicio (login) del proyecto corriendo](clase-17/ProyectoIniciado.png)
 
 ### Consola después de los cambios de Docker
 
-![Consola luego de aplicar la dockerización al proyecto](evidencias/clase17/ConsolaDespuesDeLosCambios.png)
+![Consola luego de aplicar la dockerización al proyecto](clase-17/ConsolaDespuesDeLosCambios.png)
 
 ---
 
@@ -59,7 +59,7 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 - Controlador: [`AutentificacionController::ingresar()`](../app/Http/Controllers/AutentificacionController.php)
 - Vista: [`resources/views/acceso/ingresar.blade.php`](../resources/views/acceso/ingresar.blade.php)
 
-![Pantalla de carga / login](evidencias/clase17/PantallaDeCarga.png)
+![Pantalla de carga / login](clase-17/PantallaDeCarga.png)
 
 ---
 
@@ -74,7 +74,7 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 - Controlador: [`AutentificacionController::registrar()`](../app/Http/Controllers/AutentificacionController.php)
 - Migración: [`database/migrations/0001_01_01_000000_create_users_table.php`](../database/migrations/0001_01_01_000000_create_users_table.php)
 
-![Pantalla de registro de usuario](evidencias/clase17/RegistroDeUusario.png)
+![Pantalla de registro de usuario](clase-17/RegistroDeUusario.png)
 
 ---
 
@@ -90,7 +90,7 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 - Modelo / Scope: [`Plan::scopeFiltrar()`](../app/Models/Plan.php)
 - Vista: [`resources/views/planes/listar.blade.php`](../resources/views/planes/listar.blade.php)
 
-![Pantalla de inicio con lista de planes](evidencias/clase17/PantallaDeInicio.png)
+![Pantalla de inicio con lista de planes](clase-17/PantallaDeInicio.png)
 
 ---
 
@@ -105,9 +105,9 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 - Controlador: [`PlanesController::guardar()`](../app/Http/Controllers/PlanesController.php)
 - Migración tabla planes: [`database/migrations/2026_10_02_013531_create_planes_table.php`](../database/migrations/2026_10_02_013531_create_planes_table.php)
 
-![Formulario para crear un plan](evidencias/clase17/CrearPlan.png)
+![Formulario para crear un plan](clase-17/CrearPlan.png)
 
-![Plan creado exitosamente en la lista](evidencias/clase17/PlanCreado.png)
+![Plan creado exitosamente en la lista](clase-17/PlanCreado.png)
 
 ---
 
@@ -122,9 +122,9 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 - Controlador: [`PlanesController::cambiarEstado()`](../app/Http/Controllers/PlanesController.php)
 - Migración estado: [`database/migrations/2026_10_08_174248_agregar_estado_a_planes_table.php`](../database/migrations/2026_10_08_174248_agregar_estado_a_planes_table.php)
 
-![Pantalla de confirmación de plan](evidencias/clase17/PantallaDeConfirmacion.png)
+![Pantalla de confirmación de plan](clase-17/PantallaDeConfirmacion.png)
 
-![Plan confirmado reflejado en la lista](evidencias/clase17/PlanConfirmado.png)
+![Plan confirmado reflejado en la lista](clase-17/PlanConfirmado.png)
 
 ---
 
@@ -137,7 +137,7 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 
 - Controlador: [`PlanesController::cambiarEstado()`](../app/Http/Controllers/PlanesController.php) — líneas 127–144
 
-![Pantalla de cancelación de plan](evidencias/clase17/PantallaDeCancelacion.png)
+![Pantalla de cancelación de plan](clase-17/PantallaDeCancelacion.png)
 
 ---
 
@@ -151,7 +151,7 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 - Ruta: [`routes/web.php`](../routes/web.php) — línea 32
 - Controlador: [`PlanesController::eliminar()`](../app/Http/Controllers/PlanesController.php) — líneas 108–119
 
-![Pantalla de eliminación de plan](evidencias/clase17/PantallaDeEliminacion.png)
+![Pantalla de eliminación de plan](clase-17/PantallaDeEliminacion.png)
 
 ---
 
@@ -284,10 +284,10 @@ Route::delete('/opciones/{opcion}/votar',    [VotosController::class, 'quitar'])
 3. **Refactorización del Organizador (H6 y H8):** En `_modal_crear.blade.php`, se retira el campo editable de organizador y se muestra un badge informativo de solo lectura: *«Organizador: {{ auth()->user()->name }}»*.
 4. **Pantalla de Historial de Actividad ([`planes/historial.blade.php`](../resources/views/planes/historial.blade.php)):**
    - **Tarjetas de Actividad (`ActivityCard`):** Responden a las **4 dimensiones autónomas** del evento (*qué ocurrió, cuándo, cuál fue el resultado, qué elemento involucró*).
-   - **Filtros Temáticos (Ley de Hick):** Acotados a $n=4$ chips (`Todos`, `Estados`, `Creaciones`, `Participación`) con área táctil $\ge 44$px (Ley de Fitts).
+   - **Filtros Temáticos (Ley de Hick):** Acotados a $n = 4$ chips (`Todos`, `Estados`, `Creaciones`, `Participación`) con área táctil ≥ 44 px (Ley de Fitts).
 5. **Nueva Pantalla de Sala Colaborativa ([`planes/detalle.blade.php`](../resources/views/planes/detalle.blade.php)):**
    - **Cabecera (`_cabecera.blade.php`):** Título, estado y fecha límite.
-   - **Panel de Participantes (`_participantes.blade.php`):** Lista de miembros con roles (`Organizador` vs `Participante`) y botón accesible "Invitar participante" ($\ge 44$px de target táctil, Ley de Fitts).
+   - **Panel de Participantes (`_participantes.blade.php`):** Lista de miembros con roles (`Organizador` vs `Participante`) y botón accesible "Invitar participante" (≥ 44 px de target táctil, Ley de Fitts).
    - **Sala de Votación (`_sala_votacion.blade.php`):** Pestañas semánticas para separar "Fechas" y "Lugares" (Ley de Hick, $n \le 4$), tarjetas de opción autónomas con recuento de votos y separación antagónica de 12px (`gap-3`) entre botones de votar y eliminar opción.
 6. **Salida de Emergencia (Nielsen H3):** Botón visible «Abandonar plan» con diálogo de confirmación para participantes invitados.
 

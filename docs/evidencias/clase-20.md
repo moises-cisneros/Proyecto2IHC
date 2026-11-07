@@ -79,10 +79,10 @@ Siguiendo las tres preguntas directrices de la Clase 20:
    Se reemplazaron títulos genéricos o ambiguos (como «Gestionar» o «Todos») por etiquetas explícitas que anticipan el contenido: **«Mis planes creados»** y **«Planes donde participo»**, evitando dudas de navegación.
 3. **¿Dónde lo espera?**  
    Se distinguió formalmente la navegación estructural de secciones (pestañas superiores fijas) de los filtros analíticos dentro de la lista (formulario de búsqueda por nombre y estado). El formulario además retiene el parámetro `?seccion=` para preservar el contexto al filtrar o limpiar.
-4. **Ley de Hick ($T = b \log_2(n+1)$):**  
+4. **Ley de Hick:** $T = b \log_{2}(n + 1)$ —  
    Al segmentar las opciones en bloques cronológicos cerrados (`Hoy`, `Próximos`, `Vencidos`), el tiempo de decisión se reduce drásticamente porque el usuario no busca en un universo indiferenciado, sino que focaliza su atención en el bloque urgente.
 5. **Ley de Fitts:**  
-   Pestañas con touch targets amplios ($\ge 44\times 44\text{px}$), contraste visual accesible para el estado activo (`role="tab"`, `aria-selected`) y separación clara de acciones.
+   Pestañas con touch targets amplios (≥ 44 × 44 px), contraste visual accesible para el estado activo (`role="tab"`, `aria-selected`) y separación clara de acciones.
 6. **Nielsen H1 (Visibilidad del estado) y H5 (Prevención de errores):**  
    Cada bloque cuenta con un badge numérico visible con el conteo exacto de planes. En caso de que un bloque temporal esté vacío, se despliega un mensaje orientador para no generar incertidumbre sobre si hubo un fallo de carga.
 
