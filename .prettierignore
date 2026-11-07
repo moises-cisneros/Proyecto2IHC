@@ -1,0 +1,22 @@
+# Excluir explícitamente archivos markdown
+*.md
+docs/**/*.md
+openspec/**/*.md
+
+# Dependencias y artefactos de compilación
+node_modules/
+vendor/
+public/build/
+storage/
+bootstrap/cache/
+.phpunit.cache/
+
+# Carpetas de agentes y metadatos
+.git/
+.agent/
+.agents/
+.claude/
+.cursor/
+.opencode/
+.codegraph/
+.gemini/

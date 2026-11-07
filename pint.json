@@ -1,0 +1,14 @@
+{
+    "preset": "laravel",
+    "exclude": [
+        "node_modules",
+        "vendor",
+        "storage",
+        "bootstrap/cache",
+        ".agent",
+        ".agents",
+        ".claude",
+        ".cursor",
+        ".opencode"
+    ]
+}

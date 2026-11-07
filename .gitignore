@@ -33,6 +33,9 @@ Thumbs.db
 /.opencode/
 /.pi/
 
+# Documentación interna de planificación y notas
+/docs/internal/
+
 # Playwright
 node_modules/
 /test-results/
