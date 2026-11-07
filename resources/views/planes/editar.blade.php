@@ -26,11 +26,12 @@
 
         <div class="campo">
             <label>Organizador</label>
-            <div class="inline-flex items-center gap-2 px-3 py-2 bg-stone-100 border border-stone-200 rounded-lg text-sm text-stone-700">
-                <svg class="w-4 h-4 text-stone-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            <div class="campo-estatico" title="Organizador del plan">
+                <svg class="icono-organizador" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
                 </svg>
-                <span class="font-medium">{{ $plan->organizador }}</span>
+                <span><strong>{{ $plan->organizador }}</strong></span>
             </div>
         </div>
 

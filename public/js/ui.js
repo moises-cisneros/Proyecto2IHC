@@ -51,8 +51,8 @@
                 return;
             }
 
-            const elTitulo   = document.getElementById('dialog-confirm-titulo');
-            const elMensaje  = document.getElementById('dialog-confirm-mensaje');
+            const elTitulo = document.getElementById('dialog-confirm-titulo');
+            const elMensaje = document.getElementById('dialog-confirm-mensaje');
             const btnAceptar = document.getElementById('dialog-confirm-aceptar');
             const btnCancelar = document.getElementById('dialog-confirm-cancelar');
 
@@ -101,12 +101,8 @@
 
             function onBackdropClick(e) {
                 const rect = dialog.getBoundingClientRect();
-                const clicFuera = (
-                    e.clientX < rect.left ||
-                    e.clientX > rect.right ||
-                    e.clientY < rect.top ||
-                    e.clientY > rect.bottom
-                );
+                const clicFuera =
+                    e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom;
                 if (clicFuera) {
                     onCancelar();
                 }
@@ -150,9 +146,10 @@
         toast.className = `toast-alerta toast-${estilo} pointer-events-auto flex items-center justify-between gap-3 p-4 rounded-xl shadow-lg border transition-all duration-300 ease-out`;
         toast.setAttribute('role', estilo === 'error' ? 'alert' : 'status');
 
-        const iconoSvg = estilo === 'error'
-            ? '<svg class="toast-icono w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
-            : '<svg class="toast-icono w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
+        const iconoSvg =
+            estilo === 'error'
+                ? '<svg class="toast-icono w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>'
+                : '<svg class="toast-icono w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>';
 
         toast.innerHTML = `
             <div class="toast-contenido flex items-center gap-3">
@@ -204,11 +201,8 @@
         const form = trigger.closest('form');
         const metodo = (form?.querySelector('input[name="_method"]')?.value || form?.method || '').toUpperCase();
 
-        const esDestructivo = (
-            trigger.dataset.type === 'danger' ||
-            trigger.classList.contains('boton-rojo') ||
-            metodo === 'DELETE'
-        );
+        const esDestructivo =
+            trigger.dataset.type === 'danger' || trigger.classList.contains('boton-rojo') || metodo === 'DELETE';
 
         const confirmado = await mostrarConfirmacion({
             titulo: trigger.dataset.title || 'Confirmar acción',

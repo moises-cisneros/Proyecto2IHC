@@ -11,7 +11,7 @@
 
 body {
     margin: 0;
-    font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+    font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
     font-size: 15px;
     line-height: 1.5;
     color: #1c1c1a;
@@ -107,7 +107,6 @@ body {
     background-color: rgb(150, 10, 14);
 }
 
-
 /* Botones desactivados (plan confirmado no se puede eliminar, cancelado no se puede reconfirmar) */
 .boton:disabled {
     opacity: 0.4;
@@ -123,7 +122,7 @@ body {
 }
 
 .campo input,
-.campo input[type="date"] {
+.campo input[type='date'] {
     padding: 9px 12px;
     font: inherit;
     border: 1px solid #e3e3df;
@@ -178,7 +177,9 @@ body {
     border: 1px solid transparent;
     opacity: 1;
     transform: translateY(0);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition:
+        opacity 0.3s ease,
+        transform 0.3s ease;
     animation: toast-entrada 0.3s ease-out;
 }
 
@@ -239,7 +240,9 @@ body {
     justify-content: center;
     border-radius: 8px;
     opacity: 0.7;
-    transition: opacity 0.2s, background-color 0.2s;
+    transition:
+        opacity 0.2s,
+        background-color 0.2s;
     padding: 0;
 }
 
@@ -271,7 +274,7 @@ body {
     margin-bottom: 12px;
 }
 
-.filtros input[type="text"],
+.filtros input[type='text'],
 .filtros select {
     padding: 8px 12px;
     font: inherit;
@@ -280,7 +283,7 @@ body {
     background: #ffffff;
 }
 
-.filtros input[type="text"] {
+.filtros input[type='text'] {
     flex: 1;
     min-width: 160px;
 }
@@ -342,7 +345,9 @@ body {
     color: #1c1c1a;
     font-weight: 600;
     text-decoration: none;
-    transition: color 0.15s ease, text-decoration 0.15s ease;
+    transition:
+        color 0.15s ease,
+        text-decoration 0.15s ease;
 }
 
 .enlace-plan:hover {
