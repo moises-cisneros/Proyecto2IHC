@@ -42,23 +42,29 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 │   │   ├── Controllers/
 │   │   │   ├── AutentificacionController.php   # Registro, login, logout, recuperación
 │   │   │   ├── PlanesController.php           # CRUD de planes y transiciones de estado
+│   │   │   ├── ColaboracionController.php     # Sala colaborativa, invitaciones y propuestas
+│   │   │   ├── GastosController.php           # Gastos, división equitativa/personalizada y liquidación de pagos
 │   │   │   ├── HistorialController.php        # Línea de tiempo y registro de eventos
-│   │   │   ├── InvitacionesController.php     # Gestión de invitaciones y tokens
-│   │   │   ├── OpcionesController.php         # Propuestas de fechas y lugares
-│   │   │   ├── VotosController.php            # Emisión y retiro de votos
 │   │   │   └── Controller.php                 # Base controller
 │   │   └── Requests/                          # Form Requests para validación desacoplada
 │   │       ├── GuardarPlanRequest.php         # Validación de creación/edición de plan
-│   │       └── ProponerOpcionRequest.php      # Validación de opciones propuestas
+│   │       ├── ProponerOpcionRequest.php      # Validación de opciones propuestas
+│   │       ├── RegistrarGastoRequest.php      # Validación de gastos y coherencia de división
+│   │       └── RegistrarPagoRequest.php       # Validación de deudor, acreedor y monto
 │   ├── Models/
 │   │   ├── User.php                          # Modelo de usuario autenticable
 │   │   ├── Plan.php                          # Modelo central de plan y relaciones
 │   │   ├── PlanActivity.php                  # Modelo de eventos y auditoría de cambios
 │   │   ├── Invitacion.php                    # Membresías y estado de invitados
 │   │   ├── Opcion.php                        # Fechas o lugares propuestos
-│   │   └── Voto.php                          # Votos relacionales únicos
+│   │   ├── Voto.php                          # Votos relacionales únicos
+│   │   ├── Gasto.php                         # Registro de gastos por plan y pagador
+│   │   ├── GastoDivision.php                 # Asignación individual de cuota por participante
+│   │   └── Pago.php                          # Liquidación y transferencias entre deudor y acreedor
 │   ├── Policies/
-│   │   └── PlanPolicy.php                    # Autorización: Creador vs Participante vs Invitado
+│   │   ├── PlanPolicy.php                    # Autorización: Creador vs Participante vs Invitado
+│   │   ├── GastoPolicy.php                   # Autorización: Miembros de plan en gastos
+│   │   └── PagoPolicy.php                    # Autorización: Deudor vs Receptor en pagos
 │   └── Providers/                            # Service Providers (AppServiceProvider)
 ├── bootstrap/                                # Inicialización del framework (app.php)
 ├── config/                                   # Configuraciones de Laravel (database, auth, etc.)
@@ -75,9 +81,9 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 │   ├── js/                                   # Entry points de JavaScript
 │   ├── views/                                # Plantillas Blade modulares
 │   │   ├── acceso/                           # Vistas de autenticación (ingresar, registro, etc.)
-│   │   ├── components/                       # Componentes reutilizables (<dialog> modal nativo, toast-alerta flotante)
+│   │   ├── components/                       # Componentes reutilizables (<dialog> modal nativo, toast-alerta flotante, <x-icono> SVG accesible)
 │   │   ├── layouts/                          # Layouts base (app, acceso, parciales de nav/mensajes)
-│   │   └── planes/                           # Vistas de gestión, auditoría y sala (listar, historial, detalle)
+│   │   └── planes/                           # Vistas de gestión, auditoría y sala (listar, historial, detalle, parciales de sala y gastos)
 │   └── DESIGN.md                             # Guía oficial del sistema de diseño y tokens
 ├── routes/
 │   ├── web.php                               # Definición de rutas web y middleware auth
@@ -115,6 +121,11 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
     - Los **Participantes aceptados** pueden colaborar activamente (proponer opciones, votar y abandonar el plan según H3).
     - Los **Invitados pendientes** tienen acceso de solo lectura hasta aceptar o rechazar su invitación.
     - Los **Recursos en estado terminal o cancelado** bloquean de forma terminante cualquier mutación posterior.
+  - En el dominio de gastos y liquidación (`GastoPolicy.php` y `PagoPolicy.php`):
+    - Solo los **Participantes aceptados y el Creador** pueden registrar gastos y consultar saldos del plan.
+    - Solo el **Deudor** puede registrar un pago a favor de su acreedor.
+    - Solo el **Receptor (acreedor)** puede confirmar o rechazar un pago pendiente. El deudor tiene estrictamente bloqueada la auto-confirmación (`403 Forbidden`).
+    - Pagos en estado `confirmado` o `rechazado` son terminales e inmutables (prevención de doble aplicación / idempotencia).
 - **Aislamiento Multiusuario y Prevención de Accesos Indebidos (Anti-IDOR):**
   - Todo endpoint o acción debe garantizar de forma sistemática:
     1. **Autenticación obligatoria:** Middleware `auth` en `routes/web.php` intercepta peticiones anónimas (redirección `302` a login).
@@ -127,23 +138,29 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 
 - Mapea las tablas relacionales mediante **Eloquent ORM**.
 - Define relaciones formales:
-  - `Plan`: `organizador()`, `actividades()`, `invitaciones()`, `participantes()`, `opciones()`.
-  - `User`: `planes()`, `actividades()`, `votos()`.
+  - `Plan`: `user()` (organizador), `actividades()`, `invitaciones()`, `participantes()`, `opciones()`, `gastos()`, `pagos()`.
+  - `User`: `planes()`, `actividades()`, `votos()`, `gastosPagados()`, `gastosAsignados()`, `pagosRealizados()`, `pagosRecibidos()`.
   - `PlanActivity`: `plan()`, `usuario()`.
   - `Invitacion`: `plan()`, `usuario()`.
   - `Opcion`: `plan()`, `proponente()`, `votos()`.
   - `Voto`: `opcion()`, `usuario()`.
+  - `Gasto`: `plan()`, `pagador()`, `divisiones()`.
+  - `GastoDivision`: `gasto()`, `participante()`.
+  - `Pago`: `plan()`, `deudor()`, `receptor()`.
+- Servicio de Dominio / Cálculo de Saldos (`Plan::calcularSaldosNetos()`):
+  - Procesa la sumatoria de gastos pagados menos cuotas asignadas, cruzando pagos confirmados para producir la matriz neta de deudas (`quién debe a quién y cuánto`).
 - Garantiza integridad mediante constraints únicos (`unique(['opcion_id', 'user_id'])`).
 
 ### E. Capa de Presentación (`resources/views/`)
 
 - Plantillas Blade modulares desacopladas en componentes y vistas de dominio:
   - **`layouts/app.blade.php`**: Shell maestro libre de CDNs externos.
+  - **`components/icono.blade.php`**: Componente de íconos SVG vectoriales nativos (Heroicons/Lucide) accesibles (`aria-hidden="true"`, `.sr-only`) con adaptación cromática reactiva vía `stroke="currentColor"`.
   - **`components/dialog-confirm.blade.php`**: Diálogo modal nativo de HTML5 (`<dialog>`) para confirmaciones ergonómicas de Fitts y Hick.
   - **`components/toast-alerta.blade.php`**: Notificación flotante nativa (`fixed top-5 right-5 z-50`) con auto-cierre a los 3 segundos para mensajes de sesión sin alterar el layout.
-  - **`planes/listar.blade.php`**: Orquestador del listado que incluye parciales (`_filtros.blade.php`, `_tabla.blade.php`, `_modal_crear.blade.php`).
-  - **`planes/historial.blade.php`**: Vista de auditoría cronológica con tarjetas autónomas de 4 dimensiones y filtros temáticos de Hick ($n=4$).
-  - **`planes/detalle.blade.php`**: Sala colaborativa que incluye parciales (`_cabecera.blade.php`, `_participantes.blade.php`, `_sala_votacion.blade.php`).
+  - **`planes/listar.blade.php`**: Orquestador del listado que incluye parciales (`_filtros.blade.php`, `_tabla_seccion.blade.php`, `_modal_crear.blade.php`).
+  - **`planes/historial.blade.php`**: Vista de auditoría cronológica con tarjetas autónomas de 4 dimensiones y filtros temáticos de Hick ($n = 4$).
+  - **`planes/detalle.blade.php`**: Sala colaborativa que incluye parciales (`_cabecera.blade.php`, `_participantes.blade.php`, `_sala_votacion.blade.php`, `_gastos_liquidacion.blade.php`).
 - **Prohibido:** Ejecutar consultas directas a la base de datos dentro de los archivos Blade.
 
 ---
@@ -156,10 +173,20 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 - Transición válida: `pendiente` puede pasar a `confirmado` o `cancelado`. Un plan `cancelado` no puede volver a `confirmado`.
 - Para eliminar un plan, primero debe cancelarse (no se eliminan planes confirmados activos).
 
-### Flujo Colaborativo
+### Entidad `Pago` y Proceso de Gastos y Liquidación
+
+- **Estados posibles:** `pendiente` ➔ `confirmado` | `rechazado`.
+- **Reglas y Consecuencias de Estado:**
+  1. Al registrar un pago el deudor, nace en estado `pendiente`. **Consecuencia:** NO reduce la deuda ni altera saldos.
+  2. El receptor (acreedor) revisa el pago:
+     - **Si confirma:** El estado pasa a `confirmado`. **Consecuencia:** Reduce la deuda neta y actualiza saldos de ambos participantes. La confirmación es inmutable y no puede repetirse (idempotencia).
+     - **Si rechaza:** Requiere motivo obligatorio de rechazo. El estado pasa a `rechazado`. **Consecuencia:** La deuda se mantiene exigible en su totalidad.
+
+### Flujo Colaborativo y de Liquidación
 
 1. El organizador crea el plan (con organizador asignado automáticamente).
 2. El organizador invita miembros mediante email o token.
 3. Los participantes aceptados proponen opciones de fechas o lugares.
 4. Los participantes votan (un voto por opción por usuario garantizado por base de datos).
 5. Los participantes cuentan con salida de emergencia (H3) para abandonar el plan sin romper la sala.
+6. En la etapa de liquidación, los miembros registran gastos (división equitativa o personalizada) y emiten pagos que son auditados y aprobados por los receptores.

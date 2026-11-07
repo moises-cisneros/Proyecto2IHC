@@ -136,25 +136,76 @@ docker compose exec planazo_app php artisan db:seed
 
 ---
 
-## 🗺️ App Map — Mapa de Flujos de la Aplicación
+## 🗺️ App Map — Mapa de Flujos y Arquitectura de la Aplicación
 
 ```mermaid
 flowchart TD
-    F1["1. Acceso y Control de Sesión<br/>(/ingresar, /registro, /recuperar)"] --> F2["2. Creación y Edición de Plan<br/>(/planes, /planes/{id}/editar)"]
-    F2 --> F4["4. Búsqueda y Filtros<br/>(/mis-planes?buscar=&estado=&fecha=)"]
-    F2 --> F3["3. Máquina de Estados<br/>(Pendiente -> Confirmado -> Cancelado)"]
-    F2 --> F6["6. Colaboración Grupal<br/>(Invitar miembros, proponer fechas/lugares)"]
-    F6 --> F7["7. Varios Votos & Cierre<br/>(Aprobación múltiple y congelamiento)"]
-    F2 & F3 & F6 --> F5["5. Historial de Auditoría<br/>(/historial con selector de 4 chips)"]
+    subgraph G_Acceso["1. Acceso y Control de Sesión"]
+        Login["/ingresar | /registro | /recuperar<br/>Rate-limiting y cuentas de prueba"]
+    end
+
+    subgraph G_Dashboard["2. Dashboard de Gestión (/mis-planes)"]
+        Dash["Pestañas por Rol (Creados vs Participo)<br/>Bloques LATCH + Filtros Hick"]
+        ModalCrear["Modal Crear Plan<br/>(Organizador automático de sesión)"]
+        Dash -->|"Organizador crea plan"| ModalCrear
+    end
+
+    subgraph G_Sala["3. Sala Colaborativa (/planes/{id}) — Máquina de Estados"]
+        direction TB
+        EstadoPendiente{"Estado: PENDIENTE"}
+
+        subgraph S_Participante["Perspectiva: Invitado / Participante"]
+            AceptarInv["Aceptar Invitación"] --> ProponerVotar["Proponer Fechas/Lugares<br/>Votación Aprobación (Toggle Reactivo)"]
+            ProponerVotar --> Abandono["Salida H3: Abandonar Plan"]
+        end
+
+        subgraph S_Organizador["Perspectiva: Organizador"]
+            Invitar["Invitar Miembros por Correo"]
+            Cierre{"¿Cierre de Votación / Fecha Límite?"}
+            Empate{"¿Existe Empate en 1er Lugar?"}
+            DesempateModal["Modal Desempate Obligatorio<br/>(Motivo justificado >= 5 caracteres)"]
+            ConfirmarAccion["Confirmar Plan Oficial<br/>(Congela sala y bloquea votos)"]
+
+            Invitar --> Cierre
+            Cierre --> Empate
+            Empate -->|"Sí"| DesempateModal
+            DesempateModal --> ConfirmarAccion
+            Empate -->|"No (Ganador directo)"| ConfirmarAccion
+        end
+
+        EstadoPendiente --> S_Participante
+        EstadoPendiente --> S_Organizador
+    end
+
+    subgraph G_Post["4. Post-Evento & Liquidación (/planes/{id})"]
+        EstadoConfirmado["Estado: CONFIRMADO (Sala Congelada)"]
+        Gastos["Módulo de Gastos y Saldos Netos<br/>(División 1/N o personalizada)"]
+        Pagos["Liquidación de Deudas<br/>(Pendiente -> Confirmado/Rechazado)"]
+        EstadoConfirmado --> Gastos --> Pagos
+    end
+
+    subgraph G_Auditoria["5. Trazabilidad Transversal (/historial)"]
+        Bitacora["Bitácora Inmutable de 4 Dimensiones<br/>(Qué, Quién, Cuándo, Resultado) + Chips"]
+    end
+
+    Login --> Dash
+    ModalCrear -->|"Redirección tras creación"| EstadoPendiente
+    Dash -->|"Acceso a detalle del plan"| EstadoPendiente
+    ConfirmarAccion --> EstadoConfirmado
+
+    ModalCrear & ProponerVotar & DesempateModal & ConfirmarAccion & Pagos -.-> Bitacora
 ```
 
-1. **Flujo 1 (Acceso y Autenticación):** Acceso seguro con cuentas sembradas, registro y recuperación de contraseña.
-2. **Flujo 2 (Creación y Edición):** Registro de planes con organizador automático desde sesión y fecha límite.
-3. **Flujo 3 (Máquina de Estados):** Transición controlada: `pendiente` $\to$ `confirmado` $\to$ `cancelado` (estado terminal inmutable).
-4. **Flujo 4 (Búsqueda y Filtros):** Filtrado dinámico por texto, estado y fechas (próximos 7 días o vencidos).
-5. **Flujo 5 (Historial de Auditoría):** Bitácora cronológica con las 4 dimensiones del evento (Qué, Quién, Cuándo, Resultado).
-6. **Flujo 6 (Colaboración Grupal):** Invitación de amigos por correo, aceptación y propuestas de fechas o lugares.
-7. **Flujo 7 (Varios Votos y Cierre):** Votación por aprobación múltiple, alternancia reactiva de votos y congelamiento ante confirmación o vencimiento.
+### Detalle de los Flujos de la Aplicación
+
+1. **Flujo 1 (Acceso y Control de Sesión):** Puerta de entrada (`/ingresar`, `/registro`, `/recuperar`). Rate-limiting (`throttle:5,1`), protección contra enumeración de credenciales, autenticación con cuentas de prueba sembradas y regeneración de token CSRF al cerrar sesión.
+2. **Flujo 2 (Dashboard y Organización de Planes - `/mis-planes`):** Centro de navegación posautenticación. Aplica Arquitectura de la Información con dos pestañas semánticas por propósito/rol (*«Mis planes creados»* vs *«Planes donde participo»*), clasificación cronológica LATCH (*Hoy*, *Próximos*, *Vencidos*), y filtros rápidos acotados ($\le 4$ opciones) conforme a la Ley de Hick.
+3. **Flujo 3 (Creación y Ciclo de Vida del Plan):** Diálogo modal nativo `<dialog>` de creación ágil con captura automática del organizador desde la sesión (`auth()->user()->name`), validación preventiva de fechas pasadas (`after_or_equal:today`) y transición segura de la máquina de estados (`pendiente` &rarr; `confirmado` &rarr; `cancelado` inmutable).
+4. **Flujo 4 (Sala Colaborativa, Deliberación y Cierre - `/planes/{plan}`):** Espacio interactivo unificado que bifurca la experiencia según el rol gobernado por políticas (`PlanPolicy`):
+   - **Carril Participante:** Aceptación de invitación, propuesta de opciones (fechas/lugares), votación reactiva por aprobación (Approval Voting) con alternancia de votos y salida de emergencia voluntaria (Nielsen H3).
+   - **Carril Organizador:** Envío de invitaciones por correo, supervisión de quórum, resolución obligatoria de empates con motivo justificado ($\ge 5$ caracteres) y confirmación oficial que congela la sala (`403` a votos y propuestas posteriores).
+5. **Flujo 5 (Gastos, Liquidación y Saldos Netos):** Proceso post-evento activado exclusivamente en planes confirmados. Registro de gastos grupales (partes iguales $Monto/N$ o cuotas personalizadas), cálculo automatizado de la matriz de saldos netos cruzados y ciclo de liquidación de deudas con estados controlados (`pendiente` emitido por el deudor &rarr; `confirmado` o `rechazado` con motivo obligatorio por el acreedor).
+6. **Servicio Transversal (Auditoría y Trazabilidad - `/historial`):** Bitácora inmutable accesible desde la navegación global. Registra en 4 dimensiones (Qué, Quién, Cuándo, Resultado) todas las transiciones de estado, propuestas, votos, desempates y liquidaciones, con selector temático de 4 chips.
 
 ---
 
@@ -162,9 +213,9 @@ flowchart TD
 
 La aplicación sigue una disciplina estricta de usabilidad, ergonomía y accesibilidad:
 
-- **Ley de Fitts ($T = a + b \log_2(2D/W)$):** Todo botón o control interactivo (votar, proponer, invitar, confirmar) garantiza un área táctil mínima de **44×44px** (`min-height: 44px`). Los controles antagónicos mantienen una separación preventiva de **12px (`gap-3`)**.
-- **Ley de Hick ($T = b \log_2(n + 1)$):** Clasificación en $n=2$ pestañas en la sala de votación (*Fechas propuestas* vs *Lugares propuestos*) y $n=4$ chips temáticos en el historial (*Todos, Estados, Creaciones, Participación*).
-- **Carga Cognitiva ($7 \pm 2$ chunks):** Tarjetas sintéticas con los 4 metadatos esenciales para evitar sobrecarga mental.
+- **Ley de Fitts:** $T = a + b \log_{2}(2D/W)$ — Todo botón o control interactivo (votar, proponer, invitar, confirmar) garantiza un área táctil mínima de **44×44px** (`min-height: 44px`). Los controles antagónicos mantienen una separación preventiva de **12px (`gap-3`)**.
+- **Ley de Hick:** $T = b \log_{2}(n + 1)$ — Clasificación en $n = 2$ pestañas en la sala de votación (*Fechas propuestas* vs *Lugares propuestos*) y $n = 4$ chips temáticos en el historial (*Todos, Estados, Creaciones, Participación*).
+- **Carga Cognitiva (7 ± 2 chunks):** Tarjetas sintéticas con los 4 metadatos esenciales para evitar sobrecarga mental.
 - **10 Heurísticas de Nielsen:**
   - *H1 (Visibilidad del estado):* Contadores de votos en vivo y badges semánticos con texto e ícono.
   - *H3 (Control y libertad):* Diálogo modal nativo `<dialog>` accesible para abandono de planes o retiro de votos.

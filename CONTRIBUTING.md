@@ -1,345 +1,182 @@
-# Guía de Contribución - Planazo
+# Guía de Contribución — Planazo
 
-¡Gracias por tu interés en contribuir a **Planazo**! Este proyecto sigue un flujo de trabajo estructurado y profesional, integrando desarrollo asistido y guiado por especificaciones con **Gentle-AI** y **OpenSpec**.
+¡Gracias por tu interés en contribuir a **Planazo**! Este repositorio sigue un flujo de trabajo profesional, modular y reproducible, integrando desarrollo asistido con **Gentle-AI (ODD)** y **OpenSpec**.
 
-Para mantener la consistencia técnica y la calidad del código, todos los colaboradores y agentes automatizados deben seguir estas pautas.
+Para garantizar una experiencia fluida según tu objetivo, esta guía está segmentada en dos perfiles de usuario:
 
----
-
-## 1. Configuración del Entorno de Desarrollo (Setup)
-
-Para empezar a contribuir, necesitás tener el proyecto corriendo localmente. Podés elegir entre el flujo estándar con **Docker** (recomendado) o la **ejecución manual en tu host**.
-
-### Requisitos Previos
-
-* **Con Docker (recomendado):** [Docker Desktop](https://www.docker.com/products/docker-desktop) y Git.
-* **Sin Docker (manual):** PHP 8.2+, Composer 2.x, MySQL 8.0, Node.js 18+ y Git.
+1. **[Perfil 1: Revisor / Evaluador / Tester](#-perfil-1-revisor--evaluador--tester-probar-y-verificar):** Quien desea clonar, levantar el entorno y verificar la aplicación y sus pruebas sin configurar dependencias complejas.
+2. **[Perfil 2: Desarrollador / Colaborador Activo](#-perfil-2-desarrollador--colaborador-activo-construir-e-implementar):** Quien va a implementar nuevas funcionalidades, refactorizar código, resolver sub-issues y enviar Pull Requests.
 
 ---
 
-### Paso 1: Clonar el Repositorio
+## 🚀 Perfil 1: Revisor / Evaluador / Tester (Probar y Verificar)
+
+Si tu rol es evaluar una entrega académica, probar una funcionalidad o auditar las pruebas automatizadas, no necesitas instalar PHP localmente ni configurar herramientas de IA.
+
+### 1. Clonar el Repositorio
 
 ```bash
 git clone https://github.com/moises-cisneros/Proyecto2IHC.git
 cd Proyecto2IHC
 ```
 
----
-
-### Paso 2: Levantar el Entorno
-
-#### Opción A: Con Docker (Estándar recomendado)
-
-El comando estándar para levantar todo el entorno en cualquier terminal y sistema operativo es:
+### 2. Levantar el Entorno con Docker (Un solo comando)
 
 ```bash
 docker compose up --build
 ```
 
-*(Antes de iniciar por primera vez, podés verificar que las herramientas necesarias estén instaladas ejecutando `node scripts/setup.mjs`, `pnpm run setup` o en PowerShell `powershell ./scripts/setup.ps1`).*
+*(El contenedor aprovisiona automáticamente la base de datos MySQL, corre las migraciones, siembra los datos de prueba y levanta Laravel y Vite).*
 
-Esto inicia automáticamente los servicios:
-
-* **App web:** `http://localhost:9300`
+* **Aplicación Web:** [http://localhost:9300](http://localhost:9300)
 * **Vite HMR:** `http://localhost:9373`
-* **MySQL 8.0:** `127.0.0.1:9306`
+* **MySQL 8.0:** `127.0.0.1:9306` (Base de datos: `planazo`, Usuario: `planazo_user`, Clave: `planazo_pass`)
 
-Para detener los contenedores:
+### 3. Credenciales de Prueba Precargadas
 
-```bash
-docker compose down
-```
+Podés iniciar sesión inmediatamente con cualquiera de las cuentas precargadas en los seeders:
 
-*(Para detener y limpiar volúmenes de datos si necesitás reiniciar desde cero: `docker compose down -v`).*
+| Nombre | Correo Electrónico | Contraseña | Rol / Propósito |
+| :--- | :--- | :--- | :--- |
+| **Lucas (Organizador)** | `lucas@example.com` | `password` | Creador de planes, organizador y moderador de sala. |
+| **Ana (Participante)** | `ana@example.com` | `password` | Participante con votos activos y propuestas. |
+| **Carlos (Participante)** | `carlos@example.com` | `password` | Participante para validación de quórum y liquidación de gastos. |
+| **Usuario General** | `test@example.com` | `password` | Usuario base de pruebas generales. |
+
+### 4. Ejecución de Pruebas Automatizadas
+
+* **Pruebas Backend (PHPUnit):**
+
+  ```bash
+  docker compose exec planazo_app php artisan test
+  ```
+
+* **Pruebas E2E en Navegador Visible (Playwright):**
+  *(Requiere Node.js en el host para abrir la ventana del navegador en tu pantalla):*
+
+  ```bash
+  pnpm install
+  pnpm run test:e2e:headed
+  ```
+
+* **Detener el entorno:**
+
+  ```bash
+  docker compose down
+  ```
 
 ---
 
-#### Opción B: Modo Manual (Host Local)
+## 🛠️ Perfil 2: Desarrollador / Colaborador Activo (Construir e Implementar)
 
-1. Instalar dependencias:
+Si vas a desarrollar nuevas características, resolver sub-issues o refactorizar código, sigue estas pautas obligatorias de ingeniería y control de calidad.
+
+### 1. Configuración del Host (Modo Manual Opcional)
+
+Si prefieres ejecutar sin Docker en tu entorno local (requiere PHP 8.2+, Composer 2.x, MySQL 8.0 y Node.js 18+):
 
 ```bash
 composer install
 pnpm install
-```
-
-1. Configurar el archivo de entorno y generar la clave:
-
-```bash
 cp .env.example .env
 php artisan key:generate
-```
-
-1. Configurar tus credenciales de MySQL en `.env` y ejecutar migraciones:
-
-```bash
-php artisan migrate
-```
-
-1. Levantar los servidores de desarrollo (en terminales separadas):
-
-```bash
+php artisan migrate --seed
+# Terminal 1:
 php artisan serve
-```
-
-```bash
+# Terminal 2:
 pnpm dev
 ```
 
 ---
 
-### Paso 3: Verificar que Todo Funcione
+### 2. Metodología de Desarrollo: ODD y OpenSpec
 
-Ejecutá la suite de pruebas para confirmar que tu entorno está listo para recibir cambios:
+* **Flujo ODD (Organic-Driven Development) con Gentle-AI v4+ (Por defecto):**
+  * Desarrollo ágil guiado por TDD estricto (*RED &rarr; GREEN &rarr; REFACTOR*).
+  * Las decisiones de arquitectura, lecciones y estado se sincronizan en memoria persistente (**Engram**) y seguimiento en `odd/tasks/`.
+* **Flujo Formal con OpenSpec (Comandos `/opsx`):**
+  * Para entregas académicas que exijan especificación previa versionada en `openspec/changes/<cambio>/`.
 
-Con Docker:
+### 3. Catálogo de Skills Canónicas (`.agents/skills/`)
+
+El repositorio incluye habilidades versionadas para que desarrolladores y agentes sigan protocolos uniformes:
+
+* **`information-architecture`:** Directivas de organización LATCH, chunking, rótulos y modelado de Task Flows vs App Maps.
+* **`interaction-decisions`:** Auditoría ergonómica basada en la Ley de Fitts, Ley de Hick y Carga Cognitiva (7 ± 2).
+* **`heuristic-evaluation`:** Protocolo para las 10 heurísticas de Nielsen (H1–H10) con escala de severidad 0-4.
+* **`e2e-testing`:** Pruebas Playwright orientadas a tareas humanas con localizadores semánticos (`getByRole`, `getByLabel`).
+* **`refactoring`:** Transformaciones Fowler seguras y preservación estricta de contratos.
+
+---
+
+### 4. Reglas Estrictas de Contribución y Seguridad
+
+#### A. Cero Atribución de IA
+
+Queda terminantemente prohibido mencionar o atribuir autoría a cualquier IA en commits, pull requests, issues, comentarios o código (`Co-Authored-By: ...`, "Generated by ...", etc.). La autoría pertenece al contribuidor humano.
+
+#### B. Destino Estricto de Pull Requests (Fork Independiente)
+
+Este proyecto es un fork independiente (`moises-cisneros/Proyecto2IHC`). **Nunca crees PRs o Issues hacia el repositorio original (upstream).**
+Con GitHub CLI (`gh`), especifica siempre `-R`:
 
 ```bash
-docker compose exec planazo_app php artisan test
+gh pr create -R moises-cisneros/Proyecto2IHC --base main --head <rama> --title "<titulo>" --body "<cuerpo>"
 ```
 
-En host local:
+#### C. Seguridad Obligatoria y Principio de Menor Privilegio
 
-```bash
-php artisan test
-```
+Toda nueva ruta, controlador o mutación debe auditar:
 
-*(Para ver credenciales de prueba preconfiguradas y puertos de red, consultá el [README.md](README.md)).*
+1. **Autenticación:** Middleware `auth` en rutas privadas (anónimos reciben redirección `302` a login).
+2. **Autorización:** Invocación de `Gate::authorize()` con Policies (`app/Policies/`). Intentos de usuarios sin permisos reciben `403 Forbidden`.
+3. **Tests Negativos Obligatorios:** Toda suite de backend debe incluir al menos un test con `assertStatus(302)` y uno con `assertStatus(403)`.
 
----
+#### D. Descomposición de Requisitos Docentes en Sub-issues
 
-## 2. Base de Datos, Migraciones y Seeders
+Los requisitos docentes no se implementan en un único bloque masivo:
 
-El backend utiliza **Laravel Eloquent ORM** conectado al servicio MySQL `planazo_mysql`.
-
-### Migraciones
-
-Al iniciar los contenedores en Docker, las migraciones se aplican solas. Si creás una nueva migración o necesitás correrlas manualmente:
-
-```bash
-docker compose exec planazo_app php artisan migrate
-```
-
-### Seeders de Datos
-
-Para poblar la base de datos con registros de prueba:
-
-```bash
-docker compose exec planazo_app php artisan db:seed
-```
-
----
-
-## 3. Arquitectura del Proyecto
-
-El repositorio está organizado como una aplicación web monolítica basada en **Laravel 12**:
-
-```text
-├── app/                  # Lógica de aplicación (Controllers, Requests, Policies, Models, Providers)
-├── bootstrap/            # Inicialización del framework (app.php)
-├── config/               # Archivos de configuración de Laravel
-├── database/             # Migraciones, factories y seeders
-├── docker/               # Scripts de arranque y aprovisionamiento Docker
-├── docs/                 # Documentación técnica, evidencias y entregas de clase
-├── openspec/             # Especificaciones, propuestas y cambios de OpenSpec
-├── public/               # Raíz pública del servidor web (assets, js/ui.js)
-├── resources/            # Vistas Blade modulares, componentes, Tailwind v4, DESIGN.md
-├── routes/               # Definición de rutas web y consola
-├── scripts/              # Scripts de verificación y automatización (setup, verify-subissue, evidences)
-├── tests/                # Pruebas automatizadas (Unit / Feature con PHPUnit)
-├── docker-compose.yml    # Orquestación de servicios (planazo_app, planazo_mysql, planazo_vite)
-├── Dockerfile            # Imagen base de ejecución PHP/Laravel
-├── AGENTS.md             # Instrucciones y restricciones para agentes de IA
-├── ARCHITECTURE.md       # Mapa y capas arquitectónicas del sistema
-├── CONTRIBUTING.md       # Esta guía
-└── README.md             # Documentación e inicio rápido
-```
-
-*(Consulta el [README.md](README.md) y los registros de referencia en [docs/](docs/) para conocer las credenciales y detalles).*
-
----
-
-## 4. Flujo de Trabajo Spec-Driven (Gentle-AI & OpenSpec)
-
-El desarrollo en Planazo sigue la metodología **Spec-Driven Development (SDD)**:
-
-1. **No codificar sin especificación:** Ninguna funcionalidad o cambio de arquitectura se escribe directamente sin antes definir su propuesta y tareas.
-2. **Ciclo de OpenSpec (con OpenSpec directo o con Gentle-AI):** ambos caminos son válidos y generan los mismos artefactos en `openspec/changes/<cambio>/`.
-   * **Explorar:** Clarificar requerimientos y analizar el estado actual (`/opsx-explore` o `/gentle-sdd-explore`).
-   * **Proponer:** Crear la propuesta formal con deltas de especificación, diseño y lista de tareas (`/opsx-propose`, o `/gentle-sdd-new` seguido de `/gentle-sdd-ff`).
-   * **Implementar:** Ejecutar las tareas paso a paso (`/opsx-apply` o `/gentle-sdd-apply`, y `/gentle-sdd-verify` para validar).
-   * **Sincronizar / Archivar:** Actualizar las especificaciones principales y archivar el cambio completado (`/opsx-sync` y `/opsx-archive`, o `/gentle-sdd-archive`).
-   * **Almacén de artefactos:** con Gentle-AI elige **OpenSpec** o **Ambos** (hybrid con Engram); solo Engram no deja archivos en el repo y no es válido. Tus preferencias personales (ritmo, estrategia de PR) no se commitean.
-   * **Validación común:** un cambio es válido si `openspec validate <cambio>` pasa, sin importar la herramienta usada.
-
-### Distribución de Skills y Configuración Multi-Agente
-
-* **Directorio compartido canónico (`.agents/skills/`):**
-  Es la fuente de la verdad para todas las habilidades del repositorio (como `heuristic-evaluation` e `interaction-decisions`). **Este directorio sí se versiona en Git** para que todo el equipo comparta los mismos protocolos y directivas.
-* **Carpetas de adaptadores locales (`.agent/`, `.claude/`, `.cursor/`, `.opencode/`, `.pi/`):**
-  Están deliberadamente ignoradas en `.gitignore`. Son proyecciones específicas generadas por las herramientas cliente para cada entorno local.
-* **Cómo sincronizar las skills en tu IDE/Agente:**
-  Si utilizas un editor asistido por IA (Cursor, OpenCode, Claude Code, etc.), solo necesitas ejecutar:
-
-  ```bash
-  npx @fission-ai/openspec init
-  ```
-
-  Esto proyectará las skills desde `.agents/skills/` a tu herramienta preferida sin ensuciar el control de versiones con archivos autogenerados.
-* **Colaboradores o evaluadores sin herramientas de IA:**
-  Las herramientas como OpenSpec, Gentle-AI, Engram o CodeGraph son **herramientas de asistencia de proceso**, no dependencias de runtime. El proyecto funciona y se evalúa de manera 100% estándar con Docker o PHP local, sin necesidad de instalar o conocer estas utilidades.
-* **Documentación (`docs/`):** Contiene el historial de tareas de clase y evidencias del proyecto recibido.
-
----
-
-## 5. Estándares de Código y Commits
-
-* **Conventional Commits:** Todos los mensajes de commit deben seguir el estándar:
-  * `feat: <descripción>` para nuevas funcionalidades.
-  * `fix: <descripción>` para corrección de bugs.
-  * `docs: <descripción>` para cambios en documentación.
-  * `refactor: <descripción>` para reestructuración de código sin cambio funcional.
-  * `test: <descripción>` para adición o actualización de pruebas.
-  * `chore: <descripción>` para tareas de mantenimiento o configuración.
-* **Sin atribución de IA (regla clave):** Ningún commit, pull request, issue, comentario ni documento puede mencionar, referenciar o atribuir contribución a una IA (por ejemplo `Co-Authored-By: Claude ...`, "Generated with ...", "con ayuda de ChatGPT", etc.). La autoría es siempre de la persona que contribuye.
-* **PHP & Buenas Prácticas:** Seguir PSR-12, controladores limpios y validaciones estrictas.
-* **Pruebas Automatizadas (PHPUnit y Playwright E2E):**
-  * **Backend (PHPUnit):**
-    * Toda nueva funcionalidad o regla de negocio (Sub-issues 1 y 2) debe incluir al menos 4 tests unitarios o de feature (incluyendo casos negativos 302 y 403).
-    * **Ubicación y Archivos:** `tests/Unit/<Entidad>Test.php` (lógica pura y modelos) y `tests/Feature/<Modulo>Test.php` (rutas HTTP, controladores y sesión).
-    * **Nomenclatura de Métodos:** `test_<accion>_<condicion>_<resultado_esperado>()` (ej: `test_crear_plan_con_fecha_pasada_retorna_error_de_validacion`).
-    * Ejecutar la suite completa:
-
-      ```bash
-      docker compose exec planazo_app php artisan test
-      ```
-
-    * Ejecutar un archivo puntual:
-
-      ```bash
-      docker compose exec planazo_app php artisan test tests/Feature/<NombreDelTest>.php
-      ```
-
-    * Filtrar por nombre de test:
-
-      ```bash
-      docker compose exec planazo_app php artisan test --filter <nombre_del_metodo>
-      ```
-
-  * **E2E (Playwright):**
-    * Toda prueba de interacción usuario-sistema reside en `e2e/` con extensión `.spec.ts` y debe construirse con localizadores semánticos (`getByRole`, `getByLabel`, `getByText`).
-    * **Nomenclatura de Archivos:**
-      * Flujos de dominio: `e2e/<modulo>-<escenario-o-flujo>.spec.ts` (ej: `e2e/planes-creacion-flujo-completo.spec.ts`).
-      * Asignaciones por tarea docente/feedback: `e2e/<prefijo-de-tarea>-<descripcion-kebab>.spec.ts` (ej: `e2e/tarea-<N>-<flujo>.spec.ts`).
-    * **Nomenclatura de Casos:** `test('Como <rol>, puedo <accion> para <beneficio>', async ({ page }) => { ... })`.
-    * Ejecutar suite completa (headless): `pnpm run test:e2e`
-    * Ejecutar suite completa visible: `pnpm run test:e2e:headed`
-    * Ejecutar una prueba puntual: `pnpm run test:e2e e2e/<archivo-a-probar>.spec.ts` (o con `test:e2e:headed`)
-    * Filtrar por nombre: `pnpm run test:e2e:headed -g "<patrón>"`
-    * Inspector interactivo: `pnpm run test:e2e:ui`
-    * Capturas de pantalla para evidencias docentes: `await page.screenshot({ path: 'docs/evidencias/<carpeta-tarea>/<secuencia>-<descripcion>.png' })`.
-* **Validación:** Antes de enviar un pull request o finalizar una tarea, verifica que las pruebas pasen sin errores.
-
----
-
-## 6. Gestión de Issues y Pull Requests
-
-Para mantener el orden del equipo sin burocracia innecesaria y alinearse con la metodología docente:
-
-### Requisitos Docentes y Descomposición en Sub-issues
-
-Cuando el docente asigne un issue con un requerimiento:
-
-1. **El issue padre NO se cierra:** Representa la solicitud oficial del docente y permanece abierto hasta su revisión y aprobación formal en clase.
-2. **Descomposición obligatoria (mínimo 3 sub-issues):** Todo requerimiento docente debe dividirse en **al menos 3 sub-issues pequeños y atómicos** para evitar tareas sobredimensionadas. La partición debe reflejar las capas de la arquitectura:
-   * **Sub-issue 1 (Regla / Backend / Persistencia):** Lógica de dominio, estados, validación y persistencia en base de datos.
-   * **Sub-issue 2 (Controlador / Lógica / Filtros):** Métodos de controlador, validación de parámetros, construcción de queries Eloquent y respuestas.
-   * **Sub-issue 3 (Interfaz / UX / Accesibilidad):** Vistas Blade, componentes UI, estilos Tailwind, accesibilidad y estados vacíos.
-3. **Relación commits ↔ sub-issues:** Cada commit debe estar directamente relacionado con su sub-issue (`Refs #<sub-issue>` o `#<sub-issue>` en el mensaje del commit).
-4. **Cierre progresivo:** Los sub-issues se cierran conforme se completan y mergean sus cambios (`Closes #<sub-issue>`).
-5. **Vinculación jerárquica nativa en GitHub:** Al crear cada sub-issue, además de mencionarlo en el cuerpo del issue padre, debe vincularse obligatoriamente al árbol nativo de sub-issues de GitHub (vía interfaz web o mediante GitHub CLI):
+1. El issue padre **nunca** se cierra con `Closes`; se referencia con `Refs #<padre>`.
+2. Se divide en **mínimo 3 sub-issues atómicos**:
+   * `backend` (migraciones, modelos, reglas de negocio)
+   * `controlador` (endpoints, validaciones Form Request, queries)
+   * `interfaz` (vistas Blade, accesibilidad, CSS Tailwind)
+3. Vincular al árbol nativo de GitHub:
 
    ```bash
    gh api -X POST /repos/:owner/:repo/issues/:padre/sub_issues -F sub_issue_id=:id_global
    ```
 
-6. **Validación obligatoria de Autenticación y Autorización (Principio de Menor Privilegio):** Todo sub-issue de backend o controlador debe auditar explícitamente el control de acceso del módulo o endpoint a implementar, garantizando que usuarios anónimos (redirección `302`) o usuarios autenticados sin privilegios o ajenos al recurso reciban un rechazo estricto (`403 Forbidden`). Es obligatorio incluir pruebas automatizadas con casos negativos (`assertStatus(403)` / `assertStatus(302)`).
+4. Cada sub-issue se cierra con su correspondiente PR (`Closes #<sub-issue>`).
 
-### Evaluación Heurística (IHC)
+---
 
-Para las evaluaciones de usabilidad según las 10 Heurísticas de Nielsen (H1–H10):
+### 5. Taxonomía de Etiquetas (Labels)
 
-* Consultar el protocolo operativo completo en la skill `heuristic-evaluation` y el informe en [docs/evaluacion-heuristica.md](docs/evaluacion-heuristica.md).
-* **Reglas clave:** Único issue principal tracker (`Evaluación heurística H1–H10 · <funcionalidad>`) con lista verificable, sub-issues atómicos únicamente para hallazgos con severidad 1 a 4, y commits de cierre individuales (`fix: ... (Closes #<sub-issue>, Refs #<padre>)`).
-
-### Decisiones de Interacción Ergonómica (IHC · Fitts, Hick y Carga Cognitiva)
-
-Para el diseño y evaluación ergonómica de flujos e interfaces:
-
-* Consultar el protocolo completo en la skill `interaction-decisions` y el informe en [docs/decisiones-interaccion.md](docs/decisiones-interaccion.md).
-* **Estructura obligatoria:** Contrastar siempre la alternativa base o ingenua (**Antes**) frente a la solución implementada (**Después**), justificando con las fórmulas teóricas de Fitts ($T = a + b \log_2(2D/W)$), Hick ($T = b \log_2(n+1)$) y la capacidad de memoria de trabajo de Miller/Sweller ($7 \pm 2$).
-* **Evidencias gráficas:** Guardadas en `docs/evidencias/historial/` respetando la nomenclatura `Fitts-antes.jpeg`, `Fitts-despues.jpeg`, `Hick-antes.jpeg`, `Hick-despues.jpeg`, `Carga-Cognitiva-antes-P1.jpeg`..`P4.jpeg`, `Carga-Cognitiva-despues.jpeg`, `Estado-Vacio-despues.jpeg`.
-
-### Issues Generales
-
-* Toda tarea o requerimiento fuera de los requisitos docentes debe registrarse en una issue breve con:
-  * **Objetivo:** Qué se busca resolver o implementar.
-  * **Criterios de Aceptación:** Qué comportamiento define que la tarea está terminada.
-  * **Seguridad y Control de Acceso:** Explicitar middleware `auth`, comprobaciones en Policy y garantía de que usuarios ajenos o sin los privilegios requeridos queden completamente aislados.
-  * **Pruebas esperadas:** Qué casos de prueba unitaria deben cubrirse con PHPUnit (mínimo 4 si involucra reglas de negocio o transiciones de estado, incluyendo casos negativos con `assertStatus(403)` / `302`).
-
-### Taxonomía de Etiquetas (Labels)
-
-El repositorio utiliza una taxonomía de etiquetas organizada en tres niveles para categorizar issues, sub-issues y pull requests de forma sistemática:
-
-| Categoría | Etiqueta | Color | Descripción y Ámbito de Aplicación |
+| Categoría | Etiqueta | Color | Descripción |
 | :--- | :--- | :--- | :--- |
-| **Tipo de Tarea** | `requisito` | `#0E8A16` (Verde) | Requisito docente o tarea madre principal. Permanece abierta hasta la revisión formal. |
-| | `sub-issue` | `#1D76DB` (Azul) | Sub-issue atómico vinculado a un requisito o tarea. |
-| | `enhancement` | `#A2EEEF` (Celeste) | Nueva funcionalidad o mejora general fuera de consignas obligatorias. |
-| | `bug` | `#D73A4A` (Rojo) | Corrección de fallas o comportamientos inesperados. |
-| | `refactor` | `#D4C5F9` (Lila) | Refactorización de código y reducción de deuda técnica. |
-| | `documentation` | `#0075CA` (Azul oscuro) | Documentación técnica, matrices de evidencias y guías académicas. |
-| **Capa Arquitectónica** | `backend` | `#FBCA04` (Ámbar) | Modelos Eloquent, migraciones, base de datos y reglas de dominio. |
-| | `controlador` | `#E99695` (Salmón) | Controladores, Form Requests, queries, endpoints y flujos HTTP. |
-| | `interfaz` | `#7057FF` (Morado) | Vistas Blade, componentes UI, estilos Tailwind y maquetación accesible. |
-| | `testing` | `#0052CC` (Azul marino) | Suites PHPUnit, Playwright E2E y pruebas automatizadas. |
-| **Transversal / Dominio** | `seguridad` | `#B60205` (Bordó) | Autenticación, autorización (`Gate::authorize()`, `PlanPolicy`) y control de acceso. |
-| | `ihc` | `#5319E7` (Índigo) | Principios ergonómicos (Fitts, Hick, Carga Cognitiva) y heurísticas de Nielsen. |
-| | `accessibility` | `#F143AB` (Fucsia) | Accesibilidad web (WCAG 2.1 AA, roles ARIA y contraste). |
-| **Mantenimiento** | `duplicate` | `#CFD3D7` (Gris) | Tarea o PR duplicada. |
-| | `wontfix` | `#FFFFFF` (Blanco) | Elemento descartado que no se implementará. |
+| **Tipo** | `requisito` | `#0E8A16` (Verde) | Requisito docente madre (permanece abierto hasta revisión). |
+| | `sub-issue` | `#1D76DB` (Azul) | Sub-issue atómico vinculado a una tarea. |
+| | `refactor` | `#D4C5F9` (Lila) | Limpieza y reducción de deuda técnica. |
+| | `bug` | `#D73A4A` (Rojo) | Corrección de fallos. |
+| **Capa** | `backend` | `#FBCA04` (Ámbar) | Modelos Eloquent, base de datos y persistencia. |
+| | `controlador` | `#E99695` (Salmón) | Controllers, validación Form Requests y HTTP. |
+| | `interfaz` | `#7057FF` (Morado) | Vistas Blade, componentes UI y accesibilidad. |
+| | `testing` | `#0052CC` (Azul marino) | Suites PHPUnit y Playwright. |
+| **Transversal** | `seguridad` | `#B60205` (Bordó) | Autenticación, autorización (`PlanPolicy`) y menores privilegios. |
+| | `ihc` | `#5319E7` (Índigo) | Principios ergonómicos y heurísticas de Nielsen. |
+| | `accessibility` | `#F143AB` (Fucsia) | WCAG 2.1 AA y roles ARIA. |
 
-#### Reglas de Asignación Obligatoria
+---
 
-1. **Issues Madre:** Asignar `requisito` (y opcionalmente `refactor` o `seguridad` si el alcance del requerimiento lo involucra directamente).
-2. **Sub-issues Atómicos:** Asignar `sub-issue` junto con la etiqueta de la capa arquitectónica correspondiente (`backend`, `controlador`, `interfaz`, o `testing` + `documentation`). Agregar etiquetas transversales (`seguridad`, `ihc`, `accessibility`) según los componentes implementados.
-3. **Pull Requests:** Asignar `sub-issue` y las etiquetas de capa y transversales que correspondan al código entregado.
+### 6. Verificación Local y Entrega
 
-### Pull Requests (PRs) y Verificación de Sub-issues
+Antes de solicitar revisión o hacer merge:
 
-* **Destino estricto de PRs (Fork independiente):** Este repositorio es un fork que avanza de manera independiente. **Nunca envíes una PR hacia el repositorio original (upstream).**
-  * **En la web:** Al pulsar "Compare & pull request", cambiá siempre el selector **base repository** a `moises-cisneros/Proyecto2IHC` y la base a `main`.
-  * **Con GitHub CLI (`gh`):** Usá siempre el flag `-R moises-cisneros/Proyecto2IHC --base main`:
+1. Correr tests backend: `docker compose exec planazo_app php artisan test`
+2. Correr tests E2E: `pnpm run test:e2e`
+3. Validar consistencia y ausencia de IA:
 
-    ```bash
-    gh pr create -R moises-cisneros/Proyecto2IHC --base main --head <rama> --title "<titulo>" --body "<cuerpo>"
-    ```
-
-* Crear una rama descriptiva vinculada a la tarea (`feat/issue-<número>`, `fix/issue-<número>`).
-* **Referencias y cierre en PRs:**
-  * Usar `Closes #<número-sub-issue>` para que el sub-issue completado se cierre automáticamente al mergear.
-  * Usar `Refs #<número-issue-padre>` para referenciar el issue general del docente (**NUNCA usar `Closes` sobre el issue del docente**).
-* La descripción de la PR no debe contener referencias ni atribuciones a ninguna IA.
-* Respetar las responsabilidades de [ARCHITECTURE.md](ARCHITECTURE.md):
-  * Backend: lógica, autenticación (`auth`), autorización (`PlanPolicy`) y reglas de estado en modelos y controladores.
-  * Frontend: vistas Blade limpias, sin consultas a BD, protegiendo acciones con `@can`.
-* **Verificación Automática (Hooks y GitHub Actions):**
-  * Script de verificación cruzada local para sub-issues:
-
-    ```bash
-    node scripts/verify-subissue.mjs
-    ```
-
-  * **GitHub Action:** `.github/workflows/verify-pr-subissue.yml` bloquea cualquier PR hacia `main` si no cumple los criterios de la sub-issue o si fallan las pruebas unitarias.
-  * **Flujo directo en `main`:** Si se trabaja directamente sobre la rama `main`, las verificaciones de rama de PR no bloquean el flujo diario.
+   ```bash
+   node scripts/verify-subissue.mjs
+   ```

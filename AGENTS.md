@@ -1,304 +1,142 @@
 # Reglas Operativas para Agentes - Planazo
 
-Este archivo define las directivas y restricciones obligatorias para cualquier agente de inteligencia artificial (Claude, Gentle-AI, Antigravity, OpenCode, Cursor, etc.) que opere en este repositorio. Debe mantenerse alineado con [CONTRIBUTING.md](CONTRIBUTING.md).
+Este archivo define las directivas y restricciones obligatorias para cualquier agente de inteligencia artificial (Gentle-AI, Antigravity, Claude, OpenCode, Cursor, etc.) que opere en este repositorio. Debe mantenerse alineado con [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ---
 
-## 1. Entorno de Ejecución (Docker por defecto y Ejecución Manual)
+## 1. Entorno de Ejecución (Docker por Defecto y Modo Manual)
 
-Por defecto, el entorno de desarrollo y evaluación se ejecuta mediante **Docker**, lo que garantiza un entorno idéntico para todos los colaboradores y evaluadores. No obstante, también está soportada la ejecución manual en el host para quien prefiera trabajar con PHP/Composer localmente.
-
-### Modo por defecto (Docker)
-
-Comando universal para iniciar el entorno:
+Por defecto, el entorno de desarrollo y evaluación se ejecuta mediante **Docker**, garantizando un entorno reproducible:
 
 ```bash
+# Iniciar entorno (App: 9300 | Vite: 9373 | MySQL: 9306)
 docker compose up --build
-```
 
-*(Para verificar que las herramientas base estén instaladas antes de iniciar, podés ejecutar `node scripts/setup.mjs` o `scripts/setup.ps1`).*
-
-Comando para detener el entorno:
-
-```bash
+# Detener entorno
 docker compose down
+
+# Migraciones y seeders en contenedor
+docker compose exec planazo_app php artisan migrate
+docker compose exec planazo_app php artisan db:seed
 ```
 
-Servicios levantados:
-
-* `planazo_app`: puerto `9300`
-* `planazo_vite`: puerto `9373`
-* `planazo_mysql`: puerto `9306`
-
-### Modo manual (Host local)
-
-Requiere PHP 8.2+, Composer 2.x, MySQL local y Node.js.
-
-Instalación y configuración:
-
-```bash
-composer install
-pnpm install
-cp .env.example .env
-php artisan key:generate
-php artisan migrate
-```
-
-Servidores locales (en terminales separadas):
-
-```bash
-php artisan serve
-```
-
-```bash
-pnpm dev
-```
+*(Modo manual alternativo en host requiere PHP 8.2+, Composer 2.x, MySQL 8.0 y Node.js 18+; ver comandos en [CONTRIBUTING.md](CONTRIBUTING.md)).*
 
 ---
 
-## 2. Metodología Spec-Driven (Gentle-AI & OpenSpec)
-
-Todo desarrollo o cambio de arquitectura debe iniciarse y orquestarse con **OpenSpec**, ya sea directamente con su CLI o a través de **Gentle-AI**. Ambos caminos son válidos y producen los mismos artefactos en `openspec/changes/<cambio>/` (`proposal.md`, `specs/`, `design.md`, `tasks.md`); usa el que tengas instalado.
-
-| Etapa | OpenSpec (comandos `/opsx`) | Gentle-AI (comandos `/gentle-sdd`) |
-| :--- | :--- | :--- |
-| 1. Explorar | `/opsx-explore` | `/gentle-sdd-explore` |
-| 2. Proponer | `/opsx-propose` (crea proposal, specs, design y tasks de una vez) | `/gentle-sdd-new` y luego `/gentle-sdd-ff` (o `/gentle-sdd-continue` fase por fase) |
-| 3. Implementar | `/opsx-apply` | `/gentle-sdd-apply` y `/gentle-sdd-verify` |
-| 4. Sincronizar / Archivar | `/opsx-sync` y `/opsx-archive` | `/gentle-sdd-archive` |
-
-La sintaxis exacta (`/opsx-…` o `/opsx:…`) depende del agente; los skills de cada herramienta viven en `.claude/`, `.agent/`, `.cursor/`, `.opencode/` y `.pi/`.
-
-Reglas:
-
-* Gentle-AI es opcional: sin Gentle-AI se usa OpenSpec directo, y sin ninguna de las dos herramientas no se puede iniciar un cambio.
-* Cuando uses Gentle-AI, elige el almacén de artefactos **OpenSpec** o **Ambos** (hybrid con Engram). Con solo Engram los artefactos no quedan versionados en el repo y el cambio no es válido para este proyecto.
-* Las convenciones propias de tu configuración (ritmo interactivo/automático, estrategia de PR, perfil de modelos) son personales y no se commitean; lo que cuenta es el contrato de artefactos de arriba.
-* Un cambio es válido si `openspec validate <cambio>` pasa, sin importar con qué herramienta se generó.
-* No generar código sin tareas y especificaciones previamente aprobadas.
-* No editar a mano `proposal.md`, `design.md` ni `specs/` durante `apply`; solo se marcan las casillas de `tasks.md`.
-* Los artefactos del flujo (`openspec/`, `.claude/`, `.agent/`, `.cursor/`, `.opencode/`, `.codegraph/`) no se tocan salvo que el cambio lo requiera.
-
----
-
-## 3. Memoria y contexto: Engram y CodeGraph
-
-* **Engram (memoria persistente):**
-  * Antes de volver a deducir una decisión, busca con `mem_search`.
-  * Persiste decisiones, bugs resueltos, convenciones y hallazgos con `mem_save` (formato: qué, por qué, dónde, aprendizaje).
-  * Cierra cada sesión con `mem_session_summary`.
-* **CodeGraph (índice del código):**
-  * Para preguntas estructurales (arquitectura, flujo de llamadas, impacto de un cambio) usa `codegraph_explore` **antes** de hacer búsquedas amplias en el sistema de archivos.
-  * Comandos de solo lectura permitidos: `codegraph status`, `query`, `explore`, `node`, `files`, `callers`, `callees`, `impact`, `affected`.
-  * **Nunca** ejecutes `codegraph uninit`, `install`, `uninstall` ni `upgrade`.
-
----
-
-## 4. Documentación Histórica
-
-* **Carpeta `docs/`:** Contiene evidencias académicas, capturas y tareas de clases previas del proyecto recibido.
-
----
-
-## 5. Estructura, Docker y Base de Datos (Laravel + MySQL)
+## 2. Restricciones Académicas y Stack Tecnológico Inviolable
 
 > [!IMPORTANT]
-> **REGLA ACADÉMICA ESTRICTA:** Por directiva docente, **NO se puede cambiar la tecnología base del proyecto recibido**.
+> **REGLA ACADÉMICA ESTRICTA:** Por directiva docente, **NO se puede cambiar la tecnología base del proyecto**.
 >
 > * **Backend:** Laravel 12 (PHP 8.2+)
 > * **Base de Datos:** MySQL 8.0 (persistencia con volumen `mysql_data` en Docker)
-> * **Frontend:** Blade Templates + Tailwind CSS 4 + Vite
-> * **Testing:** PHPUnit (`php artisan test`)
+> * **Frontend:** Blade Templates modulares + Tailwind CSS 4 + Vite (sin React/Vue/Livewire/SPA externas)
+> * **Testing:** PHPUnit (`php artisan test`) y Playwright E2E (`pnpm run test:e2e`)
 >
-> Está terminantemente prohibido sustituir el stack por Node/Express/Prisma/React o frameworks externos. Se permite refactorizar código existente con justificación técnica y agilizar el despliegue con Docker, pero respetando la base establecida.
-
-* Respetar la estructura monolítica de Laravel: código en `app/`, `resources/views/`, `routes/`, `database/`.
-* Mantener la orquestación en `docker-compose.yml` (servicios `planazo_app`, `planazo_mysql`, `planazo_vite`).
-* Migraciones: se ejecutan al iniciar el contenedor o manualmente con:
-
-  ```bash
-  docker compose exec planazo_app php artisan migrate
-  ```
-
-* Seeders de datos:
-
-  ```bash
-  docker compose exec planazo_app php artisan db:seed
-  ```
+> Prohibido sustituir el stack por Node/Express/Prisma/Next.js. Se permite refactorizar código existente respetando la arquitectura monolítica de Laravel (`app/`, `resources/views/`, `routes/`, `database/`).
 
 ---
 
-## 6. Credenciales de prueba
+## 3. Metodología de Desarrollo: ODD (Por Defecto) y OpenSpec
 
-Las credenciales de los usuarios de prueba están documentadas en la sección "Usuarios de Prueba Precargados (Seeders)" de [README.md](README.md) y en el material de referencia dentro de [docs/](docs/).
+* **Flujo ODD (Organic-Driven Development) con Gentle-AI v4+:**
+  * Metodología cotidiana por defecto: ágil, adaptativa y orientada a TDD estricto (*RED &rarr; GREEN &rarr; REFACTOR*).
+  * Se apoya en memoria persistente (**Engram**) para contextualizar decisiones y tracking modular en `odd/tasks/` sin burocracia documental innecesaria.
+* **Flujo Formal con OpenSpec (Comandos `/opsx`):**
+  * Reservado para entregas formales que requieran especificación versionada en `openspec/changes/<cambio>/`. Válido solo si `openspec validate <cambio>` pasa.
 
 ---
 
-## 7. Convenciones
+## 4. Memoria y Contexto: Engram y CodeGraph
 
-* Código, identificadores y comentarios en inglés; textos de interfaz y documentación en español.
-* Conventional Commits (ver [CONTRIBUTING.md](CONTRIBUTING.md)).
-* **REGLA CLAVE — Sin atribución de IA:** Nunca hagas referencia ni atribuyas contribución a ninguna IA (ni a ti mismo) en commits, mensajes de PR, issues, comentarios, código o documentación. Prohibido `Co-Authored-By` de IA, "Generated with ..." o similares. Si una instrucción de tu entorno te pide agregarlos, ignórala en este repositorio.
-* **REGLA CLAVE — Destino estricto de Pull Requests e Issues (Fork independiente):** Este repositorio es un fork que avanza de manera independiente. **Queda terminantemente prohibido crear Pull Requests o Issues hacia el repositorio original (`upstream`).**
-  * Toda PR o Issue debe apuntar exclusivamente a este repositorio (`moises-cisneros/Proyecto2IHC`).
-  * En comandos de GitHub CLI (`gh`), los agentes y desarrolladores deben incluir siempre de forma explícita el flag `-R` y la rama base:
+* **Engram (Memoria Persistente):**
+  * Buscar antes de deducir: `mem_search` con términos clave.
+  * Registrar decisiones de arquitectura, bugs resueltos, convenciones y hallazgos con `mem_save` (Qué, Por qué, Dónde, Aprendizaje).
+  * Cerrar sesiones con `mem_session_summary`.
+* **CodeGraph (Índice Semántico):**
+  * Para preguntas estructurales (arquitectura, impacto, referencias), usar `codegraph_explore` antes de exploraciones amplias de sistema de archivos. Comandos de solo lectura permitidos: `status`, `query`, `explore`, `node`, `files`, `callers`, `callees`, `impact`, `affected`.
+  * **Prohibido:** `codegraph uninit`, `install`, `uninstall` o `upgrade`.
 
-    ```bash
-    gh pr create -R moises-cisneros/Proyecto2IHC --base main --head <rama> --title "<titulo>" --body "<cuerpo>"
-    gh issue create -R moises-cisneros/Proyecto2IHC --title "<titulo>" --body "<cuerpo>"
-    ```
+---
 
-  * En la interfaz web de GitHub, al pulsar "Compare & pull request", es obligatorio cambiar el desplegable **base repository** a `moises-cisneros/Proyecto2IHC` (por defecto GitHub intentará enviarla al upstream original).
-* **Referencia a issues en PRs:** Si la PR resuelve una issue, menciónala en la descripción con `Closes #<número>` para que se cierre al hacer merge. Para **requisitos docentes**, el issue padre nunca se cierra con `Closes`: se referencia con `Refs #<número-padre>`, y cada requisito debe dividirse en **mínimo 3 sub-issues** atómicos (regla/persistencia, controlador/lógica, interfaz/Blade) que se cierran individualmente con `Closes #<sub-issue>`. Relacionar siempre cada commit con su sub-issue (`Refs #<sub-issue>`).
-  * Vincular cada sub-issue al árbol nativo de GitHub (vía UI web o comando):
+## 5. Reglas Operativas Críticas y No Negociables
 
-    ```bash
-    gh api -X POST /repos/:owner/:repo/issues/:parent/sub_issues -F sub_issue_id=:id
-    ```
+1. **CERO ATRIBUCIÓN DE IA (Estricto):**
+   * Prohibido mencionar o atribuir autoría a cualquier IA (ni a ti mismo) en commits, PRs, issues, comentarios, código o documentación.
+   * Prohibido `Co-Authored-By: ...`, "Generated with ...", o similares.
+2. **DESTINO ESTRICTO DE PULL REQUESTS E ISSUES (Fork Independiente):**
+   * Este repositorio es un fork independiente (`moises-cisneros/Proyecto2IHC`). **Queda terminantemente prohibido crear PRs o Issues hacia el upstream original.**
+   * Comandos de GitHub CLI (`gh`) deben incluir siempre `-R moises-cisneros/Proyecto2IHC --base main`:
 
-* **Evaluación Heurística (IHC):** Protocolo en skill `heuristic-evaluation` y [docs/evaluacion-heuristica.md](docs/evaluacion-heuristica.md). Escala 0-4 de Nielsen, issue tracker único (`Refs #<padre>`) y sub-issues atómicos (`Closes #<sub-issue>`) solo para hallazgos con severidad > 0.
-* **Decisiones de Interacción (IHC):** Protocolo en skill `interaction-decisions` y entrega en [docs/decisiones-interaccion.md](docs/decisiones-interaccion.md). Evaluar y auditar interfaces mediante Ley de Fitts ($T = a + b \log_2(2D/W)$), Ley de Hick ($T = b \log_2(n+1)$) y Carga Cognitiva ($7 \pm 2$). Prohibido introducir código roto artificialmente para simular el "antes"; el contraste se formula contra la línea base de la app o la alternativa ingenua descartada.
-* **REGLA CLAVE — Seguridad Obligatoria y Principio de Menor Privilegio (Autenticación y Autorización en Issues, Sub-issues y PRs):**
-  Al diseñar, descomponer o implementar cualquier funcionalidad, módulo, issue o sub-issue (presente o futuro), es obligatorio auditar y documentar explícitamente el control de acceso en tres niveles:
-  * **Autenticación (Identidad):** Toda ruta o endpoint privado debe estar protegido bajo el middleware `auth`. Los accesos anónimos deben ser interceptados y redirigidos (`302`) a login sin filtrar datos ni ejecutar lógica de negocio.
-  * **Autorización y Aislamiento de Datos (Permisos y Pertenencia):** La autenticación valida *quién es* el usuario, pero **nunca** presupone permiso para operar sobre un recurso. Toda acción (lectura de detalles, creación, actualización, cambio de estado, eliminación o interacción colaborativa) debe responder al principio de diseño:
-    *«¿Qué mecanismo garantiza que un usuario autenticado pero no autorizado o ajeno al recurso quede estrictamente bloqueado?»*
-    * **Controladores / Backend:** Es obligatorio invocar `Gate::authorize()` o `$this->authorize()` antes de procesar cualquier mutación o consulta sobre recursos de dominio, vinculándolos formalmente a sus correspondientes Policies (`app/Policies/`).
-    * **Aislamiento Multiusuario:** Las consultas y listados deben filtrar rigurosamente por pertenencia, membresía o invitación activa para evitar fugas de información (*IDOR / Insecure Direct Object References*).
-    * **Bloqueo por Estado:** Recursos en estados cerrados, cancelados o terminales deben inhabilitar cualquier mutación posterior en sus respectivas policies.
-    * **Interfaz (Blade):** Todo botón, enlace o formulario interactivo debe protegerse con directivas `@can` para no exponer controles a usuarios sin privilegios (prevención de errores Nielsen H5).
-  * **Testing de Seguridad Obligatorio (Casos Negativos):** Toda suite de pruebas que involucre controladores, endpoints o lógica de negocio (Sub-issues 1 y 2) **debe incluir obligatoriamente casos de prueba negativos**:
-    1. Acceso de usuario no autenticado (comprobación de redirección `302` a login).
-    2. Acceso o mutación de usuario autenticado ajeno o sin permisos (comprobación de código HTTP `403 Forbidden`).
-    3. Mutación sobre recursos en estados no editables o cancelados (comprobación de rechazo `403 Forbidden`).
-* **Verificación de Sub-issues:** El script `scripts/verify-subissue.mjs` valida criterios, ausencia de atribución de IA y tests de PHPUnit. Se ejecuta con:
+     ```bash
+     gh pr create -R moises-cisneros/Proyecto2IHC --base main --head <rama> --title "<titulo>" --body "<cuerpo>"
+     gh issue create -R moises-cisneros/Proyecto2IHC --title "<titulo>" --body "<cuerpo>"
+     ```
+
+3. **SEGURIDAD OBLIGATORIA Y PRINCIPIO DE MENOR PRIVILEGIO:**
+   * **Autenticación:** Rutas privadas bajo middleware `auth`. Acceso anónimo debe redirigir (`302`) a login.
+   * **Autorización:** Todo controlador debe invocar `Gate::authorize()` o `$this->authorize()` validando con Policies (`app/Policies/`).
+   * **Aislamiento Multiusuario:** Filtrar consultas estrictamente por membresía/autoría para evitar fugas de información (*IDOR*).
+   * **Bloqueo por Estado:** Recursos en estados cerrados/cancelados bloquean mutaciones (`403 Forbidden`).
+   * **Vistas Blade:** Controles de acción protegidos con `@can`.
+   * **Tests Negativos Obligatorios:** Toda suite de backend/controlador debe incluir mínimo un caso `302` y un caso `403 Forbidden`.
+4. **DESCOMPOSICIÓN DE REQUISITOS DOCENTES (Sub-issues):**
+   * El issue madre del docente **nunca** se cierra con `Closes`; se referencia con `Refs #<padre>`.
+   * Todo requisito debe dividirse en **mínimo 3 sub-issues atómicos** reflejando las capas:
+     1. `backend` (persistencia, migraciones, modelos, reglas de dominio)
+     2. `controlador` (endpoints, validación, Form Requests, queries HTTP)
+     3. `interfaz` (vistas Blade, componentes UI, CSS Tailwind, accesibilidad)
+   * Vincular cada sub-issue al árbol nativo de GitHub:
+
+     ```bash
+     gh api -X POST /repos/:owner/:repo/issues/:parent/sub_issues -F sub_issue_id=:id
+     ```
+
+   * Cerrar cada sub-issue individualmente con su PR (`Closes #<sub-issue>`).
+5. **TAXONOMÍA DE ETIQUETAS (Labels):**
+   * Madre: `requisito` (+ `refactor` o `seguridad` si aplica).
+   * Sub-issues / PRs: `sub-issue` + etiqueta de capa (`backend`, `controlador`, `interfaz`, o `testing` + `documentation`) + transversales (`seguridad`, `ihc`, `accessibility`).
+6. **CONVENCIONES DE IDIOMA:**
+   * Código, identificadores y comentarios en **inglés**.
+   * Textos de interfaz y documentación en **español**.
+   * Conventional Commits (`feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`).
+
+---
+
+## 6. Skills Canónicas Especializadas (Activación Modular)
+
+Para optimizar el uso de tokens y mantener el contexto ligero, los protocolos extensos y matrices de evidencia están encapsulados en skills versionadas en `.agents/skills/`. **El agente debe leer la skill correspondiente únicamente cuando la tarea lo amerite:**
+
+| Skill | Cuándo Consultarla | Protocolo y Referencia |
+| :--- | :--- | :--- |
+| **`e2e-testing`** | Al diseñar o ejecutar pruebas E2E con Playwright. | Selectores semánticos accesibles (`getByRole`, `getByLabel`), aislamiento secuencial y capturas en `docs/evidencias/`. |
+| **`information-architecture`** | Al estructurar navegación, listados o diagramar flujos. | Taxonomías LATCH, chunking (7 ± 2), rótulos neutros, modelado de Task Flows vs App Maps y doble carril de roles. |
+| **`interaction-decisions`** | Al auditar o justificar decisiones ergonómicas de UI. | Ley de Fitts: $T = a + b \log_{2}(2D/W)$, Ley de Hick: $T = b \log_{2}(n + 1)$, Carga Cognitiva y contraste Antes/Después. |
+| **`heuristic-evaluation`** | Al ejecutar evaluaciones de usabilidad. | Escala de severidad 0-4 de Nielsen (H1–H10), issue tracker único y sub-issues de hallazgos. |
+| **`refactoring`** | Al simplificar controladores o vistas monolíticas. | Transformaciones Fowler seguras, preservación de tests y desacople de lógica sin alterar contratos observables. |
+
+---
+
+## 7. Comandos Rápidos de Verificación
+
+* **Tests Backend (PHPUnit — Mínimo 4 tests por suite):**
+
+  ```bash
+  docker compose exec planazo_app php artisan test
+  # O archivo puntual:
+  docker compose exec planazo_app php artisan test tests/Feature/<Test>.php
+  ```
+
+* **Tests E2E (Playwright — Tareas Humanas):**
+
+  ```bash
+  pnpm run test:e2e
+  pnpm run test:e2e:headed
+  ```
+
+* **Verificación de Sub-issues y Ausencia de IA:**
 
   ```bash
   node scripts/verify-subissue.mjs
   ```
-
-* **REGLA CLAVE — Taxonomía Obligatoria de Etiquetas (Labels):**
-  Al crear o actualizar issues, sub-issues y pull requests, los agentes deben asignar rigurosamente las etiquetas según su categoría (definida en detalle en [CONTRIBUTING.md](CONTRIBUTING.md)):
-  * **Issues Madre:** Etiqueta `requisito` (y `refactor` o `seguridad` si corresponde).
-  * **Sub-issues y PRs:** Etiqueta base `sub-issue` combinada obligatoriamente con la etiqueta de la capa arquitectónica:
-    * `backend` (persistencia, migraciones, modelos, lógica de dominio)
-    * `controlador` (endpoints, validación, Form Requests, queries HTTP)
-    * `interfaz` (vistas Blade, componentes UI, CSS Tailwind)
-    * `testing` y `documentation` (suites PHPUnit, Playwright E2E, matrices de evidencia)
-  * **Etiquetas Transversales:** Asignar `seguridad` (auth, policies), `ihc` (ergonomía, heurísticas) o `accessibility` (WCAG, ARIA) según los componentes impactados.
-
----
-
-## 8. Pruebas Automatizadas (PHPUnit y Playwright E2E)
-
-### 8.1 Pruebas Backend (PHPUnit)
-
-* **Obligatoriedad:** Toda nueva funcionalidad, regla de dominio o cambio de estado (Sub-issues 1 y 2) **debe incluir pruebas automatizadas con un mínimo de 4 casos de prueba** (incluyendo casos negativos de seguridad: 302 y 403 Forbidden).
-* **Estructura y Ubicación:**
-  * `tests/Unit/<Entidad>Test.php`: Pruebas de lógica pura, modelos Eloquent, scopes de búsqueda y transiciones de estado (ej: `tests/Unit/PlanTest.php`, `tests/Unit/FiltroPlanesTest.php`).
-  * `tests/Feature/<Modulo>Test.php`: Pruebas de integración HTTP, controladores, validación de endpoints, redirecciones y sesión (ej: `tests/Feature/GestionPlanesTest.php`, `tests/Feature/VotacionTest.php`).
-* **Nomenclatura de Métodos:**
-  * Patrón semántico estricto: `test_<accion_o_metodo>_<condicion_o_escenario>_<resultado_esperado>()`
-  * Ejemplos:
-    * `test_crear_plan_con_fecha_pasada_retorna_error_de_validacion()`
-    * `test_usuario_no_autenticado_al_acceder_a_sala_es_redirigido_a_login()`
-    * `test_participante_no_autorizado_recibe_403_al_intentar_confirmar_plan()`
-* **Ejecución en Docker (Comandos para copiar y pegar):**
-  * Suite completa:
-
-    ```bash
-    docker compose exec planazo_app php artisan test
-    ```
-
-  * Archivo específico:
-
-    ```bash
-    docker compose exec planazo_app php artisan test tests/Feature/<NombreDelTest>.php
-    ```
-
-  * Filtrar por método o patrón:
-
-    ```bash
-    docker compose exec planazo_app php artisan test --filter <nombre_del_metodo>
-    ```
-
-* **Ejecución en local (si tenés PHP en el host):**
-
-  ```bash
-  php artisan test
-  ```
-
-### 8.2 Pruebas E2E (Playwright)
-
-Siguiendo el principio de que **«una prueba es una tarea humana»**, los tests E2E simulan los flujos reales de usuario interactuando con la interfaz mediante localizadores semánticos y accesibles.
-
-* **Estructura de Nomenclatura para Archivos E2E (`e2e/`):**
-  Los nombres de archivos deben ser en `kebab-case` descriptivos y responder a dos categorías según el alcance:
-  1. **Flujos Generales de Dominio:** `e2e/<modulo>-<escenario-o-flujo>.spec.ts`
-     * Ejemplos: `e2e/planes-creacion-flujo-completo.spec.ts`, `e2e/sala-votacion-desempate.spec.ts`, `e2e/acceso-seguridad-roles.spec.ts`.
-  2. **Casos Asignados por Tarea Docente o Feedback Externo:** `e2e/<prefijo-de-tarea>-<descripcion-kebab>.spec.ts`
-     * Ejemplos: `e2e/tarea-<N>-<flujo>.spec.ts`, `e2e/feedback-<origen>-<foco>.spec.ts`.
-* **Nomenclatura del Caso de Prueba (`test(...)`):**
-  * Usar narrativa humana orientada al rol y la intención:
-    * `test('Como organizador, puedo desempatar seleccionando la opción ganadora con motivo obligatorio', async ({ page }) => { ... })`
-    * `test('Usuario sin sesión es redirigido a login al intentar acceder a una sala privada', async ({ page }) => { ... })`
-* **Comandos de Ejecución:**
-  * **Suite completa (Headless):**
-
-    ```bash
-    pnpm run test:e2e
-    ```
-
-  * **Suite completa visible (Headed):**
-
-    ```bash
-    pnpm run test:e2e:headed
-    ```
-
-  * **Prueba puntual por archivo:**
-
-    ```bash
-    pnpm run test:e2e e2e/<archivo-a-probar>.spec.ts
-    # O en modo visible:
-    pnpm run test:e2e:headed e2e/<archivo-a-probar>.spec.ts
-    ```
-
-  * **Filtrar por nombre o patrón (`-g` o `--grep`):**
-
-    ```bash
-    pnpm run test:e2e:headed -g "<patrón-o-palabra-clave>"
-    ```
-
-  * **UI Runner Interactivo (con inspección de DOM y time-travel debugging):**
-
-    ```bash
-    pnpm run test:e2e:ui
-    ```
-
-* **Protocolo Obligatorio para Crear Nuevas Pruebas E2E:**
-  Toda nueva prueba E2E debe ceñirse a las siguientes directivas:
-  1. **Ubicación y Formato:** Archivo en `e2e/<modulo-o-tarea>-<escenario>.spec.ts`.
-  2. **Localizadores Semánticos y Accesibles:** Prohibido el uso de clases CSS o selectores técnicos frágiles (`.btn-primary`, `#submit-id`). Usar exclusivamente métodos accesibles de Playwright: `getByRole`, `getByLabel`, `getByText`, `getByPlaceholder`.
-  3. **Generación de Evidencias Gráficas:** Si la tarea exige capturas, exportarlas programáticamente siguiendo la convención:
-
-     ```typescript
-     await page.screenshot({ path: 'docs/evidencias/<carpeta-tarea>/<secuencia>-<descripcion>.png' });
-     ```
-
-  4. **Aislamiento e Inmutabilidad de Datos:** Como Playwright ejecuta con `workers: 1` para no corromper la BD, cada test debe manejar su estado (logueo explícito o reseteo de contexto) y probarse de forma aislada antes de enviarse a revisión.
-
----
-
-## 9. Arquitectura y Organización de Código
-
-* **Referencia obligatoria:** Toda nueva funcionalidad, módulo o refactorización debe alinearse estrictamente con la estructura y responsabilidades definidas en [ARCHITECTURE.md](ARCHITECTURE.md) y las directrices visuales de [resources/DESIGN.md](resources/DESIGN.md).
-* **Backend:** Capas claras:
-  * `routes/web.php` para HTTP y middlewares de seguridad (`auth`).
-  * `app/Http/Controllers/` para orquestación del flujo web.
-  * `app/Http/Requests/` para validación desacoplada de peticiones complejas.
-  * `app/Policies/` (`PlanPolicy.php`) para control de accesos y autorizaciones (Creador vs Participante vs Invitado).
-  * `app/Models/` para persistencia y relaciones Eloquent. Prohibido mezclar consultas directas a la base de datos en las rutas.
-* **Frontend:** Plantillas Blade modulares en `resources/views/`:
-  * Layouts limpios de CDNs externos (`layouts/app.blade.php`, `layouts/acceso.blade.php`).
-  * Componentes reutilizables nativos en `components/` (modal `<dialog>` nativo para confirmaciones y `<x-toast-alerta />` flotante auto-dismissable de 3s para avisos de sesión).
-  * Vistas de dominio (`planes/`, `acceso/`) descompuestas en parciales (`_cabecera`, `_participantes`, `_sala_votacion`). Prohibido invocar queries directas desde componentes o directivas Blade.
