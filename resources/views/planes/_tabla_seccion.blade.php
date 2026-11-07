@@ -71,8 +71,7 @@
                                     @csrf
                                     @method('PUT')
                                     <input type="hidden" name="estado" value="confirmado">
-                                    <button type="submit" class="boton boton-claro"
-                                        style="min-height: 44px; width: 104px; min-width: 104px; border-radius: 50px; padding: 8px 12px; font-weight: 500; white-space: nowrap; text-align: center; justify-content: center; display: inline-flex; align-items: center; box-sizing: border-box;"
+                                    <button type="submit" class="boton boton-claro boton-accion-md"
                                         data-confirm="¿Confirmar el plan &laquo;{{ $plan->nombre }}&raquo;?"
                                         data-title="Confirmar plan" data-btn-ok="Sí, confirmar"
                                         data-btn-cancel="Mantener pendiente">Confirmar</button>
@@ -82,102 +81,61 @@
                                     @csrf
                                     @method('PUT')
                                     <input type="hidden" name="estado" value="cancelado">
-                                    <button type="submit" class="boton boton-claro"
-                                        style="min-height: 44px; width: 104px; min-width: 104px; border-radius: 50px; padding: 8px 12px; font-weight: 500; white-space: nowrap; text-align: center; justify-content: center; display: inline-flex; align-items: center; box-sizing: border-box;"
+                                    <button type="submit" class="boton boton-claro boton-accion-md"
                                         data-confirm="¿Cancelar el plan &laquo;{{ $plan->nombre }}&raquo;? No podrá volver a confirmarse."
                                         data-title="Cancelar plan" data-btn-ok="Sí, cancelar"
                                         data-btn-cancel="Mantener plan">Cancelar</button>
                                 </form>
                             @else
                                 {{-- Plan cancelado: no puede volver a confirmarse --}}
-                                <button class="boton boton-claro" disabled
-                                    style="min-height: 44px; width: 104px; min-width: 104px; border-radius: 50px; padding: 8px 12px; font-weight: 500; white-space: nowrap; text-align: center; justify-content: center; display: inline-flex; align-items: center; box-sizing: border-box;"
+                                <button class="boton boton-claro boton-accion-md" disabled
                                     title="Un plan cancelado no puede volver a confirmarse">Confirmar</button>
                             @endif
                         @endcan
 
-                        {{-- 2. Botón EDITAR (✏ SVG nítido de alta definición) --}}
+                        {{-- 2. Botón EDITAR (SVG nítido de alta definición) --}}
                         @can('update', $plan)
-                            <a href="{{ route('planes.editar', $plan) }}" class="boton boton-editar"
-                                style="min-height: 44px; min-width: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center;"
+                            <a href="{{ route('planes.editar', $plan) }}" class="boton boton-editar boton-accion-sm"
                                 title="Editar plan" aria-label="Editar plan {{ $plan->nombre }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"
-                                    stroke-linejoin="round" aria-hidden="true" style="display: block;">
-                                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                                    <path d="m15 5 4 4" />
-                                </svg>
-                                <span class="sr-only"
-                                    style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">Editar
-                                    plan</span>
+                                <x-icono nombre="editar" style="width: 18px; height: 18px;" />
+                                <span class="sr-only">Editar plan</span>
                             </a>
                         @else
                             @can('cambiarEstado', $plan)
                                 {{-- Creador pero plan cancelado: deshabilitado (Nielsen H5) --}}
                                 @if ($plan->estado === 'cancelado')
-                                    <button class="boton boton-editar" disabled
-                                        style="min-height: 44px; min-width: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center; opacity: 0.4; cursor: not-allowed;"
+                                    <button class="boton boton-editar boton-accion-sm" disabled
+                                        style="opacity: 0.4; cursor: not-allowed;"
                                         title="Un plan cancelado no puede editarse"
                                         aria-label="Editar no disponible en plan cancelado">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
-                                            style="display: block;">
-                                            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
-                                            <path d="m15 5 4 4" />
-                                        </svg>
-                                        <span class="sr-only"
-                                            style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">Editar
-                                            plan</span>
+                                        <x-icono nombre="editar" style="width: 18px; height: 18px;" />
+                                        <span class="sr-only">Editar plan</span>
                                     </button>
                                 @endif
                             @endcan
                         @endcan
 
-                        {{-- 3. Botón ELIMINAR (🗑 SVG nítido de alta definición) --}}
+                        {{-- 3. Botón ELIMINAR (SVG nítido de alta definición) --}}
                         @can('delete', $plan)
                             @if ($plan->estado == 'confirmado')
-                                <button class="boton boton-rojo" disabled
-                                    style="min-height: 44px; min-width: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center; opacity: 0.4; cursor: not-allowed;"
+                                <button class="boton boton-rojo boton-accion-sm" disabled
+                                    style="opacity: 0.4; cursor: not-allowed;"
                                     title="Cancela el plan antes de eliminarlo"
                                     aria-label="Eliminar no disponible en plan confirmado">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                                        stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
-                                        style="display: block;">
-                                        <path d="M3 6h18" />
-                                        <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                        <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                        <line x1="10" x2="10" y1="11" y2="17" />
-                                        <line x1="14" x2="14" y1="11" y2="17" />
-                                    </svg>
-                                    <span class="sr-only"
-                                        style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">Eliminar
-                                        plan</span>
+                                    <x-icono nombre="eliminar" style="width: 18px; height: 18px;" />
+                                    <span class="sr-only">Eliminar plan</span>
                                 </button>
                             @else
                                 <form method="POST" action="{{ route('planes.eliminar', $plan) }}" style="margin: 0;">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="boton boton-rojo"
-                                        style="min-height: 44px; min-width: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center;"
+                                    <button type="submit" class="boton boton-rojo boton-accion-sm"
                                         data-confirm="¿Eliminar &laquo;{{ $plan->nombre }}&raquo;? Esta acción no se puede deshacer."
                                         data-title="Eliminar plan" data-btn-ok="Sí, eliminar" data-btn-cancel="Volver"
                                         data-type="danger" title="Eliminar plan"
                                         aria-label="Eliminar plan {{ $plan->nombre }}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
-                                            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
-                                            style="display: block;">
-                                            <path d="M3 6h18" />
-                                            <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                                            <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                                            <line x1="10" x2="10" y1="11" y2="17" />
-                                            <line x1="14" x2="14" y1="11" y2="17" />
-                                        </svg>
-                                        <span class="sr-only"
-                                            style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">Eliminar
-                                            plan</span>
+                                        <x-icono nombre="eliminar" style="width: 18px; height: 18px;" />
+                                        <span class="sr-only">Eliminar plan</span>
                                     </button>
                                 </form>
                             @endif

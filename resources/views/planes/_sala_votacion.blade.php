@@ -18,7 +18,7 @@
 
             <div style="display: flex; flex-wrap: wrap; gap: 24px; margin-top: 6px; font-size: 15px;">
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;" aria-hidden="true">📅</span>
+                    <x-icono nombre="calendario" style="width: 20px; height: 20px; color: #2e5939;" />
                     <div>
                         <span style="font-weight: 600; color: #4a4a49;">Fecha acordada:</span>
                         @php
@@ -36,7 +36,7 @@
                 </div>
 
                 <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-size: 18px;" aria-hidden="true">📍</span>
+                    <x-icono nombre="ubicacion" style="width: 20px; height: 20px; color: #2e5939;" />
                     <div>
                         <span style="font-weight: 600; color: #4a4a49;">Lugar acordado:</span>
                         <span style="font-weight: 700; color: #1c1c1a;">
@@ -67,8 +67,8 @@
                         class="boton"
                         style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; font-weight: 600; border-radius: 50px; background: #25663a; color: #ffffff;"
                         onclick="document.getElementById('modal-confirmar-plan').showModal()"
-                        aria-label="✓ Cerrar votación y confirmar">
-                    ✓ Cerrar votación y confirmar
+                        aria-label="Cerrar votación y confirmar">
+                    <x-icono nombre="check" style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Cerrar votación y confirmar
                 </button>
             @endcan
 
@@ -95,7 +95,7 @@
            aria-selected="{{ $pestanaActiva === 'fechas' ? 'true' : 'false' }}"
            class="boton {{ $pestanaActiva === 'fechas' ? '' : 'boton-claro' }}"
            style="min-height: 44px; min-width: 44px; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 50px; background: {{ $pestanaActiva === 'fechas' ? '#ffe683' : '#ffffff' }}; color: #1c1c1a; border: 1px solid {{ $pestanaActiva === 'fechas' ? '#ffe683' : '#e3e3df' }};">
-            📅 Fechas propuestas ({{ $fechas->count() }})
+            <x-icono nombre="calendario" style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Fechas propuestas ({{ $fechas->count() }})
         </a>
 
         <a href="{{ route('planes.detalle', ['plan' => $plan, 'tab' => 'lugares']) }}"
@@ -103,7 +103,7 @@
            aria-selected="{{ $pestanaActiva === 'lugares' ? 'true' : 'false' }}"
            class="boton {{ $pestanaActiva === 'lugares' ? '' : 'boton-claro' }}"
            style="min-height: 44px; min-width: 44px; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 50px; background: {{ $pestanaActiva === 'lugares' ? '#ffe683' : '#ffffff' }}; color: #1c1c1a; border: 1px solid {{ $pestanaActiva === 'lugares' ? '#ffe683' : '#e3e3df' }};">
-            📍 Lugares propuestos ({{ $lugares->count() }})
+            <x-icono nombre="ubicacion" style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Lugares propuestos ({{ $lugares->count() }})
         </a>
     </div>
 
@@ -173,7 +173,7 @@
                                     style="width: 100%; min-height: 44px; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center; font-weight: 600; gap: 8px;"
                                     aria-label="{{ $haVotado ? 'Retirar voto de ' . $textoValor : 'Votar por ' . $textoValor }}">
                                 @if ($haVotado)
-                                    ✓ Votado (clic para retirar)
+                                    <x-icono nombre="check" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Votado (clic para retirar)
                                 @else
                                     Votar por esta opción
                                 @endif
@@ -246,7 +246,7 @@
                 </button>
             </div>
             <div id="feedback-fecha-confirmada" style="display: none; margin-top: 8px; padding: 8px 12px; background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 8px; font-size: 13px; color: #1b5e20; font-weight: 600; align-items: center; gap: 6px;">
-                <span>✓ Fecha confirmada:</span>
+                <span style="display: inline-flex; align-items: center; gap: 6px;"><x-icono nombre="check" style="width: 16px; height: 16px;" /> Fecha confirmada:</span>
                 <span id="texto-fecha-confirmada" style="font-weight: 700;"></span>
             </div>
             <p style="margin: 4px 0 0 0; font-size: 12px; color: #6f6f6a;">Selecciona el momento exacto y pulsa «Aceptar fecha» para fijar tu elección.</p>
@@ -396,7 +396,7 @@
         {{-- Bloque Selección de Fecha --}}
         <div style="margin-bottom: 20px;">
             <label style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 8px;">
-                📅 Fecha definitiva
+                <x-icono nombre="calendario" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Fecha definitiva
             </label>
             @if ($candidatosFecha->isEmpty())
                 <div style="padding: 10px 14px; background: #fbfbf9; border: 1px solid #e3e3df; border-radius: 8px; font-size: 14px; color: #6f6f6a;">
@@ -404,7 +404,7 @@
                 </div>
             @elseif ($empateFechas)
                 <div style="padding: 10px 14px; background: #fff4d6; border: 1px solid #ffe683; border-radius: 8px; margin-bottom: 10px; font-size: 13px; color: #8a6100; font-weight: 600;">
-                    ⚖️ Existe un empate en las fechas más votadas. Elige la opción ganadora:
+                    <x-icono nombre="balanza" style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Existe un empate en las fechas más votadas. Elige la opción ganadora:
                 </div>
                 <select name="propuesta_fecha_id" required style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; min-height: 44px; box-sizing: border-box;">
                     <option value="">-- Selecciona la fecha definitiva --</option>
@@ -430,7 +430,7 @@
                 @endphp
                 <input type="hidden" name="propuesta_fecha_id" value="{{ $ganadorF->id }}">
                 <div style="padding: 12px 16px; background: #edf7ef; border: 1px solid #c2e2c8; border-radius: 10px; font-size: 14px; color: #25663a; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-weight: 600;">✓ Ganador indiscutido: {{ $textoGanadorF }}</span>
+                    <span style="font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><x-icono nombre="check" style="width: 16px; height: 16px;" /> Ganador indiscutido: {{ $textoGanadorF }}</span>
                     <span style="font-weight: 700; background: #ffffff; padding: 2px 10px; border-radius: 50px; font-size: 12px;">
                         {{ $ganadorF->votos->count() }} votos
                     </span>
@@ -441,7 +441,7 @@
         {{-- Bloque Selección de Lugar --}}
         <div style="margin-bottom: 20px;">
             <label style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 8px;">
-                📍 Lugar o destino definitivo
+                <x-icono nombre="ubicacion" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Lugar o destino definitivo
             </label>
             @if ($candidatosLugar->isEmpty())
                 <div style="padding: 10px 14px; background: #fbfbf9; border: 1px solid #e3e3df; border-radius: 8px; font-size: 14px; color: #6f6f6a;">
@@ -449,7 +449,7 @@
                 </div>
             @elseif ($empateLugares)
                 <div style="padding: 10px 14px; background: #fff4d6; border: 1px solid #ffe683; border-radius: 8px; margin-bottom: 10px; font-size: 13px; color: #8a6100; font-weight: 600;">
-                    ⚖️ Existe un empate en los lugares más votados. Elige la opción ganadora:
+                    <x-icono nombre="balanza" style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Existe un empate en los lugares más votados. Elige la opción ganadora:
                 </div>
                 <select name="propuesta_lugar_id" required style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; min-height: 44px; box-sizing: border-box;">
                     <option value="">-- Selecciona el lugar definitivo --</option>
@@ -465,7 +465,7 @@
                 @endphp
                 <input type="hidden" name="propuesta_lugar_id" value="{{ $ganadorL->id }}">
                 <div style="padding: 12px 16px; background: #edf7ef; border: 1px solid #c2e2c8; border-radius: 10px; font-size: 14px; color: #25663a; display: flex; justify-content: space-between; align-items: center;">
-                    <span style="font-weight: 600;">✓ Ganador indiscutido: {{ $ganadorL->valor }}</span>
+                    <span style="font-weight: 600; display: inline-flex; align-items: center; gap: 6px;"><x-icono nombre="check" style="width: 16px; height: 16px;" /> Ganador indiscutido: {{ $ganadorL->valor }}</span>
                     <span style="font-weight: 700; background: #ffffff; padding: 2px 10px; border-radius: 50px; font-size: 12px;">
                         {{ $ganadorL->votos->count() }} votos
                     </span>
