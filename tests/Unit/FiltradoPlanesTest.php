@@ -29,8 +29,8 @@ class FiltradoPlanesTest extends TestCase
         Plan::factory()->create(['user_id' => $this->usuario->id, 'nombre' => 'Cena familiar']); // pendiente
 
         $resultado = Plan::where('user_id', $this->usuario->id)
-                         ->filtrar(null, 'confirmado', null)
-                         ->get();
+            ->filtrar(null, 'confirmado', null)
+            ->get();
 
         $this->assertCount(1, $resultado);
         $this->assertEquals('confirmado', $resultado->first()->estado);
@@ -43,8 +43,8 @@ class FiltradoPlanesTest extends TestCase
         Plan::factory()->create(['user_id' => $this->usuario->id, 'nombre' => 'Cena familiar']);
 
         $resultado = Plan::where('user_id', $this->usuario->id)
-                         ->filtrar('Viaje', null, null)
-                         ->get();
+            ->filtrar('Viaje', null, null)
+            ->get();
 
         $this->assertCount(1, $resultado);
         $this->assertStringContainsString('Viaje', $resultado->first()->nombre);
@@ -55,18 +55,18 @@ class FiltradoPlanesTest extends TestCase
     {
         // Este cumple ambos filtros
         Plan::factory()->confirmado()->create([
-            'user_id'      => $this->usuario->id,
+            'user_id' => $this->usuario->id,
             'fecha_limite' => now()->addDays(3),
         ]);
         // Este está confirmado pero fuera del rango de 7 días
         Plan::factory()->confirmado()->create([
-            'user_id'      => $this->usuario->id,
+            'user_id' => $this->usuario->id,
             'fecha_limite' => now()->addDays(20),
         ]);
 
         $resultado = Plan::where('user_id', $this->usuario->id)
-                         ->filtrar(null, 'confirmado', '7dias')
-                         ->get();
+            ->filtrar(null, 'confirmado', '7dias')
+            ->get();
 
         $this->assertCount(1, $resultado);
     }
@@ -79,8 +79,8 @@ class FiltradoPlanesTest extends TestCase
         Plan::factory()->create(['user_id' => $this->usuario->id, 'nombre' => 'Cena familiar']);
 
         $resultado = Plan::where('user_id', $this->usuario->id)
-                         ->filtrar('Viaje', null, null)
-                         ->get();
+            ->filtrar('Viaje', null, null)
+            ->get();
 
         $this->assertCount(0, $resultado);
     }
@@ -89,13 +89,13 @@ class FiltradoPlanesTest extends TestCase
     public function test_vencidos_no_incluye_futuros(): void
     {
         Plan::factory()->create([
-            'user_id'      => $this->usuario->id,
+            'user_id' => $this->usuario->id,
             'fecha_limite' => now()->addDays(5), // futuro
         ]);
 
         $resultado = Plan::where('user_id', $this->usuario->id)
-                         ->filtrar(null, null, 'vencidos')
-                         ->get();
+            ->filtrar(null, null, 'vencidos')
+            ->get();
 
         $this->assertCount(0, $resultado);
     }

@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Opcion;
 use App\Models\Plan;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class ConfirmarPlanRequest extends FormRequest
@@ -19,7 +20,7 @@ class ConfirmarPlanRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -34,7 +35,7 @@ class ConfirmarPlanRequest extends FormRequest
         return [
             'propuesta_fecha_id' => ['required', 'integer', 'exists:opciones,id'],
             'propuesta_lugar_id' => ['nullable', 'integer', 'exists:opciones,id'],
-            'motivo_desempate'   => $tieneEmpate
+            'motivo_desempate' => $tieneEmpate
                 ? ['required', 'string', 'min:5', 'max:1000']
                 : ['nullable', 'string', 'max:1000'],
         ];
@@ -53,17 +54,17 @@ class ConfirmarPlanRequest extends FormRequest
                 $plan = Plan::find($plan);
             }
 
-            if (!$plan) {
+            if (! $plan) {
                 return;
             }
 
             if ($this->filled('propuesta_fecha_id')) {
                 $opcionFecha = Opcion::find($this->propuesta_fecha_id);
-                if (!$opcionFecha || !$plan->validarPropuestaPertenece($opcionFecha, 'fecha')) {
+                if (! $opcionFecha || ! $plan->validarPropuestaPertenece($opcionFecha, 'fecha')) {
                     $validator->errors()->add('propuesta_fecha_id', 'La fecha seleccionada no pertenece a este plan.');
                 } elseif ($plan->tieneEmpateFechas()) {
                     $empatadas = $plan->obtenerPropuestasEmpatadas('fecha')->pluck('id');
-                    if (!$empatadas->contains($opcionFecha->id)) {
+                    if (! $empatadas->contains($opcionFecha->id)) {
                         $validator->errors()->add('propuesta_fecha_id', 'Debes seleccionar una de las fechas empatadas con mayor votación.');
                     }
                 }
@@ -71,11 +72,11 @@ class ConfirmarPlanRequest extends FormRequest
 
             if ($this->filled('propuesta_lugar_id')) {
                 $opcionLugar = Opcion::find($this->propuesta_lugar_id);
-                if (!$opcionLugar || !$plan->validarPropuestaPertenece($opcionLugar, 'lugar')) {
+                if (! $opcionLugar || ! $plan->validarPropuestaPertenece($opcionLugar, 'lugar')) {
                     $validator->errors()->add('propuesta_lugar_id', 'El lugar seleccionado no pertenece a este plan.');
                 } elseif ($plan->tieneEmpateLugares()) {
                     $empatadas = $plan->obtenerPropuestasEmpatadas('lugar')->pluck('id');
-                    if (!$empatadas->contains($opcionLugar->id)) {
+                    if (! $empatadas->contains($opcionLugar->id)) {
                         $validator->errors()->add('propuesta_lugar_id', 'Debes seleccionar uno de los lugares empatados con mayor votación.');
                     }
                 }
@@ -92,10 +93,10 @@ class ConfirmarPlanRequest extends FormRequest
     {
         return [
             'propuesta_fecha_id.required' => 'Debes seleccionar una fecha confirmada para el plan.',
-            'propuesta_fecha_id.exists'   => 'La opción de fecha seleccionada no es válida.',
-            'propuesta_lugar_id.exists'   => 'La opción de lugar seleccionada no es válida.',
-            'motivo_desempate.required'   => 'Al existir un empate, es obligatorio registrar el motivo de tu decisión.',
-            'motivo_desempate.min'        => 'El motivo de desempate debe contener al menos 5 caracteres.',
+            'propuesta_fecha_id.exists' => 'La opción de fecha seleccionada no es válida.',
+            'propuesta_lugar_id.exists' => 'La opción de lugar seleccionada no es válida.',
+            'motivo_desempate.required' => 'Al existir un empate, es obligatorio registrar el motivo de tu decisión.',
+            'motivo_desempate.min' => 'El motivo de desempate debe contener al menos 5 caracteres.',
         ];
     }
 }

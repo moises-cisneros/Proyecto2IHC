@@ -141,6 +141,7 @@ class Plan extends Model
         }
 
         $maxVotos = $opciones->max('votos_count');
+
         return $opciones->where('votos_count', $maxVotos)->values();
     }
 
@@ -185,7 +186,7 @@ class Plan extends Model
      */
     public function asignarGanadora(Opcion $opcion, ?string $motivo = null): void
     {
-        if (!$this->validarPropuestaPertenece($opcion, $opcion->tipo)) {
+        if (! $this->validarPropuestaPertenece($opcion, $opcion->tipo)) {
             throw new \InvalidArgumentException("La propuesta #{$opcion->id} no pertenece al plan #{$this->id}.");
         }
 
@@ -226,10 +227,10 @@ class Plan extends Model
     public function participantes(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'invitaciones', 'plan_id', 'user_id')
-                    ->wherePivot('estado', 'aceptada');
+            ->wherePivot('estado', 'aceptada');
     }
 
-    //  para busqueda y filtros 
+    //  para busqueda y filtros
     public function scopeFiltrar($query, ?string $buscar, ?string $estado, ?string $fecha)
     {
         if ($buscar) {

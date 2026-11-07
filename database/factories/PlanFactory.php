@@ -13,11 +13,11 @@ class PlanFactory extends Factory
     public function definition(): array
     {
         return [
-            'nombre'      => $this->faker->sentence(3),
+            'nombre' => $this->faker->sentence(3),
             'organizador' => $this->faker->name(),
             'fecha_limite' => now()->addDays(rand(1, 30)),
-            'estado'      => 'pendiente',
-            'user_id'     => User::factory(),
+            'estado' => 'pendiente',
+            'user_id' => User::factory(),
         ];
     }
 

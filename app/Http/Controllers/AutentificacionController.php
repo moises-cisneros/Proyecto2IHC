@@ -24,22 +24,23 @@ class AutentificacionController extends Controller
     public function ingresar(Request $request)
     {
         $request->validate([
-            'correo'     => 'required|email',
+            'correo' => 'required|email',
             'contrasena' => 'required',
         ], [
-            'correo.required'     => 'Escribe tu correo.',
-            'correo.email'        => 'El correo no es válido.',
+            'correo.required' => 'Escribe tu correo.',
+            'correo.email' => 'El correo no es válido.',
             'contrasena.required' => 'Escribe tu contraseña.',
         ]);
 
         // Auth::attempt hace la búsqueda en la BD y compara el hash de la contraseña
         $credenciales = [
-            'email'    => $request->correo,
+            'email' => $request->correo,
             'password' => $request->contrasena,
         ];
 
         if (Auth::attempt($credenciales)) {
             $request->session()->regenerate(); // Previene ataques de fijación de sesión
+
             return redirect()->route('planes.listar');
         }
 
@@ -60,23 +61,23 @@ class AutentificacionController extends Controller
     public function registrar(Request $request)
     {
         $request->validate([
-            'nombre'     => 'required|max:255',
-            'correo'     => 'required|email|unique:users,email',
+            'nombre' => 'required|max:255',
+            'correo' => 'required|email|unique:users,email',
             'contrasena' => 'required|min:8|confirmed',
         ], [
-            'nombre.required'      => 'Escribe tu nombre.',
-            'correo.required'      => 'Escribe tu correo.',
-            'correo.email'         => 'El correo no es válido.',
-            'correo.unique'        => 'Ese correo ya está registrado.',
-            'contrasena.required'  => 'Escribe una contraseña.',
-            'contrasena.min'       => 'La contraseña debe tener al menos 8 caracteres.',
+            'nombre.required' => 'Escribe tu nombre.',
+            'correo.required' => 'Escribe tu correo.',
+            'correo.email' => 'El correo no es válido.',
+            'correo.unique' => 'Ese correo ya está registrado.',
+            'contrasena.required' => 'Escribe una contraseña.',
+            'contrasena.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'contrasena.confirmed' => 'Las contraseñas no coinciden.',
         ]);
 
         // Creamos el usuario y hasheamos la contraseña (nunca guardar en texto plano)
-        $usuario = new User();
-        $usuario->name     = $request->nombre;
-        $usuario->email    = $request->correo;
+        $usuario = new User;
+        $usuario->name = $request->nombre;
+        $usuario->email = $request->correo;
         $usuario->password = Hash::make($request->contrasena);
         $usuario->save();
 
@@ -103,7 +104,7 @@ class AutentificacionController extends Controller
             'correo' => 'required|email',
         ], [
             'correo.required' => 'Escribe tu correo.',
-            'correo.email'    => 'El correo no es válido.',
+            'correo.email' => 'El correo no es válido.',
         ]);
 
         // Laravel genera el token y envía el correo automáticamente
@@ -131,26 +132,27 @@ class AutentificacionController extends Controller
     public function mostrarRestablecer(Request $request, $token)
     {
         $correo = $request->email; // Viene en el enlace: ?email=...
+
         return view('acceso.restablecer', compact('token', 'correo'));
     }
 
     public function restablecer(Request $request)
     {
         $request->validate([
-            'correo'     => 'required|email',
+            'correo' => 'required|email',
             'contrasena' => 'required|min:8|confirmed',
         ], [
-            'correo.required'      => 'Escribe tu correo.',
-            'contrasena.required'  => 'Escribe la nueva contraseña.',
-            'contrasena.min'       => 'La contraseña debe tener al menos 8 caracteres.',
+            'correo.required' => 'Escribe tu correo.',
+            'contrasena.required' => 'Escribe la nueva contraseña.',
+            'contrasena.min' => 'La contraseña debe tener al menos 8 caracteres.',
             'contrasena.confirmed' => 'Las contraseñas no coinciden.',
         ]);
 
         $datos = [
-            'email'                 => $request->correo,
-            'password'              => $request->contrasena,
+            'email' => $request->correo,
+            'password' => $request->contrasena,
             'password_confirmation' => $request->contrasena_confirmation,
-            'token'                 => $request->token,
+            'token' => $request->token,
         ];
 
         // Laravel revisa que el token sea válido y luego ejecuta esta función

@@ -25,7 +25,7 @@ class AbandonoPlanTest extends TestCase
 
         Invitacion::factory()->aceptada($participante)->create([
             'plan_id' => $plan->id,
-            'email'   => $participante->email,
+            'email' => $participante->email,
         ]);
 
         $response = $this->actingAs($participante)
@@ -73,17 +73,17 @@ class AbandonoPlanTest extends TestCase
 
         $plan = Plan::factory()->create([
             'user_id' => $creador->id,
-            'nombre'  => 'Festival de Música',
+            'nombre' => 'Festival de Música',
         ]);
 
         Invitacion::factory()->aceptada($participante1)->create([
             'plan_id' => $plan->id,
-            'email'   => $participante1->email,
+            'email' => $participante1->email,
         ]);
 
         Invitacion::factory()->aceptada($participante2)->create([
             'plan_id' => $plan->id,
-            'email'   => $participante2->email,
+            'email' => $participante2->email,
         ]);
 
         // Participante 1 abandona el plan
@@ -94,7 +94,7 @@ class AbandonoPlanTest extends TestCase
 
         // El plan principal sigue existiendo
         $this->assertDatabaseHas('planes', [
-            'id'     => $plan->id,
+            'id' => $plan->id,
             'nombre' => 'Festival de Música',
         ]);
 
@@ -108,7 +108,7 @@ class AbandonoPlanTest extends TestCase
         $this->assertDatabaseHas('invitaciones', [
             'plan_id' => $plan->id,
             'user_id' => $participante2->id,
-            'estado'  => 'aceptada',
+            'estado' => 'aceptada',
         ]);
 
         $plan->refresh();
@@ -130,41 +130,41 @@ class AbandonoPlanTest extends TestCase
         $opcionFecha = Opcion::factory()->create([
             'plan_id' => $plan->id,
             'user_id' => $creador->id,
-            'tipo'    => 'fecha',
-            'valor'   => '2026-11-20',
+            'tipo' => 'fecha',
+            'valor' => '2026-11-20',
         ]);
 
         $opcionLugar = Opcion::factory()->create([
             'plan_id' => $plan->id,
             'user_id' => $creador->id,
-            'tipo'    => 'lugar',
-            'valor'   => 'Club Campestre',
+            'tipo' => 'lugar',
+            'valor' => 'Club Campestre',
         ]);
 
         Invitacion::factory()->aceptada($participante1)->create([
             'plan_id' => $plan->id,
-            'email'   => $participante1->email,
+            'email' => $participante1->email,
         ]);
 
         Invitacion::factory()->aceptada($participante2)->create([
             'plan_id' => $plan->id,
-            'email'   => $participante2->email,
+            'email' => $participante2->email,
         ]);
 
         // Participante 1 vota en ambas opciones
         Voto::factory()->create([
             'opcion_id' => $opcionFecha->id,
-            'user_id'   => $participante1->id,
+            'user_id' => $participante1->id,
         ]);
         Voto::factory()->create([
             'opcion_id' => $opcionLugar->id,
-            'user_id'   => $participante1->id,
+            'user_id' => $participante1->id,
         ]);
 
         // Participante 2 vota en la primera opción
         Voto::factory()->create([
             'opcion_id' => $opcionFecha->id,
-            'user_id'   => $participante2->id,
+            'user_id' => $participante2->id,
         ]);
 
         // Participante 1 abandona el plan
@@ -174,17 +174,17 @@ class AbandonoPlanTest extends TestCase
         // Todos los votos del Participante 1 en el plan fueron removidos
         $this->assertDatabaseMissing('votos', [
             'opcion_id' => $opcionFecha->id,
-            'user_id'   => $participante1->id,
+            'user_id' => $participante1->id,
         ]);
         $this->assertDatabaseMissing('votos', [
             'opcion_id' => $opcionLugar->id,
-            'user_id'   => $participante1->id,
+            'user_id' => $participante1->id,
         ]);
 
         // El voto del Participante 2 sigue vigente
         $this->assertDatabaseHas('votos', [
             'opcion_id' => $opcionFecha->id,
-            'user_id'   => $participante2->id,
+            'user_id' => $participante2->id,
         ]);
     }
 

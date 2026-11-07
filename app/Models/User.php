@@ -79,7 +79,7 @@ class User extends Authenticatable
     public function planesParticipados(): BelongsToMany
     {
         return $this->belongsToMany(Plan::class, 'invitaciones', 'user_id', 'plan_id')
-                    ->wherePivot('estado', 'aceptada');
+            ->wherePivot('estado', 'aceptada');
     }
 
     /**

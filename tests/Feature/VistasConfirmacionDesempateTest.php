@@ -6,7 +6,6 @@ use App\Models\Invitacion;
 use App\Models\Opcion;
 use App\Models\Plan;
 use App\Models\User;
-use App\Models\Voto;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

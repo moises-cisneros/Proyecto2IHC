@@ -60,7 +60,7 @@ class PlanPolicy
      */
     public function confirmar(User $user, Plan $plan): bool
     {
-        if (!$this->isCreator($user, $plan)) {
+        if (! $this->isCreator($user, $plan)) {
             return false;
         }
 
@@ -139,11 +139,11 @@ class PlanPolicy
     {
         return $plan->participantes()->where('users.id', $user->id)->exists()
             || $plan->invitaciones()
-                    ->where('estado', 'aceptada')
-                    ->where(function ($query) use ($user) {
-                        $query->where('user_id', $user->id)
-                              ->orWhere('email', $user->email);
-                    })->exists();
+                ->where('estado', 'aceptada')
+                ->where(function ($query) use ($user) {
+                    $query->where('user_id', $user->id)
+                        ->orWhere('email', $user->email);
+                })->exists();
     }
 
     /**
@@ -152,11 +152,11 @@ class PlanPolicy
     public function isInvitado(User $user, Plan $plan): bool
     {
         return $plan->invitaciones()
-                    ->where('estado', 'pendiente')
-                    ->where(function ($query) use ($user) {
-                        $query->where('user_id', $user->id)
-                              ->orWhere('email', $user->email);
-                    })->exists();
+            ->where('estado', 'pendiente')
+            ->where(function ($query) use ($user) {
+                $query->where('user_id', $user->id)
+                    ->orWhere('email', $user->email);
+            })->exists();
     }
 
     /**

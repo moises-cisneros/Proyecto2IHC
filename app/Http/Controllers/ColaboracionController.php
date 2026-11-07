@@ -31,7 +31,7 @@ class ColaboracionController extends Controller
         ]);
 
         $pestanaActiva = $request->input('tab', 'fechas');
-        if (!in_array($pestanaActiva, ['fechas', 'lugares'])) {
+        if (! in_array($pestanaActiva, ['fechas', 'lugares'])) {
             $pestanaActiva = 'fechas';
         }
 
@@ -56,11 +56,11 @@ class ColaboracionController extends Controller
 
         $invitacion = Invitacion::firstOrNew([
             'plan_id' => $plan->id,
-            'email'   => $request->email,
+            'email' => $request->email,
         ]);
 
-        $invitacion->token   = Str::random(40);
-        $invitacion->estado  = 'pendiente';
+        $invitacion->token = Str::random(40);
+        $invitacion->estado = 'pendiente';
         $invitacion->user_id = $usuarioExistente?->id;
         $invitacion->save();
 
@@ -88,7 +88,7 @@ class ColaboracionController extends Controller
             ->where('estado', 'pendiente')
             ->where(function ($q) use ($usuario) {
                 $q->where('user_id', $usuario->id)
-                  ->orWhere('email', $usuario->email);
+                    ->orWhere('email', $usuario->email);
             })
             ->firstOrFail();
 
@@ -116,15 +116,15 @@ class ColaboracionController extends Controller
         Gate::authorize('proponer', $plan);
 
         $request->validate([
-            'tipo'        => 'required|in:fecha,lugar',
-            'valor'       => 'required|string|max:255',
+            'tipo' => 'required|in:fecha,lugar',
+            'valor' => 'required|string|max:255',
             'descripcion' => 'nullable|string|max:500',
         ]);
 
         $plan->opciones()->create([
-            'user_id'     => auth()->id(),
-            'tipo'        => $request->tipo,
-            'valor'       => $request->valor,
+            'user_id' => auth()->id(),
+            'tipo' => $request->tipo,
+            'valor' => $request->valor,
             'descripcion' => $request->descripcion,
         ]);
 
@@ -132,7 +132,7 @@ class ColaboracionController extends Controller
         $plan->actividades()->create([
             'user_id' => auth()->id(),
             'accion' => 'propuesta',
-            'descripcion' => auth()->user()->name . " propuso una nueva opción de {$request->tipo}: {$request->valor}",
+            'descripcion' => auth()->user()->name." propuso una nueva opción de {$request->tipo}: {$request->valor}",
             'estado_resultante' => $plan->estado,
         ]);
 
@@ -157,20 +157,20 @@ class ColaboracionController extends Controller
             $opcion->plan->actividades()->create([
                 'user_id' => auth()->id(),
                 'accion' => 'voto',
-                'descripcion' => auth()->user()->name . " retiró su voto de la opción {$opcion->valor}",
+                'descripcion' => auth()->user()->name." retiró su voto de la opción {$opcion->valor}",
                 'estado_resultante' => $opcion->plan->estado,
             ]);
         } else {
             Voto::create([
                 'opcion_id' => $opcion->id,
-                'user_id'   => auth()->id(),
+                'user_id' => auth()->id(),
             ]);
             $mensaje = '¡Voto registrado!';
 
             $opcion->plan->actividades()->create([
                 'user_id' => auth()->id(),
                 'accion' => 'voto',
-                'descripcion' => auth()->user()->name . " votó por la opción {$opcion->valor}",
+                'descripcion' => auth()->user()->name." votó por la opción {$opcion->valor}",
                 'estado_resultante' => $opcion->plan->estado,
             ]);
         }
@@ -199,7 +199,7 @@ class ColaboracionController extends Controller
         $plan->invitaciones()
             ->where(function ($q) use ($usuario) {
                 $q->where('user_id', $usuario->id)
-                  ->orWhere('email', $usuario->email);
+                    ->orWhere('email', $usuario->email);
             })
             ->delete();
 

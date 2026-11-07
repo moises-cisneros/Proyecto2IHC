@@ -24,14 +24,14 @@ class SalaColaborativaVistaTest extends TestCase
         $ajeno = User::factory()->create();
 
         $plan = Plan::factory()->create([
-            'user_id'     => $creador->id,
-            'nombre'      => 'Viaje a la Costa',
+            'user_id' => $creador->id,
+            'nombre' => 'Viaje a la Costa',
             'organizador' => $creador->name,
         ]);
 
         Invitacion::factory()->aceptada($participante)->create([
             'plan_id' => $plan->id,
-            'email'   => $participante->email,
+            'email' => $participante->email,
         ]);
 
         // Creador tiene acceso 200 OK
@@ -56,10 +56,10 @@ class SalaColaborativaVistaTest extends TestCase
     {
         $creador = User::factory()->create(['name' => 'Elena Vega']);
         $plan = Plan::factory()->create([
-            'user_id'      => $creador->id,
-            'nombre'       => 'Cena de Aniversario',
-            'organizador'  => 'Elena Vega',
-            'estado'       => 'pendiente',
+            'user_id' => $creador->id,
+            'nombre' => 'Cena de Aniversario',
+            'organizador' => 'Elena Vega',
+            'estado' => 'pendiente',
             'fecha_limite' => '2026-12-24',
         ]);
 
@@ -81,13 +81,13 @@ class SalaColaborativaVistaTest extends TestCase
         $creador = User::factory()->create(['name' => 'Marcos Creador']);
         $participante = User::factory()->create(['name' => 'Lucía Colaboradora']);
         $plan = Plan::factory()->create([
-            'user_id'     => $creador->id,
+            'user_id' => $creador->id,
             'organizador' => $creador->name,
         ]);
 
         Invitacion::factory()->aceptada($participante)->create([
             'plan_id' => $plan->id,
-            'email'   => $participante->email,
+            'email' => $participante->email,
         ]);
 
         // Consulta del creador: ve ambos colaboradores y el botón "Invitar"
@@ -116,21 +116,21 @@ class SalaColaborativaVistaTest extends TestCase
         $opcionFecha = Opcion::factory()->create([
             'plan_id' => $plan->id,
             'user_id' => $creador->id,
-            'tipo'    => 'fecha',
-            'valor'   => 'Sábado 15 de Noviembre 20:00',
+            'tipo' => 'fecha',
+            'valor' => 'Sábado 15 de Noviembre 20:00',
         ]);
 
         $opcionLugar = Opcion::factory()->create([
             'plan_id' => $plan->id,
             'user_id' => $creador->id,
-            'tipo'    => 'lugar',
-            'valor'   => 'Terraza Bella Vista',
+            'tipo' => 'lugar',
+            'valor' => 'Terraza Bella Vista',
         ]);
 
         // Emitir un voto en la fecha
         Voto::factory()->create([
             'opcion_id' => $opcionFecha->id,
-            'user_id'   => $creador->id,
+            'user_id' => $creador->id,
         ]);
 
         // Ver pestaña por defecto (fechas)
@@ -172,16 +172,16 @@ class SalaColaborativaVistaTest extends TestCase
     {
         $creador = User::factory()->create(['name' => 'Organizador Principal']);
         $invitado = User::factory()->create([
-            'name'  => 'Carlos Invitado',
+            'name' => 'Carlos Invitado',
             'email' => 'carlos@invitado.com',
         ]);
         $plan = Plan::factory()->create(['user_id' => $creador->id]);
 
         Invitacion::factory()->create([
             'plan_id' => $plan->id,
-            'email'   => $invitado->email,
+            'email' => $invitado->email,
             'user_id' => $invitado->id,
-            'estado'  => 'pendiente',
+            'estado' => 'pendiente',
         ]);
 
         // Creador ve el nombre del usuario invitado en la sección de pendientes
@@ -206,14 +206,14 @@ class SalaColaborativaVistaTest extends TestCase
         $creador = User::factory()->create();
         $plan = Plan::factory()->cancelado()->create([
             'user_id' => $creador->id,
-            'nombre'  => 'Paseo de Montaña Cancelado',
+            'nombre' => 'Paseo de Montaña Cancelado',
         ]);
 
         $opcion = Opcion::factory()->create([
             'plan_id' => $plan->id,
             'user_id' => $creador->id,
-            'tipo'    => 'fecha',
-            'valor'   => 'Sábado 20 de Diciembre',
+            'tipo' => 'fecha',
+            'valor' => 'Sábado 20 de Diciembre',
         ]);
 
         $response = $this->actingAs($creador)->get(route('planes.detalle', $plan));

@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\Opcion;
 use App\Models\Plan;
-use App\Models\PlanActivity;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;

@@ -17,6 +17,7 @@ class ColaboracionModelosTest extends TestCase
     use RefreshDatabase;
 
     private User $usuario;
+
     private Plan $plan;
 
     protected function setUp(): void

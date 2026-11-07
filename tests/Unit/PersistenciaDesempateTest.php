@@ -170,7 +170,7 @@ class PersistenciaDesempateTest extends TestCase
         $this->assertFalse($planA->validarPropuestaPertenece($propuestaAjena, 'fecha'));
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage("no pertenece al plan");
+        $this->expectExceptionMessage('no pertenece al plan');
 
         $planA->asignarGanadora($propuestaAjena, 'Intento de asignacion indebida');
     }

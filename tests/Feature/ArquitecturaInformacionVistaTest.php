@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Invitacion;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -122,4 +121,3 @@ class ArquitecturaInformacionVistaTest extends TestCase
         $response->assertSee('name="seccion" value="invitaciones"', false);
     }
 }
-

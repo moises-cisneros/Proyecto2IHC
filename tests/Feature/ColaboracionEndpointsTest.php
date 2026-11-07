@@ -30,8 +30,8 @@ class ColaboracionEndpointsTest extends TestCase
         $response->assertSessionHasNoErrors();
         $this->assertDatabaseHas('invitaciones', [
             'plan_id' => $plan->id,
-            'email'   => 'colaborador1@ejemplo.com',
-            'estado'  => 'pendiente',
+            'email' => 'colaborador1@ejemplo.com',
+            'estado' => 'pendiente',
         ]);
 
         $invitacion1 = Invitacion::where('email', 'colaborador1@ejemplo.com')->first();
@@ -60,40 +60,40 @@ class ColaboracionEndpointsTest extends TestCase
         Invitacion::factory()->aceptada()->create([
             'plan_id' => $plan->id,
             'user_id' => $participante->id,
-            'email'   => $participante->email,
+            'email' => $participante->email,
         ]);
 
         // Proponer opción de fecha
         $responseFecha = $this->actingAs($participante)
             ->post(route('planes.opciones.guardar', $plan), [
-                'tipo'        => 'fecha',
-                'valor'       => '2026-11-20 19:30:00',
+                'tipo' => 'fecha',
+                'valor' => '2026-11-20 19:30:00',
                 'descripcion' => 'Viernes por la noche',
             ]);
 
         $responseFecha->assertSessionHasNoErrors();
         $this->assertDatabaseHas('opciones', [
-            'plan_id'     => $plan->id,
-            'user_id'     => $participante->id,
-            'tipo'        => 'fecha',
-            'valor'       => '2026-11-20 19:30:00',
+            'plan_id' => $plan->id,
+            'user_id' => $participante->id,
+            'tipo' => 'fecha',
+            'valor' => '2026-11-20 19:30:00',
             'descripcion' => 'Viernes por la noche',
         ]);
 
         // Proponer opción de lugar
         $responseLugar = $this->actingAs($participante)
             ->post(route('planes.opciones.guardar', $plan), [
-                'tipo'        => 'lugar',
-                'valor'       => 'Pizzería Napolitana',
+                'tipo' => 'lugar',
+                'valor' => 'Pizzería Napolitana',
                 'descripcion' => 'Mesa al aire libre',
             ]);
 
         $responseLugar->assertSessionHasNoErrors();
         $this->assertDatabaseHas('opciones', [
-            'plan_id'     => $plan->id,
-            'user_id'     => $participante->id,
-            'tipo'        => 'lugar',
-            'valor'       => 'Pizzería Napolitana',
+            'plan_id' => $plan->id,
+            'user_id' => $participante->id,
+            'tipo' => 'lugar',
+            'valor' => 'Pizzería Napolitana',
             'descripcion' => 'Mesa al aire libre',
         ]);
     }
@@ -115,7 +115,7 @@ class ColaboracionEndpointsTest extends TestCase
         // Intento de proponer opción sin invitación
         $responseProponerAjeno = $this->actingAs($ajeno)
             ->post(route('planes.opciones.guardar', $plan), [
-                'tipo'  => 'lugar',
+                'tipo' => 'lugar',
                 'valor' => 'Lugar no autorizado',
             ]);
         $responseProponerAjeno->assertStatus(403);
@@ -130,12 +130,12 @@ class ColaboracionEndpointsTest extends TestCase
         Invitacion::factory()->pendiente()->create([
             'plan_id' => $plan->id,
             'user_id' => $usuarioPendiente->id,
-            'email'   => $usuarioPendiente->email,
+            'email' => $usuarioPendiente->email,
         ]);
 
         $responseProponerPendiente = $this->actingAs($usuarioPendiente)
             ->post(route('planes.opciones.guardar', $plan), [
-                'tipo'  => 'fecha',
+                'tipo' => 'fecha',
                 'valor' => '2026-12-01',
             ]);
         $responseProponerPendiente->assertStatus(403);
@@ -154,13 +154,13 @@ class ColaboracionEndpointsTest extends TestCase
         $participante = User::factory()->create();
         $plan = Plan::factory()->create([
             'user_id' => $creador->id,
-            'estado'  => 'pendiente',
+            'estado' => 'pendiente',
         ]);
 
         Invitacion::factory()->aceptada()->create([
             'plan_id' => $plan->id,
             'user_id' => $participante->id,
-            'email'   => $participante->email,
+            'email' => $participante->email,
         ]);
 
         // Intento de eliminar el plan por parte del participante
@@ -196,7 +196,7 @@ class ColaboracionEndpointsTest extends TestCase
         Invitacion::factory()->aceptada()->create([
             'plan_id' => $plan->id,
             'user_id' => $participante->id,
-            'email'   => $participante->email,
+            'email' => $participante->email,
         ]);
 
         $responseVotar = $this->actingAs($participante)
@@ -205,7 +205,7 @@ class ColaboracionEndpointsTest extends TestCase
         $responseVotar->assertSessionHasNoErrors();
         $this->assertDatabaseHas('votos', [
             'opcion_id' => $opcion->id,
-            'user_id'   => $participante->id,
+            'user_id' => $participante->id,
         ]);
 
         // Conmutar el voto (retirarlo)
@@ -215,7 +215,7 @@ class ColaboracionEndpointsTest extends TestCase
         $responseRetirar->assertSessionHasNoErrors();
         $this->assertDatabaseMissing('votos', [
             'opcion_id' => $opcion->id,
-            'user_id'   => $participante->id,
+            'user_id' => $participante->id,
         ]);
     }
 
@@ -231,7 +231,7 @@ class ColaboracionEndpointsTest extends TestCase
         Invitacion::factory()->aceptada()->create([
             'plan_id' => $plan->id,
             'user_id' => $participante->id,
-            'email'   => $participante->email,
+            'email' => $participante->email,
         ]);
 
         $response = $this->actingAs($participante)
@@ -253,9 +253,9 @@ class ColaboracionEndpointsTest extends TestCase
 
         Invitacion::factory()->create([
             'plan_id' => $plan->id,
-            'email'   => $invitado->email,
+            'email' => $invitado->email,
             'user_id' => $invitado->id,
-            'estado'  => 'pendiente',
+            'estado' => 'pendiente',
         ]);
 
         $response = $this->actingAs($invitado)
@@ -264,15 +264,15 @@ class ColaboracionEndpointsTest extends TestCase
         $response->assertRedirect(route('planes.detalle', $plan));
         $this->assertDatabaseHas('invitaciones', [
             'plan_id' => $plan->id,
-            'email'   => $invitado->email,
+            'email' => $invitado->email,
             'user_id' => $invitado->id,
-            'estado'  => 'aceptada',
+            'estado' => 'aceptada',
         ]);
 
         $this->assertDatabaseHas('plan_activities', [
             'plan_id' => $plan->id,
             'user_id' => $invitado->id,
-            'accion'  => 'participacion',
+            'accion' => 'participacion',
         ]);
     }
 
@@ -307,7 +307,7 @@ class ColaboracionEndpointsTest extends TestCase
         $response->assertStatus(403);
         $this->assertDatabaseMissing('invitaciones', [
             'plan_id' => $plan->id,
-            'email'   => 'nuevo@ejemplo.com',
+            'email' => 'nuevo@ejemplo.com',
         ]);
     }
 
@@ -321,15 +321,15 @@ class ColaboracionEndpointsTest extends TestCase
 
         $response = $this->actingAs($creador)
             ->post(route('planes.opciones.guardar', $plan), [
-                'tipo'        => 'fecha',
-                'valor'       => '2026-12-31 20:00:00',
+                'tipo' => 'fecha',
+                'valor' => '2026-12-31 20:00:00',
                 'descripcion' => 'Propuesta bloqueada',
             ]);
 
         $response->assertStatus(403);
         $this->assertDatabaseMissing('opciones', [
             'plan_id' => $plan->id,
-            'valor'   => '2026-12-31 20:00:00',
+            'valor' => '2026-12-31 20:00:00',
         ]);
     }
 
@@ -350,7 +350,7 @@ class ColaboracionEndpointsTest extends TestCase
         Invitacion::factory()->aceptada()->create([
             'plan_id' => $plan->id,
             'user_id' => $participante->id,
-            'email'   => $participante->email,
+            'email' => $participante->email,
         ]);
 
         $response = $this->actingAs($participante)
@@ -359,7 +359,7 @@ class ColaboracionEndpointsTest extends TestCase
         $response->assertStatus(403);
         $this->assertDatabaseMissing('votos', [
             'opcion_id' => $opcion->id,
-            'user_id'   => $participante->id,
+            'user_id' => $participante->id,
         ]);
     }
 
@@ -379,8 +379,8 @@ class ColaboracionEndpointsTest extends TestCase
         // PUT actualización
         $responsePut = $this->actingAs($creador)
             ->put(route('planes.actualizar', $plan), [
-                'nombre'       => 'Nuevo Nombre Ilegal',
-                'organizador'  => $creador->name,
+                'nombre' => 'Nuevo Nombre Ilegal',
+                'organizador' => $creador->name,
                 'fecha_limite' => '2026-12-31',
             ]);
         $responsePut->assertStatus(403);
@@ -398,8 +398,8 @@ class ColaboracionEndpointsTest extends TestCase
         Invitacion::factory()->create([
             'plan_id' => $plan->id,
             'user_id' => $invitado->id,
-            'email'   => $invitado->email,
-            'estado'  => 'pendiente',
+            'email' => $invitado->email,
+            'estado' => 'pendiente',
         ]);
 
         $response = $this->actingAs($invitado)

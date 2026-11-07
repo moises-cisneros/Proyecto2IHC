@@ -6,6 +6,7 @@ use App\Http\Requests\ConfirmarPlanRequest;
 use App\Http\Requests\StorePlanRequest;
 use App\Http\Requests\UpdatePlanRequest;
 use App\Models\Plan;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -15,10 +16,10 @@ class PlanesController extends Controller
      * Mensajes de validación personalizados
      */
     private array $mensajes = [
-        'nombre.required'       => 'Escribe el nombre del plan.',
-        'organizador.required'  => 'Escribe el nombre del organizador.',
+        'nombre.required' => 'Escribe el nombre del plan.',
+        'organizador.required' => 'Escribe el nombre del organizador.',
         'fecha_limite.required' => 'Elige la fecha límite.',
-        'fecha_limite.date'     => 'La fecha no es válida.',
+        'fecha_limite.date' => 'La fecha no es válida.',
     ];
 
     /**
@@ -32,7 +33,7 @@ class PlanesController extends Controller
         // Leemos los filtros adicionales del query string (?buscar=...&estado=...&fecha=...)
         $buscar = $request->input('buscar', '');
         $estado = $request->input('estado', '');
-        $fecha  = $request->input('fecha', '');
+        $fecha = $request->input('fecha', '');
 
         // Segmentación por propósito/rol: 'creados' (default) o 'invitaciones'
         // Si no se especifica y el usuario no tiene planes creados pero sí invitaciones, orienta a 'invitaciones'
@@ -74,12 +75,12 @@ class PlanesController extends Controller
 
         $contadores = [
             'vencidos' => $vencidos->count(),
-            'hoy'      => $hoy->count(),
+            'hoy' => $hoy->count(),
             'proximos' => $proximos->count(),
         ];
 
         $totalVencidos = $vencidos->count();
-        $totalHoy      = $hoy->count();
+        $totalHoy = $hoy->count();
         $totalProximos = $proximos->count();
 
         return view('planes.listar', compact(
@@ -101,16 +102,15 @@ class PlanesController extends Controller
     /**
      * Guardar un nuevo plan
      *
-     * @param  StorePlanRequest  $request
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function guardar(StorePlanRequest $request)
     {
-        $plan = new Plan();
-        $plan->nombre       = $request->nombre;
-        $plan->organizador  = auth()->user()->name;
+        $plan = new Plan;
+        $plan->nombre = $request->nombre;
+        $plan->organizador = auth()->user()->name;
         $plan->fecha_limite = $request->fecha_limite;
-        $plan->user_id      = auth()->id();
+        $plan->user_id = auth()->id();
         $plan->save();
 
         return redirect()->route('planes.listar')->with('exito', '¡Plan creado!');
@@ -119,8 +119,7 @@ class PlanesController extends Controller
     /**
      * Editar un plan existente
      *
-     * @param  Plan  $plan
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function editar(Plan $plan)
     {
@@ -132,15 +131,13 @@ class PlanesController extends Controller
     /**
      * Actualizar un plan existente
      *
-     * @param  UpdatePlanRequest  $request
-     * @param  Plan  $plan
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function actualizar(UpdatePlanRequest $request, Plan $plan)
     {
         Gate::authorize('update', $plan);
 
-        $plan->nombre       = $request->nombre;
+        $plan->nombre = $request->nombre;
         $plan->fecha_limite = $request->fecha_limite;
         $plan->save();
 
@@ -150,8 +147,7 @@ class PlanesController extends Controller
     /**
      * Eliminar un plan existente
      *
-     * @param  Plan  $plan
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function eliminar(Plan $plan)
     {
@@ -171,9 +167,7 @@ class PlanesController extends Controller
     /**
      * Cambiar el estado de un plan
      *
-     * @param  Request  $request
-     * @param  Plan  $plan
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function cambiarEstado(Request $request, Plan $plan)
     {
@@ -193,15 +187,13 @@ class PlanesController extends Controller
         $plan->save();
 
         return redirect()->route('planes.listar')
-            ->with('exito', 'El plan ahora está ' . $plan->estado . '.');
+            ->with('exito', 'El plan ahora está '.$plan->estado.'.');
     }
 
     /**
      * Confirmar el plan a partir de la votación (resolviendo empates si aplica)
      *
-     * @param  ConfirmarPlanRequest  $request
-     * @param  Plan  $plan
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      */
     public function confirmar(ConfirmarPlanRequest $request, Plan $plan)
     {
@@ -209,17 +201,17 @@ class PlanesController extends Controller
 
         $plan->propuesta_fecha_id = $request->propuesta_fecha_id;
         $plan->propuesta_lugar_id = $request->propuesta_lugar_id;
-        $plan->motivo_desempate   = $request->motivo_desempate;
-        $plan->estado             = 'confirmado';
+        $plan->motivo_desempate = $request->motivo_desempate;
+        $plan->estado = 'confirmado';
         $plan->fecha_confirmacion = now();
         $plan->save();
 
         // Registrar en historial de actividades
-        $descripcionHistorial = auth()->user()->name . " confirmó el plan a partir de la votación";
+        $descripcionHistorial = auth()->user()->name.' confirmó el plan a partir de la votación';
         if ($plan->motivo_desempate) {
-            $descripcionHistorial .= " resolviendo el empate.";
+            $descripcionHistorial .= ' resolviendo el empate.';
         } else {
-            $descripcionHistorial .= ".";
+            $descripcionHistorial .= '.';
         }
 
         $plan->actividades()->create([

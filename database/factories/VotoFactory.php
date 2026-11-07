@@ -8,7 +8,7 @@ use App\Models\Voto;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Voto>
+ * @extends Factory<Voto>
  */
 class VotoFactory extends Factory
 {

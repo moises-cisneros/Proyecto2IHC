@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Plan;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -15,7 +16,7 @@ class ValidacionFechasPlanTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
+        $this->withoutMiddleware(ValidateCsrfToken::class);
     }
 
     /**
@@ -27,7 +28,7 @@ class ValidacionFechasPlanTest extends TestCase
         $fechaPasada = Carbon::yesterday()->format('Y-m-d');
 
         $response = $this->actingAs($user)->post('/planes', [
-            'nombre'       => 'Plan en el pasado',
+            'nombre' => 'Plan en el pasado',
             'fecha_limite' => $fechaPasada,
         ]);
 
@@ -44,17 +45,17 @@ class ValidacionFechasPlanTest extends TestCase
     {
         $user = User::factory()->create();
         $plan = Plan::create([
-            'nombre'       => 'Plan Original',
-            'organizador'  => $user->name,
+            'nombre' => 'Plan Original',
+            'organizador' => $user->name,
             'fecha_limite' => Carbon::tomorrow()->format('Y-m-d'),
-            'user_id'      => $user->id,
-            'estado'       => 'pendiente',
+            'user_id' => $user->id,
+            'estado' => 'pendiente',
         ]);
 
         $fechaPasada = Carbon::yesterday()->format('Y-m-d');
 
         $response = $this->actingAs($user)->put("/planes/{$plan->id}", [
-            'nombre'       => 'Plan Modificado Pasado',
+            'nombre' => 'Plan Modificado Pasado',
             'fecha_limite' => $fechaPasada,
         ]);
 
@@ -73,7 +74,7 @@ class ValidacionFechasPlanTest extends TestCase
 
         // Creacion exitosa
         $responseCreate = $this->actingAs($user)->post('/planes', [
-            'nombre'       => 'Viaje Futuro',
+            'nombre' => 'Viaje Futuro',
             'fecha_limite' => $fechaFutura,
         ]);
 
@@ -86,7 +87,7 @@ class ValidacionFechasPlanTest extends TestCase
         // Actualizacion exitosa
         $fechaPosterior = Carbon::now()->addDays(10)->format('Y-m-d');
         $responseUpdate = $this->actingAs($user)->put("/planes/{$plan->id}", [
-            'nombre'       => 'Viaje Futuro Reprogramado',
+            'nombre' => 'Viaje Futuro Reprogramado',
             'fecha_limite' => $fechaPosterior,
         ]);
 
@@ -102,16 +103,16 @@ class ValidacionFechasPlanTest extends TestCase
     {
         $user = User::factory()->create();
         $plan = Plan::create([
-            'nombre'       => 'Plan Privado',
-            'organizador'  => $user->name,
+            'nombre' => 'Plan Privado',
+            'organizador' => $user->name,
             'fecha_limite' => Carbon::tomorrow()->format('Y-m-d'),
-            'user_id'      => $user->id,
-            'estado'       => 'pendiente',
+            'user_id' => $user->id,
+            'estado' => 'pendiente',
         ]);
 
         // Intento anonimo de crear plan
         $responsePost = $this->post('/planes', [
-            'nombre'       => 'Intento Anónimo',
+            'nombre' => 'Intento Anónimo',
             'fecha_limite' => Carbon::tomorrow()->format('Y-m-d'),
         ]);
         $responsePost->assertRedirect('/ingresar');
@@ -122,7 +123,7 @@ class ValidacionFechasPlanTest extends TestCase
 
         // Intento anonimo de actualizar plan
         $responsePut = $this->put("/planes/{$plan->id}", [
-            'nombre'       => 'Intento Hack',
+            'nombre' => 'Intento Hack',
             'fecha_limite' => Carbon::tomorrow()->format('Y-m-d'),
         ]);
         $responsePut->assertRedirect('/ingresar');
