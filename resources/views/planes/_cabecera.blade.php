@@ -57,7 +57,7 @@
 
     @if ($plan->estado === 'cancelado')
         <div style="margin-top: 18px; padding: 14px 18px; background: #f4f4f5; border: 1px solid #e4e4e7; border-radius: 12px; display: flex; align-items: center; gap: 12px; color: #52525b;">
-            <span style="font-size: 20px;">🚫</span>
+            <x-icono nombre="bloqueado" style="width: 24px; height: 24px; color: #52525b; flex-shrink: 0;" />
             <div>
                 <div style="font-weight: 700; color: #27272a; font-size: 14px;">Plan cancelado</div>
                 <div style="font-size: 13px;">Este plan ha sido cancelado. La sala se encuentra en modo de solo lectura (no se permiten ediciones, invitaciones, nuevas propuestas ni votos).</div>
