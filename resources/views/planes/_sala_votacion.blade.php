@@ -105,12 +105,23 @@
            style="min-height: 44px; min-width: 44px; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 50px; background: {{ $pestanaActiva === 'lugares' ? '#ffe683' : '#ffffff' }}; color: #1c1c1a; border: 1px solid {{ $pestanaActiva === 'lugares' ? '#ffe683' : '#e3e3df' }};">
             <x-icono nombre="ubicacion" style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Lugares propuestos ({{ $lugares->count() }})
         </a>
+
+        <a href="{{ route('planes.detalle', ['plan' => $plan, 'tab' => 'gastos']) }}"
+           role="tab"
+           aria-selected="{{ $pestanaActiva === 'gastos' ? 'true' : 'false' }}"
+           class="boton {{ $pestanaActiva === 'gastos' ? '' : 'boton-claro' }}"
+           style="min-height: 44px; min-width: 44px; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 50px; background: {{ $pestanaActiva === 'gastos' ? '#ffe683' : '#ffffff' }}; color: #1c1c1a; border: 1px solid {{ $pestanaActiva === 'gastos' ? '#ffe683' : '#e3e3df' }};">
+            💰 Gastos y Liquidación ({{ $gastos->count() }})
+        </a>
     </div>
 
     {{-- Contenido de la pestaña activa --}}
-    @php
-        $opcionesMostradas = ($pestanaActiva === 'fechas') ? $fechas : $lugares;
-    @endphp
+    @if ($pestanaActiva === 'gastos')
+        @include('planes._gastos_liquidacion')
+    @else
+        @php
+            $opcionesMostradas = ($pestanaActiva === 'fechas') ? $fechas : $lugares;
+        @endphp
 
     @if ($opcionesMostradas->isEmpty())
         <div style="background: #fbfbf9; border: 1px dashed #d1d1cd; border-radius: 12px; padding: 36px 20px; text-align: center;">
@@ -197,6 +208,7 @@
                 </div>
             @endforeach
         </div>
+    @endif
     @endif
 </div>
 
