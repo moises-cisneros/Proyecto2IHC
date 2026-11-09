@@ -1,0 +1,165 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\RechazarPagoRequest;
+use App\Http\Requests\StoreGastoRequest;
+use App\Http\Requests\StorePagoRequest;
+use App\Models\Gasto;
+use App\Models\GastoDivision;
+use App\Models\Pago;
+use App\Models\Plan;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
+
+class GastosController extends Controller
+{
+    /**
+     * Registrar un nuevo gasto en el plan con división equitativa o personalizada.
+     */
+    public function guardarGasto(StoreGastoRequest $request, Plan $plan)
+    {
+        Gate::authorize('create', [Gasto::class, $plan]);
+
+        $montoTotal = round((float) $request->monto_total, 2);
+        $participantesIds = collect($request->participantes)->map(fn ($id) => (int) $id)->values();
+
+        $gasto = $plan->gastos()->create([
+            'pagador_id'    => auth()->id(),
+            'concepto'      => $request->concepto,
+            'monto_total'   => $montoTotal,
+            'tipo_division' => $request->tipo_division,
+        ]);
+
+        if ($request->tipo_division === 'equitativa') {
+            $count = $participantesIds->count();
+            $cuotaBase = floor(($montoTotal / $count) * 100) / 100;
+            $diferencia = round($montoTotal - ($cuotaBase * $count), 2);
+
+            foreach ($participantesIds as $index => $uid) {
+                // Asignar centavos restantes al primer participante para cuadrar la suma exacta
+                $montoAsignado = $cuotaBase;
+                if ($index === 0 && $diferencia > 0) {
+                    $montoAsignado = round($montoAsignado + $diferencia, 2);
+                }
+
+                GastoDivision::create([
+                    'gasto_id'       => $gasto->id,
+                    'user_id'        => $uid,
+                    'monto_asignado' => $montoAsignado,
+                ]);
+            }
+        } else {
+            // Personalizada
+            $divisiones = $request->input('divisiones', []);
+            foreach ($participantesIds as $uid) {
+                $monto = isset($divisiones[$uid]) ? round((float) $divisiones[$uid], 2) : 0.0;
+                GastoDivision::create([
+                    'gasto_id'       => $gasto->id,
+                    'user_id'        => $uid,
+                    'monto_asignado' => $monto,
+                ]);
+            }
+        }
+
+        // Trazabilidad en historial de actividades
+        $plan->actividades()->create([
+            'user_id'           => auth()->id(),
+            'accion'            => 'gasto',
+            'descripcion'       => auth()->user()->name . " registró el gasto '{$gasto->concepto}' por \${$gasto->monto_total}.",
+            'estado_resultante' => $plan->estado,
+        ]);
+
+        return redirect()->route('planes.detalle', ['plan' => $plan, 'tab' => 'gastos'])
+            ->with('exito', '¡Gasto registrado con éxito!');
+    }
+
+    /**
+     * Registrar un pago a favor de un acreedor (nace en estado pendiente).
+     */
+    public function guardarPago(StorePagoRequest $request, Plan $plan)
+    {
+        Gate::authorize('create', [Pago::class, $plan]);
+
+        $pago = $plan->pagos()->create([
+            'deudor_id'   => auth()->id(),
+            'receptor_id' => $request->receptor_id,
+            'monto'       => round((float) $request->monto, 2),
+            'estado'      => 'pendiente',
+        ]);
+
+        $nombreReceptor = $pago->receptor?->name ?? 'destinatario';
+
+        // Trazabilidad
+        $plan->actividades()->create([
+            'user_id'           => auth()->id(),
+            'accion'            => 'pago',
+            'descripcion'       => auth()->user()->name . " registró un pago de \${$pago->monto} a {$nombreReceptor} (pendiente de confirmación).",
+            'estado_resultante' => $plan->estado,
+        ]);
+
+        return redirect()->route('planes.detalle', ['plan' => $plan, 'tab' => 'gastos'])
+            ->with('exito', 'Pago registrado. Se aplicará a los saldos una vez que el receptor lo confirme.');
+    }
+
+    /**
+     * Confirmar un pago pendiente (solo receptor/acreedor).
+     */
+    public function confirmarPago(Request $request, Pago $pago)
+    {
+        Gate::authorize('confirmar', $pago);
+
+        if ($pago->estado === 'confirmado') {
+            return back()->with('error', 'El pago ya se encuentra confirmado.');
+        }
+
+        $pago->update([
+            'estado'           => 'confirmado',
+            'fecha_resolucion' => now(),
+        ]);
+
+        $nombreDeudor = $pago->deudor?->name ?? 'deudor';
+
+        // Trazabilidad
+        $pago->plan->actividades()->create([
+            'user_id'           => auth()->id(),
+            'accion'            => 'pago_confirmado',
+            'descripcion'       => auth()->user()->name . " confirmó el pago de \${$pago->monto} recibido de {$nombreDeudor}.",
+            'estado_resultante' => $pago->plan->estado,
+        ]);
+
+        return redirect()->route('planes.detalle', ['plan' => $pago->plan_id, 'tab' => 'gastos'])
+            ->with('exito', '¡Pago confirmado! Los saldos netos han sido actualizados.');
+    }
+
+    /**
+     * Rechazar un pago pendiente con motivo obligatorio (solo receptor/acreedor).
+     */
+    public function rechazarPago(RechazarPagoRequest $request, Pago $pago)
+    {
+        Gate::authorize('rechazar', $pago);
+
+        if ($pago->estado !== 'pendiente') {
+            return back()->with('error', 'Solo se pueden rechazar pagos que se encuentren en estado pendiente.');
+        }
+
+        $pago->update([
+            'estado'           => 'rechazado',
+            'motivo_rechazo'   => $request->motivo_rechazo,
+            'fecha_resolucion' => now(),
+        ]);
+
+        $nombreDeudor = $pago->deudor?->name ?? 'deudor';
+
+        // Trazabilidad
+        $pago->plan->actividades()->create([
+            'user_id'           => auth()->id(),
+            'accion'            => 'pago_rechazado',
+            'descripcion'       => auth()->user()->name . " rechazó el pago de \${$pago->monto} de {$nombreDeudor}. Motivo: {$request->motivo_rechazo}",
+            'estado_resultante' => $pago->plan->estado,
+        ]);
+
+        return redirect()->route('planes.detalle', ['plan' => $pago->plan_id, 'tab' => 'gastos'])
+            ->with('exito', 'El pago ha sido rechazado. La deuda original se mantiene intacta.');
+    }
+}

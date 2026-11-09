@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AutentificacionController;
 use App\Http\Controllers\ColaboracionController;
+use App\Http\Controllers\GastosController;
 use App\Http\Controllers\HistorialController;
 use App\Http\Controllers\PlanesController;
 use Illuminate\Support\Facades\Route;
@@ -40,6 +41,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/planes/{plan}/opciones', [ColaboracionController::class, 'guardarOpcion'])->name('planes.opciones.guardar');
     Route::post('/opciones/{opcion}/votar', [ColaboracionController::class, 'votar'])->name('opciones.votar');
     Route::post('/planes/{plan}/abandonar', [ColaboracionController::class, 'abandonar'])->name('planes.abandonar');
+
+    Route::post('/planes/{plan}/gastos', [GastosController::class, 'guardarGasto'])->name('planes.gastos.guardar');
+    Route::post('/planes/{plan}/pagos', [GastosController::class, 'guardarPago'])->name('planes.pagos.guardar');
+    Route::post('/pagos/{pago}/confirmar', [GastosController::class, 'confirmarPago'])->name('pagos.confirmar');
+    Route::post('/pagos/{pago}/rechazar', [GastosController::class, 'rechazarPago'])->name('pagos.rechazar');
 
     Route::get('/historial', [HistorialController::class, 'index'])->name('historial.index');
 

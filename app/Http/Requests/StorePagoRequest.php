@@ -1,0 +1,81 @@
+<?php
+
+namespace App\Http\Requests;
+
+use App\Models\Plan;
+use Illuminate\Foundation\Http\FormRequest;
+
+class StorePagoRequest extends FormRequest
+{
+    /**
+     * Determine if the user is authorized to make this request.
+     */
+    public function authorize(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Get the validation rules that apply to the request.
+     *
+     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     */
+    public function rules(): array
+    {
+        return [
+            'receptor_id' => ['required', 'integer', 'exists:users,id'],
+            'monto'       => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
+        ];
+    }
+
+    /**
+     * Validador adicional de pertenencia y no auto-pago.
+     */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($validator) {
+            /** @var Plan|null $plan */
+            $plan = $this->route('plan');
+            if (is_numeric($plan)) {
+                $plan = Plan::find($plan);
+            }
+
+            if (!$plan) {
+                return;
+            }
+
+            $receptorId = (int) $this->input('receptor_id');
+            $authId = (int) auth()->id();
+
+            if ($receptorId === $authId) {
+                $validator->errors()->add('receptor_id', 'No puedes registrar un pago hacia ti mismo.');
+            }
+
+            $participantesValidos = collect([$plan->user_id])
+                ->merge($plan->participantes()->pluck('users.id'))
+                ->merge(
+                    $plan->invitaciones()->where('estado', 'aceptada')->pluck('user_id')
+                )
+                ->filter()
+                ->unique()
+                ->values();
+
+            if (!$participantesValidos->contains($receptorId)) {
+                $validator->errors()->add('receptor_id', 'El destinatario del pago no pertenece a este plan.');
+            }
+        });
+    }
+
+    /**
+     * Mensajes descriptivos en español.
+     */
+    public function messages(): array
+    {
+        return [
+            'receptor_id.required' => 'Debes seleccionar a quién va dirigido el pago.',
+            'receptor_id.exists'   => 'El usuario seleccionado no es válido.',
+            'monto.required'       => 'Debes ingresar el monto a pagar.',
+            'monto.min'            => 'El monto debe ser mayor a cero.',
+        ];
+    }
+}
