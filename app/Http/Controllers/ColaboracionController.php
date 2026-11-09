@@ -28,17 +28,33 @@ class ColaboracionController extends Controller
             'participantes',
             'propuestaFechaGanadora',
             'propuestaLugarGanadora',
+            'gastos.pagador',
+            'gastos.divisiones.user',
+            'pagos.deudor',
+            'pagos.receptor',
         ]);
 
         $pestanaActiva = $request->input('tab', 'fechas');
-        if (! in_array($pestanaActiva, ['fechas', 'lugares'])) {
+        if (! in_array($pestanaActiva, ['fechas', 'lugares', 'gastos'])) {
             $pestanaActiva = 'fechas';
         }
 
         $fechas = $plan->opciones->where('tipo', 'fecha')->values();
         $lugares = $plan->opciones->where('tipo', 'lugar')->values();
 
-        return view('planes.detalle', compact('plan', 'fechas', 'lugares', 'pestanaActiva'));
+        $gastos = $plan->gastos()->with(['pagador', 'divisiones.user'])->latest()->get();
+        $pagos = $plan->pagos()->with(['deudor', 'receptor'])->latest()->get();
+        $saldos = $plan->calcularSaldosNetos();
+
+        return view('planes.detalle', compact(
+            'plan',
+            'fechas',
+            'lugares',
+            'pestanaActiva',
+            'gastos',
+            'pagos',
+            'saldos'
+        ));
     }
 
     /**
