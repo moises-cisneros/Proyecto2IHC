@@ -230,6 +230,166 @@ class Plan extends Model
             ->wherePivot('estado', 'aceptada');
     }
 
+    /**
+     * Gastos registrados en el plan.
+     */
+    public function gastos(): HasMany
+    {
+        return $this->hasMany(Gasto::class);
+    }
+
+    /**
+     * Pagos registrados entre participantes del plan.
+     */
+    public function pagos(): HasMany
+    {
+        return $this->hasMany(Pago::class);
+    }
+
+    /**
+     * Calcula los saldos netos consolidados y las deudas bilaterales entre participantes.
+     *
+     * @return array{
+     *     total_gastado: float,
+     *     balances: array<int, array{user: User, pagado: float, consumido: float, neto: float}>,
+     *     deudas: array<int, array{deudor_id: int, deudor: User, acreedor_id: int, acreedor: User, monto: float}>
+     * }
+     */
+    public function calcularSaldosNetos(): array
+    {
+        $gastos = $this->gastos()->with(['pagador', 'divisiones.user'])->get();
+        $pagosConfirmados = $this->pagos()->where('estado', 'confirmado')->with(['deudor', 'receptor'])->get();
+
+        // Obtener todos los usuarios participantes o involucrados
+        $usuarios = collect([$this->user])
+            ->merge($this->participantes)
+            ->filter()
+            ->keyBy('id');
+
+        foreach ($gastos as $gasto) {
+            if ($gasto->pagador) {
+                $usuarios->put($gasto->pagador->id, $gasto->pagador);
+            }
+            foreach ($gasto->divisiones as $div) {
+                if ($div->user) {
+                    $usuarios->put($div->user->id, $div->user);
+                }
+            }
+        }
+
+        foreach ($pagosConfirmados as $pago) {
+            if ($pago->deudor) {
+                $usuarios->put($pago->deudor->id, $pago->deudor);
+            }
+            if ($pago->receptor) {
+                $usuarios->put($pago->receptor->id, $pago->receptor);
+            }
+        }
+
+        $matriz = [];
+        $totalGastado = 0.0;
+        $balances = [];
+
+        foreach ($usuarios as $id => $user) {
+            $balances[$id] = [
+                'user' => $user,
+                'pagado' => 0.0,
+                'consumido' => 0.0,
+                'pagos_hechos' => 0.0,
+                'pagos_recibidos' => 0.0,
+                'neto' => 0.0,
+            ];
+        }
+
+        // 1. Procesar gastos
+        foreach ($gastos as $gasto) {
+            $pagadorId = (int) $gasto->pagador_id;
+            $montoGasto = (float) $gasto->monto_total;
+            $totalGastado += $montoGasto;
+
+            if (isset($balances[$pagadorId])) {
+                $balances[$pagadorId]['pagado'] += $montoGasto;
+            }
+
+            foreach ($gasto->divisiones as $division) {
+                $consumidorId = (int) $division->user_id;
+                $montoAsignado = (float) $division->monto_asignado;
+
+                if (isset($balances[$consumidorId])) {
+                    $balances[$consumidorId]['consumido'] += $montoAsignado;
+                }
+
+                if ($consumidorId !== $pagadorId && $montoAsignado > 0) {
+                    $matriz[$consumidorId][$pagadorId] = ($matriz[$consumidorId][$pagadorId] ?? 0.0) + $montoAsignado;
+                }
+            }
+        }
+
+        // 2. Procesar pagos confirmados
+        foreach ($pagosConfirmados as $pago) {
+            $deudorId = (int) $pago->deudor_id;
+            $receptorId = (int) $pago->receptor_id;
+            $montoPago = (float) $pago->monto;
+
+            if (isset($balances[$deudorId])) {
+                $balances[$deudorId]['pagos_hechos'] += $montoPago;
+            }
+            if (isset($balances[$receptorId])) {
+                $balances[$receptorId]['pagos_recibidos'] += $montoPago;
+            }
+
+            $matriz[$deudorId][$receptorId] = ($matriz[$deudorId][$receptorId] ?? 0.0) - $montoPago;
+        }
+
+        // 3. Consolidar balances
+        foreach ($balances as $id => &$b) {
+            $b['neto'] = round($b['pagado'] + $b['pagos_hechos'] - $b['consumido'] - $b['pagos_recibidos'], 2);
+            $b['pagado'] = round($b['pagado'], 2);
+            $b['consumido'] = round($b['consumido'], 2);
+        }
+        unset($b);
+
+        // 4. Calcular deudas bilaterales netas
+        $userIds = $usuarios->keys()->all();
+        $deudas = [];
+
+        for ($i = 0; $i < count($userIds); $i++) {
+            for ($j = $i + 1; $j < count($userIds); $j++) {
+                $u1 = $userIds[$i];
+                $u2 = $userIds[$j];
+
+                $deuda1a2 = $matriz[$u1][$u2] ?? 0.0;
+                $deuda2a1 = $matriz[$u2][$u1] ?? 0.0;
+
+                $neto = round($deuda1a2 - $deuda2a1, 2);
+
+                if ($neto > 0.009) {
+                    $deudas[] = [
+                        'deudor_id' => $u1,
+                        'deudor' => $usuarios->get($u1),
+                        'acreedor_id' => $u2,
+                        'acreedor' => $usuarios->get($u2),
+                        'monto' => $neto,
+                    ];
+                } elseif ($neto < -0.009) {
+                    $deudas[] = [
+                        'deudor_id' => $u2,
+                        'deudor' => $usuarios->get($u2),
+                        'acreedor_id' => $u1,
+                        'acreedor' => $usuarios->get($u1),
+                        'monto' => abs($neto),
+                    ];
+                }
+            }
+        }
+
+        return [
+            'total_gastado' => round($totalGastado, 2),
+            'balances' => $balances,
+            'deudas' => $deudas,
+        ];
+    }
+
     //  para busqueda y filtros
     public function scopeFiltrar($query, ?string $buscar, ?string $estado, ?string $fecha)
     {

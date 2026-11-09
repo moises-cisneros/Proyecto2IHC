@@ -97,4 +97,36 @@ class User extends Authenticatable
     {
         return $this->hasMany(Voto::class);
     }
+
+    /**
+     * Gastos pagados por el usuario.
+     */
+    public function gastosPagados(): HasMany
+    {
+        return $this->hasMany(Gasto::class, 'pagador_id');
+    }
+
+    /**
+     * Divisiones de gastos asignadas al usuario.
+     */
+    public function gastoDivisiones(): HasMany
+    {
+        return $this->hasMany(GastoDivision::class, 'user_id');
+    }
+
+    /**
+     * Pagos realizados por el usuario a otros participantes.
+     */
+    public function pagosRealizados(): HasMany
+    {
+        return $this->hasMany(Pago::class, 'deudor_id');
+    }
+
+    /**
+     * Pagos recibidos por el usuario de otros participantes.
+     */
+    public function pagosRecibidos(): HasMany
+    {
+        return $this->hasMany(Pago::class, 'receptor_id');
+    }
 }
