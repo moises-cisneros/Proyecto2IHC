@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Contracts\ComprobanteScannerInterface;
 use App\Http\Requests\RechazarPagoRequest;
 use App\Http\Requests\StoreGastoRequest;
 use App\Http\Requests\StorePagoRequest;
@@ -11,6 +12,7 @@ use App\Models\Pago;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Storage;
 
 class GastosController extends Controller
 {
@@ -81,12 +83,34 @@ class GastosController extends Controller
     {
         Gate::authorize('create', [Pago::class, $plan]);
 
-        $pago = $plan->pagos()->create([
+        $montoFloat = round((float) $request->monto, 2);
+
+        $datosPago = [
             'deudor_id' => auth()->id(),
             'receptor_id' => $request->receptor_id,
-            'monto' => round((float) $request->monto, 2),
+            'monto' => $montoFloat,
             'estado' => 'pendiente',
-        ]);
+            'estado_escaneo' => 'sin_comprobante',
+        ];
+
+        if ($request->hasFile('comprobante')) {
+            $archivo = $request->file('comprobante');
+            $rutaAlmacenada = $archivo->store('comprobantes', 'public');
+            $datosPago['comprobante_path'] = $rutaAlmacenada;
+
+            /** @var ComprobanteScannerInterface $scanner */
+            $scanner = app(ComprobanteScannerInterface::class);
+            $rutaAbsoluta = Storage::disk('public')->path($rutaAlmacenada);
+            $resultado = $scanner->scan($rutaAbsoluta);
+
+            $datosPago['monto_detectado'] = $resultado->monto;
+            $datosPago['banco_detectado'] = $resultado->banco;
+            $datosPago['confianza_escaneo'] = $resultado->confianza;
+            $datosPago['detalles_escaneo'] = $resultado->rawPayload;
+            $datosPago['estado_escaneo'] = $resultado->determinarEstadoEscaneo($montoFloat);
+        }
+
+        $pago = $plan->pagos()->create($datosPago);
 
         $nombreReceptor = $pago->receptor?->name ?? 'destinatario';
 
@@ -94,12 +118,16 @@ class GastosController extends Controller
         $plan->actividades()->create([
             'user_id' => auth()->id(),
             'accion' => 'pago',
-            'descripcion' => auth()->user()->name." registró un pago de \${$pago->monto} a {$nombreReceptor} (pendiente de confirmación).",
+            'descripcion' => auth()->user()->name." registró un pago de Bs {$pago->monto} a {$nombreReceptor} (pendiente de confirmación).",
             'estado_resultante' => $plan->estado,
         ]);
 
+        $mensajeExito = $pago->tieneComprobante()
+            ? 'Pago y comprobante registrados correctamente. Se aplicará a los saldos una vez que el receptor lo confirme.'
+            : 'Pago registrado. Se aplicará a los saldos una vez que el receptor lo confirme.';
+
         return redirect()->route('planes.detalle', ['plan' => $plan, 'tab' => 'gastos'])
-            ->with('exito', 'Pago registrado. Se aplicará a los saldos una vez que el receptor lo confirme.');
+            ->with('exito', $mensajeExito);
     }
 
     /**
