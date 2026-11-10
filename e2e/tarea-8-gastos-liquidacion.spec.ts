@@ -109,8 +109,15 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
 
         await expect(pageAna.getByText('Transporte compartido')).toBeVisible();
 
+        // Ana configura sus datos de cobro personales (Alias y CBU)
+        await pageAna.getByRole('button', { name: /Mis Datos de Cobro/i }).click();
+        await pageAna.locator('#input-perfil-alias').fill('ana.bcp.qr');
+        await pageAna.locator('#input-perfil-cbu').fill('10000045678912');
+        await pageAna.getByRole('button', { name: 'Guardar Datos' }).click();
+        await expect(pageAna.getByText(/¡Tus datos de cobro han sido actualizados/i)).toBeVisible();
+
         // -------------------------------------------------------------
-        // FASE 5: Carlos registra un pago hacia Ana ($20) -> Estado pendiente
+        // FASE 5: Carlos registra un pago hacia Ana ($20) con comprobante bancario real
         // -------------------------------------------------------------
         await pageCarlos.reload();
         await pageCarlos.getByRole('tab', { name: /Gastos y Liquidación/i }).click();
@@ -120,11 +127,32 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
             .first()
             .click();
         await pageCarlos.locator('#select-pago-receptor').selectOption({ label: 'Usuario 1' });
+
+        // Verifica que se visualizan reactivamente los datos de cobro de Ana
+        await expect(pageCarlos.locator('#contenedor-datos-receptor')).toBeVisible();
+        await expect(pageCarlos.locator('#texto-alias-receptor')).toContainText('ana.bcp.qr');
+
         await pageCarlos.locator('#input-pago-monto').fill('20.00');
+
+        // Adjuntar comprobante bancario sintetico limpio (BNB 20 Bs)
+        const comprobantePath = 'tests/fixtures/comprobantes/comprobante_bnb_20bs.png';
+        if (fs.existsSync(comprobantePath)) {
+            await pageCarlos.locator('#input-pago-comprobante').setInputFiles(comprobantePath);
+        }
+
         await pageCarlos.getByRole('button', { name: 'Enviar Pago' }).click();
 
         await expect(pageCarlos.locator('.badge-estado-pago', { hasText: 'pendiente' }).first()).toBeVisible();
+        await expect(pageCarlos.locator('.badge-escaneo', { hasText: /Verificado/i }).first()).toBeVisible();
         await pageCarlos.screenshot({ path: 'docs/evidencias/tarea-8/03-pago-pendiente.png', fullPage: true });
+
+        // Carlos abre el modal para revisar su comprobante
+        const btnVerComprobante = pageCarlos.getByRole('button', { name: /Ver comprobante/i }).first();
+        if (await btnVerComprobante.isVisible()) {
+            await btnVerComprobante.click();
+            await pageCarlos.screenshot({ path: 'docs/evidencias/tarea-8/05-modal-inspeccion-comprobante.png' });
+            await pageCarlos.locator('dialog[id^="modal-comprobante-"] button:has-text("Cerrar")').first().click();
+        }
 
         // -------------------------------------------------------------
         // FASE 6: Ana (receptora) confirma el pago de Carlos -> Saldo actualizado

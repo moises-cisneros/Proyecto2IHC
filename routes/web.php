@@ -4,6 +4,7 @@ use App\Http\Controllers\AutentificacionController;
 use App\Http\Controllers\ColaboracionController;
 use App\Http\Controllers\GastosController;
 use App\Http\Controllers\HistorialController;
+use App\Http\Controllers\PerfilCobroController;
 use App\Http\Controllers\PlanesController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,6 +47,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/planes/{plan}/pagos', [GastosController::class, 'guardarPago'])->name('planes.pagos.guardar');
     Route::post('/pagos/{pago}/confirmar', [GastosController::class, 'confirmarPago'])->name('pagos.confirmar');
     Route::post('/pagos/{pago}/rechazar', [GastosController::class, 'rechazarPago'])->name('pagos.rechazar');
+
+    Route::put('/perfil/datos-cobro', [PerfilCobroController::class, 'update'])->name('perfil.cobro.actualizar');
 
     Route::get('/historial', [HistorialController::class, 'index'])->name('historial.index');
 

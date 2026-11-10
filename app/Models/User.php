@@ -24,6 +24,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'alias_pago',
+        'cbu_pago',
+        'qr_pago_path',
     ];
 
     /**
@@ -128,5 +131,13 @@ class User extends Authenticatable
     public function pagosRecibidos(): HasMany
     {
         return $this->hasMany(Pago::class, 'receptor_id');
+    }
+
+    /**
+     * Evalúa si el usuario tiene al menos un método de cobro configurado (Alias, CBU o QR).
+     */
+    public function tieneDatosCobro(): bool
+    {
+        return ! empty($this->alias_pago) || ! empty($this->cbu_pago) || ! empty($this->qr_pago_path);
     }
 }
