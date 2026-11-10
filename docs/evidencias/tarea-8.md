@@ -31,7 +31,7 @@ Proceso de Gastos y Liquidación con Estados y Consecuencias:
 | **#66** | Backend / Persistencia | [PR #73](https://github.com/moises-cisneros/Proyecto2IHC/pull/73) | Migraciones `gastos`, `gasto_divisiones`, `pagos`, modelos Eloquent con casts y método de dominio `Plan::calcularSaldosNetos(): array` para resolución de deudas cruzadas. |
 | **#67** | Controlador / Seguridad | [PR #74](https://github.com/moises-cisneros/Proyecto2IHC/pull/74) | `GastosController`, `GastoPolicy`, `PagoPolicy`, `StoreGastoRequest` (validación de sumas y anti-IDOR), `StorePagoRequest` y `RechazarPagoRequest`. |
 | **#68** | Interfaz / Blade / IHC | [PR #75](https://github.com/moises-cisneros/Proyecto2IHC/pull/75) | Pestaña «Gastos y Liquidación» en la sala del plan, parcial `_gastos_liquidacion.blade.php`, tarjetas de posición neta («Debes» vs «Te deben»), modales `<dialog>` dinámicos y ergonomía Fitts ($\ge 44$px). |
-| **#69** | Testing E2E / Evidencias | [PR #...](https://github.com/moises-cisneros/Proyecto2IHC/pull/...) | Suite Playwright `e2e/tarea-8-gastos-liquidacion.spec.ts` con 3 participantes, división personalizada, pago pendiente y confirmado con actualización de balances. |
+| **#69** | Testing E2E / Evidencias | [PR #76](https://github.com/moises-cisneros/Proyecto2IHC/pull/76) | Suite Playwright `e2e/tarea-8-gastos-liquidacion.spec.ts` con 3 participantes, división personalizada, pago pendiente y confirmado con actualización de balances. |
 
 ---
 
@@ -51,19 +51,42 @@ Proceso de Gastos y Liquidación con Estados y Consecuencias:
 
 Las capturas generadas por la suite E2E se almacenan en `docs/evidencias/tarea-8/`:
 
-1. **`01-registro-gasto.png`:** Registro de gasto equitativo por parte del organizador (`Lucas`).
-2. **`02-division-personalizada.png`:** Formulario interactivo con división personalizada calculada al centavo por `Ana`.
-3. **`03-pago-pendiente.png`:** Pago emitido por el deudor (`Carlos`) en estado `pendiente`, sin alterar los saldos netos aún.
-4. **`04-pago-confirmado-saldos.png`:** Panel del receptor (`Ana`) tras confirmar el pago, reflejando la actualización inmediata de saldos y la extinción de la deuda.
+### 1. Registro de Gasto Equitativo
+
+Registro de gasto equitativo por parte del organizador (`Lucas`).
+![Registro de Gasto](tarea-8/01-registro-gasto.png)
+
+---
+
+### 2. Formulario de División Personalizada
+
+Formulario interactivo con división personalizada calculada al centavo por `Ana`.
+![División Personalizada](tarea-8/02-division-personalizada.png)
+
+---
+
+### 3. Registro de Pago Pendiente
+
+Pago emitido por el deudor (`Carlos`) en estado `pendiente`, sin alterar los saldos netos aún.
+![Pago Pendiente](tarea-8/03-pago-pendiente.png)
+
+---
+
+### 4. Pago Confirmado y Actualización de Saldos
+
+Panel del receptor (`Ana`) tras confirmar el pago, reflejando la actualización inmediata de saldos y la extinción de la deuda.
+![Pago Confirmado y Saldos](tarea-8/04-pago-confirmado-saldos.png)
 
 ---
 
 ## 🧪 Verificación de Suites de Pruebas
 
 ### 1. PHPUnit (Backend y Controlador)
+
 - `tests/Unit/GastosPersistenciaTest.php` (4 casos de persistencia, división equitativa, personalizada y deudas cruzadas).
 - `tests/Feature/GastosControllerTest.php` (5 casos de endpoints, autorización 403, idempotencia y redirección 302).
 - `tests/Feature/GastosVistasTest.php` (2 casos de interfaz y visibilidad condicional con `@can`).
 
 ### 2. Playwright E2E
+
 - `e2e/tarea-8-gastos-liquidacion.spec.ts` (Flujo multi-usuario docente completo con 3 participantes del seeder).

@@ -1,6 +1,7 @@
 # ODD Task: Refactorización UI e Íconos SVG (Issue #61)
 
 ## Estado General
+
 - **Issue Madre:** #61 — `[Refactor] — Componentes de íconos SVG nativos, eliminación de CSS inline y desacoplamiento de vistas`
 - **Sub-issues:**
   - #62: `[Interfaz] — Componente Blade de íconos SVG nativos accesibles y tokens en app.css`
@@ -12,6 +13,7 @@
 ## Tareas Atómicas
 
 ### 1. Sub-issue #62 (Capa 1: Componentes y Estilos)
+
 - [x] Branch: `refactor/issue-62-componente-icono-svg`
 - [x] TDD: Crear `tests/Feature/ComponenteIconoTest.php`
 - [x] Componente Blade `resources/views/components/icono.blade.php`:
@@ -24,6 +26,7 @@
 - [x] PR y merge a `main` cerrando #62 (PR #70).
 
 ### 2. Sub-issue #63 (Capa 2: Vistas y Erradicación de Emojis/CSS Inline)
+
 - [x] Branch: `refactor/issue-63-migracion-vistas-inline-styles`
 - [x] TDD: Crear `tests/Feature/VistasPlanesIconosTest.php`
 - [x] Refactorizar `_cabecera.blade.php`: sustituir emoji `🚫` por `<x-icono nombre="bloqueado" />`.
@@ -35,6 +38,7 @@
 - [x] PR y merge a `main` cerrando #63 (PR #71).
 
 ### 3. Sub-issue #64 (Capa 3: Verificación y No-Regresión)
+
 - [x] Branch: `test/issue-64-testing-no-regresion`
 - [x] Ejecutar suite completa (100% verde).
 - [x] Ejecutar `node scripts/verify-subissue.mjs 64`.
