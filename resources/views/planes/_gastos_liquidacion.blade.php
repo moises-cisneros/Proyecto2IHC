@@ -3,11 +3,20 @@
     {{-- Banner de métricas generales y balance personal --}}
     @php
         $miId = auth()->id();
+        $miUsuario = auth()->user();
         $miBalance = $saldos['balances'][$miId] ?? null;
         $misDeudas = collect($saldos['deudas'])->where('deudor_id', $miId)->values();
         $misCobros = collect($saldos['deudas'])->where('acreedor_id', $miId)->values();
         $totalNeto = $miBalance['neto'] ?? 0.0;
         $participantesPlan = collect([$plan->user])->merge($plan->participantes)->unique('id')->values();
+        $datosCobroParticipantes = $participantesPlan->mapWithKeys(function ($u) {
+            return [$u->id => [
+                'nombre' => $u->name,
+                'alias' => $u->alias_pago,
+                'cbu' => $u->cbu_pago,
+                'qr_url' => $u->qr_pago_path ? asset('storage/' . $u->qr_pago_path) : null,
+            ]];
+        });
     @endphp
 
     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 24px;">
@@ -64,6 +73,14 @@
                     <x-icono nombre="pago" style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Registrar Pago
                 </button>
             @endcan
+
+            <button type="button"
+                    class="boton boton-claro"
+                    style="min-height: 44px; width: 100%; border-radius: 50px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px;"
+                    onclick="document.getElementById('modal-configurar-cobro').showModal()"
+                    aria-label="Configurar mis datos de cobro y QR">
+                <x-icono nombre="editar" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Mis Datos de Cobro
+            </button>
         </div>
     </div>
 
@@ -180,6 +197,57 @@
                                 para <span style="font-weight: 600;">{{ $pago->receptor->name ?? 'Usuario' }}</span>
                                 · {{ $pago->created_at->format('d/m/Y H:i') }}
                             </div>
+                            @if ($pago->tieneComprobante())
+                                <div style="margin-top: 8px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                                    <button type="button"
+                                            class="boton boton-claro btn-ver-comprobante"
+                                            style="min-height: 32px; padding: 4px 10px; font-size: 12px; border-radius: 6px; display: inline-flex; align-items: center; gap: 4px;"
+                                            onclick="document.getElementById('modal-comprobante-{{ $pago->id }}').showModal()"
+                                            aria-label="Ver comprobante adjunto del pago {{ $pago->id }}">
+                                        <x-icono nombre="pago" style="width: 14px; height: 14px;" />
+                                        <span>Ver Comprobante</span>
+                                    </button>
+
+                                    @if ($pago->esEscaneoVerificado())
+                                        <span class="badge-escaneo verificado" style="font-size: 11px; font-weight: 700; color: #166534; background: #dcfce7; border: 1px solid #bbf7d0; padding: 2px 8px; border-radius: 50px; display: inline-flex; align-items: center; gap: 4px;">
+                                            <x-icono nombre="check" style="width: 12px; height: 12px;" />
+                                            <span>Monto Verificado: Bs {{ number_format($pago->monto_detectado, 2) }}{{ $pago->banco_detectado ? ' (' . $pago->banco_detectado . ')' : '' }}</span>
+                                        </span>
+                                    @elseif ($pago->esEscaneoDiscrepante())
+                                        <span class="badge-escaneo discrepante" style="font-size: 11px; font-weight: 700; color: #991b1b; background: #fee2e2; border: 1px solid #fecaca; padding: 2px 8px; border-radius: 50px; display: inline-flex; align-items: center; gap: 4px;">
+                                            <x-icono nombre="bloqueado" style="width: 12px; height: 12px;" />
+                                            <span>Alerta: Comprobante indica Bs {{ number_format($pago->monto_detectado, 2) }}</span>
+                                        </span>
+                                    @elseif ($pago->esEscaneoInvalido())
+                                        <span class="badge-escaneo invalido" style="font-size: 11px; font-weight: 600; color: #854d0e; background: #fef9c3; border: 1px solid #fef08a; padding: 2px 8px; border-radius: 50px;">
+                                            Documento no concluyente
+                                        </span>
+                                    @endif
+                                </div>
+
+                                {{-- Modal para ampliar y revisar el comprobante --}}
+                                <dialog id="modal-comprobante-{{ $pago->id }}" style="border: none; border-radius: 16px; padding: 24px; width: 100%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                        <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #1c1c1a;">Comprobante de Pago</h3>
+                                        <button type="button" onclick="document.getElementById('modal-comprobante-{{ $pago->id }}').close()" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: #6f6f6a;">&times;</button>
+                                    </div>
+                                    <div style="text-align: center; margin-bottom: 16px;">
+                                        <img src="{{ asset('storage/' . $pago->comprobante_path) }}" alt="Comprobante de pago" style="max-width: 100%; max-height: 350px; border-radius: 10px; border: 1px solid #e5e7eb;">
+                                    </div>
+                                    <div style="background: #f9fafb; padding: 12px; border-radius: 8px; font-size: 13px; color: #374151;">
+                                        <div><strong>Monto registrado:</strong> Bs {{ number_format($pago->monto, 2) }}</div>
+                                        @if ($pago->monto_detectado)
+                                            <div><strong>Monto detectado por escáner:</strong> Bs {{ number_format($pago->monto_detectado, 2) }}</div>
+                                        @endif
+                                        @if ($pago->banco_detectado)
+                                            <div><strong>Banco emisor:</strong> {{ $pago->banco_detectado }}</div>
+                                        @endif
+                                    </div>
+                                    <div style="margin-top: 16px; text-align: right;">
+                                        <button type="button" class="boton boton-claro" style="border-radius: 50px; min-height: 40px;" onclick="document.getElementById('modal-comprobante-{{ $pago->id }}').close()">Cerrar</button>
+                                    </div>
+                                </dialog>
+                            @endif
                             @if ($pago->motivo_rechazo)
                                 <div style="margin-top: 6px; font-size: 13px; color: #991b1b; background: #ffffff; padding: 6px 12px; border-radius: 6px; border: 1px solid #fecaca;">
                                     <span style="font-weight: 600;">Motivo de rechazo:</span> &laquo;{{ $pago->motivo_rechazo }}&raquo;
@@ -431,11 +499,11 @@
 {{-- Modal accesible para Registrar Pago --}}
 @can('create', [\App\Models\Pago::class, $plan])
 <dialog id="modal-crear-pago" style="border: none; border-radius: 16px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
-    <form method="POST" action="{{ route('planes.pagos.guardar', $plan) }}">
+    <form method="POST" action="{{ route('planes.pagos.guardar', $plan) }}" enctype="multipart/form-data">
         @csrf
         <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: #1c1c1a;">Registrar Pago</h2>
         <p style="margin: 0 0 20px 0; font-size: 14px; color: #6f6f6a;">
-            Anota una transferencia o entrega de dinero. El pago quedará pendiente hasta que el receptor lo confirme.
+            Anota una transferencia o entrega de dinero. Puedes adjuntar tu comprobante para acelerar la verificación.
         </p>
 
         <div style="margin-bottom: 16px;">
@@ -445,6 +513,7 @@
             <select id="select-pago-receptor"
                     name="receptor_id"
                     required
+                    onchange="actualizarDatosReceptor(this.value)"
                     style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; min-height: 44px; box-sizing: border-box;">
                 <option value="">-- Selecciona el destinatario --</option>
                 @foreach ($participantesPlan as $p)
@@ -455,7 +524,23 @@
             </select>
         </div>
 
-        <div style="margin-bottom: 24px;">
+        {{-- Panel reactivo con datos de cobro del receptor --}}
+        <div id="contenedor-datos-receptor" style="display: none; margin-bottom: 18px; padding: 14px 16px; background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px;">
+            <div style="font-size: 13px; font-weight: 700; color: #166534; margin-bottom: 6px;">
+                Datos para transferir al receptor
+            </div>
+            <div id="texto-alias-receptor" style="font-size: 13px; color: #1f2937; margin-bottom: 4px;"></div>
+            <div id="texto-cbu-receptor" style="font-size: 13px; color: #1f2937; margin-bottom: 4px;"></div>
+            <div id="contenedor-qr-receptor" style="display: none; margin-top: 8px;">
+                <span style="font-size: 12px; font-weight: 600; color: #166534; display: block; margin-bottom: 4px;">Código QR para escanear:</span>
+                <img id="img-qr-receptor" src="" alt="QR del receptor" style="max-width: 140px; max-height: 140px; border-radius: 8px; border: 1px solid #d1d5db;">
+            </div>
+            <div id="aviso-sin-cobro" style="display: none; font-size: 12px; color: #854d0e; background: #fefce8; padding: 6px 10px; border-radius: 6px; border: 1px solid #fef08a;">
+                El destinatario no ha configurado Alias o QR de cobro.
+            </div>
+        </div>
+
+        <div style="margin-bottom: 18px;">
             <label for="input-pago-monto" style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 6px;">
                 Monto pagado (Bs)
             </label>
@@ -467,6 +552,24 @@
                    required
                    placeholder="0.00"
                    style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; min-height: 44px; box-sizing: border-box;">
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label for="input-pago-comprobante" style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 6px;">
+                Comprobante de Transferencia (Opcional - Imagen)
+            </label>
+            <input type="file"
+                   id="input-pago-comprobante"
+                   name="comprobante"
+                   accept="image/png, image/jpeg, image/jpg, image/webp"
+                   onchange="previsualizarComprobante(this)"
+                   style="width: 100%; padding: 10px 12px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 13px; box-sizing: border-box;">
+            <p style="margin: 4px 0 8px 0; font-size: 12px; color: #6f6f6a;">
+                El escaneo inteligente procesará la imagen para extraer el monto y banco emisor.
+            </p>
+            <div id="preview-comprobante-contenedor" style="display: none; margin-top: 8px;">
+                <img id="img-preview-comprobante" src="" alt="Vista previa" style="max-width: 100%; max-height: 160px; border-radius: 8px; border: 1px solid #d1d1cd;">
+            </div>
         </div>
 
         <div style="display: flex; justify-content: flex-end; gap: 12px;">
@@ -486,7 +589,76 @@
 </dialog>
 @endcan
 
+{{-- Modal para configurar datos de cobro personales (Alias, CBU, QR) --}}
+<dialog id="modal-configurar-cobro" style="border: none; border-radius: 16px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
+    <form method="POST" action="{{ route('perfil.cobro.actualizar') }}" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: #1c1c1a;">Mis Datos de Cobro</h2>
+        <p style="margin: 0 0 20px 0; font-size: 14px; color: #6f6f6a;">
+            Configura tu Alias, CBU o sube tu código QR para que tus compañeros puedan transferirte fácilmente.
+        </p>
+
+        <div style="margin-bottom: 16px;">
+            <label for="input-perfil-alias" style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 6px;">
+                Alias de Cobro (ej. banco o billetera móvil)
+            </label>
+            <input type="text"
+                   id="input-perfil-alias"
+                   name="alias_pago"
+                   value="{{ old('alias_pago', $miUsuario->alias_pago) }}"
+                   placeholder="mi.alias.pago"
+                   style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; min-height: 44px; box-sizing: border-box;">
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <label for="input-perfil-cbu" style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 6px;">
+                CBU / N° de Cuenta Bancaria
+            </label>
+            <input type="text"
+                   id="input-perfil-cbu"
+                   name="cbu_pago"
+                   value="{{ old('cbu_pago', $miUsuario->cbu_pago) }}"
+                   placeholder="10000000000000"
+                   style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; min-height: 44px; box-sizing: border-box;">
+        </div>
+
+        <div style="margin-bottom: 24px;">
+            <label for="input-perfil-qr" style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 6px;">
+                Imagen de Código QR (Simple / Billetera)
+            </label>
+            <input type="file"
+                   id="input-perfil-qr"
+                   name="qr_pago"
+                   accept="image/*"
+                   style="width: 100%; padding: 10px 12px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 13px; box-sizing: border-box;">
+            @if ($miUsuario->qr_pago_path)
+                <div style="margin-top: 10px;">
+                    <span style="font-size: 12px; color: #6f6f6a; display: block; margin-bottom: 4px;">QR configurado actualmente:</span>
+                    <img src="{{ asset('storage/' . $miUsuario->qr_pago_path) }}" alt="QR actual" style="max-width: 120px; max-height: 120px; border-radius: 8px; border: 1px solid #d1d1cd;">
+                </div>
+            @endif
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 12px;">
+            <button type="button"
+                    class="boton boton-claro"
+                    style="min-height: 44px; min-width: 44px; border-radius: 50px;"
+                    onclick="document.getElementById('modal-configurar-cobro').close()">
+                Cancelar
+            </button>
+            <button type="submit"
+                    class="boton"
+                    style="min-height: 44px; min-width: 44px; border-radius: 50px; background: #25663a; color: #ffffff;">
+                Guardar Datos
+            </button>
+        </div>
+    </form>
+</dialog>
+
 <script>
+    var datosCobroParticipantes = @json($datosCobroParticipantes);
+
     function abrirModalPagoDirecto(receptorId, montoSugerido) {
         var modal = document.getElementById('modal-crear-pago');
         if (!modal) return;
@@ -496,11 +668,81 @@
 
         if (select && receptorId) {
             select.value = receptorId;
+            actualizarDatosReceptor(receptorId);
+        } else if (select) {
+            actualizarDatosReceptor(select.value);
         }
         if (inputMonto && montoSugerido) {
             inputMonto.value = parseFloat(montoSugerido).toFixed(2);
         }
         modal.showModal();
+    }
+
+    function actualizarDatosReceptor(receptorId) {
+        var contenedor = document.getElementById('contenedor-datos-receptor');
+        var textoAlias = document.getElementById('texto-alias-receptor');
+        var textoCbu = document.getElementById('texto-cbu-receptor');
+        var contenedorQr = document.getElementById('contenedor-qr-receptor');
+        var imgQr = document.getElementById('img-qr-receptor');
+        var avisoSinCobro = document.getElementById('aviso-sin-cobro');
+
+        if (!contenedor) return;
+
+        if (!receptorId || !datosCobroParticipantes[receptorId]) {
+            contenedor.style.display = 'none';
+            return;
+        }
+
+        var datos = datosCobroParticipantes[receptorId];
+        contenedor.style.display = 'block';
+
+        var tieneDatos = false;
+
+        if (datos.alias) {
+            textoAlias.textContent = 'Alias: ' + datos.alias;
+            textoAlias.style.display = 'block';
+            tieneDatos = true;
+        } else {
+            textoAlias.style.display = 'none';
+        }
+
+        if (datos.cbu) {
+            textoCbu.textContent = 'CBU / Cuenta: ' + datos.cbu;
+            textoCbu.style.display = 'block';
+            tieneDatos = true;
+        } else {
+            textoCbu.style.display = 'none';
+        }
+
+        if (datos.qr_url) {
+            imgQr.src = datos.qr_url;
+            contenedorQr.style.display = 'block';
+            tieneDatos = true;
+        } else {
+            contenedorQr.style.display = 'none';
+        }
+
+        if (!tieneDatos) {
+            avisoSinCobro.style.display = 'block';
+        } else {
+            avisoSinCobro.style.display = 'none';
+        }
+    }
+
+    function previsualizarComprobante(input) {
+        var previewCont = document.getElementById('preview-comprobante-contenedor');
+        var imgPreview = document.getElementById('img-preview-comprobante');
+
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                if (imgPreview) imgPreview.src = e.target.result;
+                if (previewCont) previewCont.style.display = 'block';
+            };
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            if (previewCont) previewCont.style.display = 'none';
+        }
     }
 
     function cambiarModoDivision(modo) {
