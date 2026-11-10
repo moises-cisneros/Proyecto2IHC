@@ -79,6 +79,13 @@ Panel del receptor (`Ana`) tras confirmar el pago, reflejando la actualización 
 
 ---
 
+### 5. Inspección de Comprobante Bancario Real y Verificación Asistida
+
+Modal accesible de inspección en alta resolución (`BNB.png`) con extracción del monto detectado (Bs 20.00) y banco emisor (`BNB`).
+![Inspección de Comprobante](tarea-8/05-modal-inspeccion-comprobante.png)
+
+---
+
 ## 🧪 Verificación de Suites de Pruebas
 
 ### 1. PHPUnit (Backend y Controlador)
@@ -90,3 +97,54 @@ Panel del receptor (`Ana`) tras confirmar el pago, reflejando la actualización 
 ### 2. Playwright E2E
 
 - `e2e/tarea-8-gastos-liquidacion.spec.ts` (Flujo multi-usuario docente completo con 3 participantes del seeder).
+
+---
+
+## 🚀 Fase 2: Conciliación Inteligente de Comprobantes y Perfil de Cobro
+
+Para elevar el módulo de gastos a un estándar de producto fintech real y eliminar la fricción de conciliación puramente manual, se incorporó la verificación automatizada de comprobantes bancarios y el perfil de cobro por participante.
+
+### 1. Árbol de Sub-issues Atómicas de la Fase 2
+
+- [Sub-issue #79](https://github.com/moises-cisneros/Proyecto2IHC/issues/79): `[Backend] — Servicio de escaneo inteligente de comprobantes, persistencia de análisis y perfil de cobro`
+- [Sub-issue #80](https://github.com/moises-cisneros/Proyecto2IHC/issues/80): `[Controlador] — Endpoint de subida de comprobante, procesamiento de escaneo y gestión de perfil de cobro`
+- [Sub-issue #81](https://github.com/moises-cisneros/Proyecto2IHC/issues/81): `[Interfaz] — Previsualización de comprobantes, badge de verificación y modal de datos de cobro`
+- [Sub-issue #82](https://github.com/moises-cisneros/Proyecto2IHC/issues/82): `[Testing] — Tests automatizados de conciliación con fixtures y documentación de evidencias`
+
+### 2. Arquitectura de Desacoplamiento (Patrón Driver)
+
+El servicio de escaneo inteligente se diseñó mediante el contrato `ComprobanteScannerInterface` y el DTO inmutable `ComprobanteScanResult`:
+
+```text
+               ┌───────────────────────────────┐
+               │  ComprobanteScannerInterface  │
+               └───────────────▲───────────────┘
+                               │
+            ┌──────────────────┴──────────────────┐
+            │                                     │
+┌───────────────────────────┐         ┌───────────────────────────┐
+│ GeminiComprobanteScanner  │         │  FakeComprobanteScanner   │
+│ (Multimodal Vision API)   │         │ (Determinista / Offline)  │
+└───────────────────────────┘         └───────────────────────────┘
+```
+
+- **Driver Gemini Vision (`gemini`):** Cuando se define `GEMINI_API_KEY` en el entorno, procesa la imagen mediante visión multimodal extrayendo monto, banco, referencia y nivel de confianza.
+- **Driver Fake (`fake`):** Utilizado por defecto en entornos locales y durante las suites de testing en Docker/CI, garantizando que las pruebas pasen al 100% de forma determinista y sin depender de red externa.
+
+### 3. Matriz de Conciliación y Manejo de Casos Borde
+
+Se incorporó un generador reproducible de fixtures sintéticos limpios (`scripts/generate-comprobante-fixtures.mjs`, ejecutable vía `pnpm run fixtures:comprobantes`) que sintetiza comprobantes con estructuras bancarias verosímiles de entidades bolivianas (BNB, Banco Unión, Yape, Yastá) sin exponer datos personales ni información confidencial:
+
+| Escenario de Negocio | Fixture de Prueba | Resultado del Escaneo | Consecuencia en Sistema |
+| :--- | :--- | :--- | :--- |
+| **Happy Path (Coincidente)** | `comprobante_bnb_20bs.png` / `comprobante_coincidente.png` | `es_comprobante: true`, Monto: Bs 20.00 / Bs 100.00 | Estado de escaneo: `verificado`. Badge verde para el acreedor, facilitando la confirmación inmediata. |
+| **Sad Path (Discrepancia)** | `comprobante_discrepante.png` | `es_comprobante: true`, Monto: Bs 35.50 (deuda esperada distinta) | Estado de escaneo: `discrepante`. Alerta visual destacada para el receptor y sustento para rechazo con motivo obligatorio. |
+| **Sad Path (Documento Inválido)** | `comprobante_invalido.png` | `es_comprobante: false`, Monto: `null` | Estado de escaneo: `invalido`. Badge de advertencia sin auto-verificación. |
+| **Seguridad Negativa (Anti-IDOR)** | N/A | Intento de auto-confirmación por deudor | Bloqueo estricto con `403 Forbidden` (`PagoPolicy`). |
+
+### 4. Cobertura de Pruebas de la Fase 2
+
+- `tests/Unit/ComprobanteScannerTest.php` (7 tests: extracción, detección de discrepancias, tolerancia monetaria y persistencia).
+- `tests/Feature/GastosComprobanteControllerTest.php` (5 tests: upload multipart, escaneo automático, perfil de cobro, 302 anónimo y 403 no participante).
+- `tests/Feature/GastosComprobanteVistaTest.php` (4 tests: renderizado de datos de cobro del receptor, badges de escaneo, modal `<dialog>` de comprobante y directivas `@can`).
+- `tests/Feature/ConciliacionComprobantePipelineTest.php` (4 tests: pipeline completo con fixtures de comprobantes sintéticos bolivianos).

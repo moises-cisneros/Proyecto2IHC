@@ -5,6 +5,7 @@
     "packageManager": "pnpm@10.34.9",
     "scripts": {
         "setup": "node scripts/setup.mjs",
+        "fixtures:comprobantes": "node scripts/generate-comprobante-fixtures.mjs",
         "dev": "vite",
         "build": "vite build",
         "format": "node scripts/format.mjs --fix",

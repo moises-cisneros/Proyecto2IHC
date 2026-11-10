@@ -30,7 +30,7 @@ class FakeComprobanteScanner implements ComprobanteScannerInterface
 
         $normalized = strtolower(basename($absoluteOrStoragePath));
 
-        if (str_contains($normalized, 'invalido') || str_contains($normalized, 'error') || str_contains($normalized, 'meme')) {
+        if (str_contains($normalized, 'invalido') || str_contains($normalized, 'error') || str_contains($normalized, 'meme') || str_contains($normalized, 'ticket')) {
             return new ComprobanteScanResult(
                 esComprobante: false,
                 monto: null,
@@ -50,6 +50,50 @@ class FakeComprobanteScanner implements ComprobanteScannerInterface
                 referencia: 'TRX-DISCREP-7721',
                 confianza: 0.92,
                 rawPayload: ['tipo' => 'transferencia_qr', 'monto_detectado' => 35.50]
+            );
+        }
+
+        if (str_contains($normalized, 'bnb') || str_contains($normalized, '20bs')) {
+            return new ComprobanteScanResult(
+                esComprobante: true,
+                monto: 20.00,
+                banco: 'Banco Nacional de Bolivia',
+                referencia: 'BNB-98432170',
+                confianza: 0.98,
+                rawPayload: ['monto_detectado' => 20.00, 'banco' => 'Banco Nacional de Bolivia', 'referencia' => 'BNB-98432170']
+            );
+        }
+
+        if (str_contains($normalized, 'union') || str_contains($normalized, '100bs')) {
+            return new ComprobanteScanResult(
+                esComprobante: true,
+                monto: 100.00,
+                banco: 'Banco Unión',
+                referencia: 'BU-202611-77889',
+                confianza: 0.98,
+                rawPayload: ['monto_detectado' => 100.00, 'banco' => 'Banco Unión', 'referencia' => 'BU-202611-77889']
+            );
+        }
+
+        if (str_contains($normalized, 'yape') || str_contains($normalized, '25bs')) {
+            return new ComprobanteScanResult(
+                esComprobante: true,
+                monto: 25.00,
+                banco: 'Yape Bolivia',
+                referencia: 'YAPE-482910',
+                confianza: 0.98,
+                rawPayload: ['monto_detectado' => 25.00, 'banco' => 'Yape Bolivia', 'referencia' => 'YAPE-482910']
+            );
+        }
+
+        if (str_contains($normalized, 'yasta') || str_contains($normalized, '35bs')) {
+            return new ComprobanteScanResult(
+                esComprobante: true,
+                monto: 35.50,
+                banco: 'Yastá QR',
+                referencia: 'YST-55992',
+                confianza: 0.95,
+                rawPayload: ['monto_detectado' => 35.50, 'banco' => 'Yastá QR', 'referencia' => 'YST-55992']
             );
         }
 
