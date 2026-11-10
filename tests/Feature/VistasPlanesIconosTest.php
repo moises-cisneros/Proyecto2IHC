@@ -85,5 +85,29 @@ class VistasPlanesIconosTest extends TestCase
         $this->assertStringNotContainsString('📅', $content);
         $this->assertStringNotContainsString('📍', $content);
         $this->assertStringNotContainsString('⚖', $content);
+        $this->assertStringNotContainsString('💰', $content);
+    }
+
+    /**
+     * Verifies that the expenses & liquidation tab does not contain raw emojis and renders semantic icons.
+     */
+    public function test_sala_gastos_no_contiene_emojis_crudos_y_renderiza_iconos_dinero_y_pago(): void
+    {
+        $organizador = User::factory()->create();
+        $plan = Plan::factory()->create([
+            'user_id' => $organizador->id,
+            'estado' => 'confirmado',
+        ]);
+
+        $response = $this->actingAs($organizador)->get(route('planes.detalle', ['plan' => $plan, 'tab' => 'gastos']));
+
+        $response->assertOk();
+        $response->assertSee('icono-svg', false);
+        $content = $response->getContent();
+
+        $this->assertStringNotContainsString('💰', $content);
+        $this->assertStringNotContainsString('💸', $content);
+        $this->assertStringNotContainsString('📤', $content);
+        $this->assertStringNotContainsString('📥', $content);
     }
 }

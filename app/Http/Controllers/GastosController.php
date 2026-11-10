@@ -25,9 +25,9 @@ class GastosController extends Controller
         $participantesIds = collect($request->participantes)->map(fn ($id) => (int) $id)->values();
 
         $gasto = $plan->gastos()->create([
-            'pagador_id'    => auth()->id(),
-            'concepto'      => $request->concepto,
-            'monto_total'   => $montoTotal,
+            'pagador_id' => auth()->id(),
+            'concepto' => $request->concepto,
+            'monto_total' => $montoTotal,
             'tipo_division' => $request->tipo_division,
         ]);
 
@@ -44,8 +44,8 @@ class GastosController extends Controller
                 }
 
                 GastoDivision::create([
-                    'gasto_id'       => $gasto->id,
-                    'user_id'        => $uid,
+                    'gasto_id' => $gasto->id,
+                    'user_id' => $uid,
                     'monto_asignado' => $montoAsignado,
                 ]);
             }
@@ -55,8 +55,8 @@ class GastosController extends Controller
             foreach ($participantesIds as $uid) {
                 $monto = isset($divisiones[$uid]) ? round((float) $divisiones[$uid], 2) : 0.0;
                 GastoDivision::create([
-                    'gasto_id'       => $gasto->id,
-                    'user_id'        => $uid,
+                    'gasto_id' => $gasto->id,
+                    'user_id' => $uid,
                     'monto_asignado' => $monto,
                 ]);
             }
@@ -64,9 +64,9 @@ class GastosController extends Controller
 
         // Trazabilidad en historial de actividades
         $plan->actividades()->create([
-            'user_id'           => auth()->id(),
-            'accion'            => 'gasto',
-            'descripcion'       => auth()->user()->name . " registró el gasto '{$gasto->concepto}' por \${$gasto->monto_total}.",
+            'user_id' => auth()->id(),
+            'accion' => 'gasto',
+            'descripcion' => auth()->user()->name." registró el gasto '{$gasto->concepto}' por \${$gasto->monto_total}.",
             'estado_resultante' => $plan->estado,
         ]);
 
@@ -82,19 +82,19 @@ class GastosController extends Controller
         Gate::authorize('create', [Pago::class, $plan]);
 
         $pago = $plan->pagos()->create([
-            'deudor_id'   => auth()->id(),
+            'deudor_id' => auth()->id(),
             'receptor_id' => $request->receptor_id,
-            'monto'       => round((float) $request->monto, 2),
-            'estado'      => 'pendiente',
+            'monto' => round((float) $request->monto, 2),
+            'estado' => 'pendiente',
         ]);
 
         $nombreReceptor = $pago->receptor?->name ?? 'destinatario';
 
         // Trazabilidad
         $plan->actividades()->create([
-            'user_id'           => auth()->id(),
-            'accion'            => 'pago',
-            'descripcion'       => auth()->user()->name . " registró un pago de \${$pago->monto} a {$nombreReceptor} (pendiente de confirmación).",
+            'user_id' => auth()->id(),
+            'accion' => 'pago',
+            'descripcion' => auth()->user()->name." registró un pago de \${$pago->monto} a {$nombreReceptor} (pendiente de confirmación).",
             'estado_resultante' => $plan->estado,
         ]);
 
@@ -114,7 +114,7 @@ class GastosController extends Controller
         }
 
         $pago->update([
-            'estado'           => 'confirmado',
+            'estado' => 'confirmado',
             'fecha_resolucion' => now(),
         ]);
 
@@ -122,9 +122,9 @@ class GastosController extends Controller
 
         // Trazabilidad
         $pago->plan->actividades()->create([
-            'user_id'           => auth()->id(),
-            'accion'            => 'pago_confirmado',
-            'descripcion'       => auth()->user()->name . " confirmó el pago de \${$pago->monto} recibido de {$nombreDeudor}.",
+            'user_id' => auth()->id(),
+            'accion' => 'pago_confirmado',
+            'descripcion' => auth()->user()->name." confirmó el pago de \${$pago->monto} recibido de {$nombreDeudor}.",
             'estado_resultante' => $pago->plan->estado,
         ]);
 
@@ -144,8 +144,8 @@ class GastosController extends Controller
         }
 
         $pago->update([
-            'estado'           => 'rechazado',
-            'motivo_rechazo'   => $request->motivo_rechazo,
+            'estado' => 'rechazado',
+            'motivo_rechazo' => $request->motivo_rechazo,
             'fecha_resolucion' => now(),
         ]);
 
@@ -153,9 +153,9 @@ class GastosController extends Controller
 
         // Trazabilidad
         $pago->plan->actividades()->create([
-            'user_id'           => auth()->id(),
-            'accion'            => 'pago_rechazado',
-            'descripcion'       => auth()->user()->name . " rechazó el pago de \${$pago->monto} de {$nombreDeudor}. Motivo: {$request->motivo_rechazo}",
+            'user_id' => auth()->id(),
+            'accion' => 'pago_rechazado',
+            'descripcion' => auth()->user()->name." rechazó el pago de \${$pago->monto} de {$nombreDeudor}. Motivo: {$request->motivo_rechazo}",
             'estado_resultante' => $pago->plan->estado,
         ]);
 

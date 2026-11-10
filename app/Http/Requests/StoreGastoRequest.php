@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use App\Models\Plan;
 use App\Models\User;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreGastoRequest extends FormRequest
@@ -19,18 +20,18 @@ class StoreGastoRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'concepto'        => ['required', 'string', 'max:255'],
-            'monto_total'     => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
-            'tipo_division'   => ['required', 'in:equitativa,personalizada'],
-            'participantes'   => ['required', 'array', 'min:1'],
+            'concepto' => ['required', 'string', 'max:255'],
+            'monto_total' => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
+            'tipo_division' => ['required', 'in:equitativa,personalizada'],
+            'participantes' => ['required', 'array', 'min:1'],
             'participantes.*' => ['integer', 'exists:users,id'],
-            'divisiones'      => ['nullable', 'array'],
-            'divisiones.*'    => ['nullable', 'numeric', 'min:0'],
+            'divisiones' => ['nullable', 'array'],
+            'divisiones.*' => ['nullable', 'numeric', 'min:0'],
         ];
     }
 
@@ -46,7 +47,7 @@ class StoreGastoRequest extends FormRequest
                 $plan = Plan::find($plan);
             }
 
-            if (!$plan) {
+            if (! $plan) {
                 return;
             }
 
@@ -64,7 +65,7 @@ class StoreGastoRequest extends FormRequest
 
             // Validar anti-IDOR: cada participante debe pertenecer al plan
             foreach ($participantesSeleccionados as $uid) {
-                if (!$participantesValidos->contains($uid)) {
+                if (! $participantesValidos->contains($uid)) {
                     $validator->errors()->add('participantes', 'Uno o más participantes seleccionados no pertenecen a este plan.');
                     break;
                 }
@@ -98,12 +99,12 @@ class StoreGastoRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'concepto.required'      => 'Debes ingresar el concepto o descripción del gasto.',
-            'monto_total.required'   => 'El monto total es obligatorio.',
-            'monto_total.min'        => 'El monto total debe ser mayor a cero.',
+            'concepto.required' => 'Debes ingresar el concepto o descripción del gasto.',
+            'monto_total.required' => 'El monto total es obligatorio.',
+            'monto_total.min' => 'El monto total debe ser mayor a cero.',
             'tipo_division.required' => 'Debes seleccionar el tipo de división (equitativa o personalizada).',
             'participantes.required' => 'Debes seleccionar al menos un participante para dividir el gasto.',
-            'participantes.min'      => 'Debes seleccionar al menos un participante para dividir el gasto.',
+            'participantes.min' => 'Debes seleccionar al menos un participante para dividir el gasto.',
         ];
     }
 }

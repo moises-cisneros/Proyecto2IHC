@@ -120,4 +120,29 @@ class ArquitecturaInformacionVistaTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('name="seccion" value="invitaciones"', false);
     }
+
+    /**
+     * Caso 5 (Envolvente y Límites Ergonómicos - IHC): La tabla de planes está envuelta
+     * en un contenedor padre (.tabla-contenedor) que dicta límites con overflow responsivo
+     * y garantiza espacio adecuado para acciones evitando desbordamientos.
+     */
+    public function test_tabla_planes_esta_envuelta_en_contenedor_con_clase_tabla_contenedor_y_anchos_balanceados(): void
+    {
+        $usuario = User::factory()->create();
+
+        Plan::create([
+            'user_id' => $usuario->id,
+            'nombre' => 'Plan con Tabla Envuelta',
+            'organizador' => $usuario->name,
+            'fecha_limite' => today(),
+            'estado' => 'pendiente',
+        ]);
+
+        $response = $this->actingAs($usuario)->get(route('planes.listar'));
+
+        $response->assertStatus(200);
+        $response->assertSee('<div class="tabla-contenedor">', false);
+        $response->assertSee('<table class="tabla">', false);
+        $response->assertSee('width: 29%; text-align: right;', false);
+    }
 }

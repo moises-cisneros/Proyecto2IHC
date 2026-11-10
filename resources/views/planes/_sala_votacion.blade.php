@@ -111,7 +111,7 @@
            aria-selected="{{ $pestanaActiva === 'gastos' ? 'true' : 'false' }}"
            class="boton {{ $pestanaActiva === 'gastos' ? '' : 'boton-claro' }}"
            style="min-height: 44px; min-width: 44px; padding: 10px 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; text-decoration: none; border-radius: 50px; background: {{ $pestanaActiva === 'gastos' ? '#ffe683' : '#ffffff' }}; color: #1c1c1a; border: 1px solid {{ $pestanaActiva === 'gastos' ? '#ffe683' : '#e3e3df' }};">
-            💰 Gastos y Liquidación ({{ $gastos->count() }})
+            <x-icono nombre="dinero" style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Gastos y Liquidación ({{ $gastos->count() }})
         </a>
     </div>
 

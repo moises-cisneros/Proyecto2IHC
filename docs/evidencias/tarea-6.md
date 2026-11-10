@@ -45,19 +45,21 @@ Todo subido en su fork: Antes de las 5pm del martes 03/11, suite de antes y desp
 ## 🖼️ Registro de Evidencias Gráficas
 
 ### 1. Estado Inicial (Antes de la Feature)
-* **Sala de votación inicial abierta:**
+
+- **Sala de votación inicial abierta:**
 ![Sala abierta inicial](tarea-6/antes/sala-abierta-inicial.png)
 
 ---
 
 ### 2. Estado Final (Después de la Feature)
-* **Múltiples votos activos simultáneamente (Fecha + Lugar):**
+
+- **Múltiples votos activos simultáneamente (Fecha + Lugar):**
 ![Múltiples votos activos](tarea-6/despues/multiples-votos-activos.png)
 
-* **Retiro de voto reactivo (Toggle con decremento a 0 votos):**
+- **Retiro de voto reactivo (Toggle con decremento a 0 votos):**
 ![Voto retirado toggle](tarea-6/despues/voto-retirado-toggle.png)
 
-* **Sala cerrada con deliberación finalizada (Banner H5 + Botones inhabilitados + Conteo congelado):**
+- **Sala cerrada con deliberación finalizada (Banner H5 + Botones inhabilitados + Conteo congelado):**
 ![Sala cerrada congelada](tarea-6/despues/sala-cerrada-congelada.png)
 
 ---

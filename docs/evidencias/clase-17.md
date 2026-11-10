@@ -55,9 +55,9 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 **Regla de negocio:** Se valida que el correo exista y que la contraseña coincida con el hash almacenado. Si falla, se muestra un mensaje de error sin revelar cuál campo fue incorrecto (seguridad).  
 **Archivos reales:**
 
-- Ruta: [`routes/web.php`](../routes/web.php) — líneas 11–12
-- Controlador: [`AutentificacionController::ingresar()`](../app/Http/Controllers/AutentificacionController.php)
-- Vista: [`resources/views/acceso/ingresar.blade.php`](../resources/views/acceso/ingresar.blade.php)
+- Ruta: [`routes/web.php`](../../routes/web.php) — líneas 11–12
+- Controlador: [`AutentificacionController::ingresar()`](../../app/Http/Controllers/AutentificacionController.php)
+- Vista: [`resources/views/acceso/ingresar.blade.php`](../../resources/views/acceso/ingresar.blade.php)
 
 ![Pantalla de carga / login](clase-17/PantallaDeCarga.png)
 
@@ -70,9 +70,9 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 **Regla de negocio:** El correo debe ser único en la BD. La contraseña mínima es 8 caracteres y se almacena como hash bcrypt. Al registrarse, el usuario queda logueado automáticamente.  
 **Archivos reales:**
 
-- Ruta: [`routes/web.php`](../routes/web.php) — líneas 14–15
-- Controlador: [`AutentificacionController::registrar()`](../app/Http/Controllers/AutentificacionController.php)
-- Migración: [`database/migrations/0001_01_01_000000_create_users_table.php`](../database/migrations/0001_01_01_000000_create_users_table.php)
+- Ruta: [`routes/web.php`](../../routes/web.php) — líneas 14–15
+- Controlador: [`AutentificacionController::registrar()`](../../app/Http/Controllers/AutentificacionController.php)
+- Migración: [`database/migrations/0001_01_01_000000_create_users_table.php`](../../database/migrations/0001_01_01_000000_create_users_table.php)
 
 ![Pantalla de registro de usuario](clase-17/RegistroDeUusario.png)
 
@@ -85,10 +85,10 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 **Regla de negocio:** Solo se muestran los planes del usuario logueado (`user_id = auth()->id()`). La ruta está protegida por el middleware `auth`.  
 **Archivos reales:**
 
-- Ruta: [`routes/web.php`](../routes/web.php) — línea 28
-- Controlador: [`PlanesController::listar()`](../app/Http/Controllers/PlanesController.php)
-- Modelo / Scope: [`Plan::scopeFiltrar()`](../app/Models/Plan.php)
-- Vista: [`resources/views/planes/listar.blade.php`](../resources/views/planes/listar.blade.php)
+- Ruta: [`routes/web.php`](../../routes/web.php) — línea 28
+- Controlador: [`PlanesController::listar()`](../../app/Http/Controllers/PlanesController.php)
+- Modelo / Scope: [`Plan::scopeFiltrar()`](../../app/Models/Plan.php)
+- Vista: [`resources/views/planes/listar.blade.php`](../../resources/views/planes/listar.blade.php)
 
 ![Pantalla de inicio con lista de planes](clase-17/PantallaDeInicio.png)
 
@@ -101,9 +101,9 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 **Regla de negocio:** Los tres campos son obligatorios. El plan se crea con estado `pendiente` por defecto y se asocia al `user_id` del usuario logueado.  
 **Archivos reales:**
 
-- Ruta: [`routes/web.php`](../routes/web.php) — línea 29
-- Controlador: [`PlanesController::guardar()`](../app/Http/Controllers/PlanesController.php)
-- Migración tabla planes: [`database/migrations/2026_10_02_013531_create_planes_table.php`](../database/migrations/2026_10_02_013531_create_planes_table.php)
+- Ruta: [`routes/web.php`](../../routes/web.php) — línea 29
+- Controlador: [`PlanesController::guardar()`](../../app/Http/Controllers/PlanesController.php)
+- Migración tabla planes: [`database/migrations/2026_10_02_013531_create_planes_table.php`](../../database/migrations/2026_10_02_013531_create_planes_table.php)
 
 ![Formulario para crear un plan](clase-17/CrearPlan.png)
 
@@ -118,9 +118,9 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 **Regla de negocio:** Un plan `cancelado` **no puede** volver a `confirmado`. La transición válida es: `pendiente → confirmado` o `pendiente → cancelado`.  
 **Archivos reales:**
 
-- Ruta: [`routes/web.php`](../routes/web.php) — línea 33
-- Controlador: [`PlanesController::cambiarEstado()`](../app/Http/Controllers/PlanesController.php)
-- Migración estado: [`database/migrations/2026_10_08_174248_agregar_estado_a_planes_table.php`](../database/migrations/2026_10_08_174248_agregar_estado_a_planes_table.php)
+- Ruta: [`routes/web.php`](../../routes/web.php) — línea 33
+- Controlador: [`PlanesController::cambiarEstado()`](../../app/Http/Controllers/PlanesController.php)
+- Migración estado: [`database/migrations/2026_10_08_174248_agregar_estado_a_planes_table.php`](../../database/migrations/2026_10_08_174248_agregar_estado_a_planes_table.php)
 
 ![Pantalla de confirmación de plan](clase-17/PantallaDeConfirmacion.png)
 
@@ -135,7 +135,7 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 **Regla de negocio:** Un plan en estado `confirmado` puede cancelarse. Una vez `cancelado`, no puede volver a `confirmado` (estado final irreversible parcialmente).  
 **Archivos reales:**
 
-- Controlador: [`PlanesController::cambiarEstado()`](../app/Http/Controllers/PlanesController.php) — líneas 127–144
+- Controlador: [`PlanesController::cambiarEstado()`](../../app/Http/Controllers/PlanesController.php) — líneas 127–144
 
 ![Pantalla de cancelación de plan](clase-17/PantallaDeCancelacion.png)
 
@@ -148,8 +148,8 @@ El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera e
 **Regla de negocio:** Un plan con estado `confirmado` **no puede eliminarse**. Primero debe cancelarse. Solo planes `pendiente` o `cancelado` pueden borrarse.  
 **Archivos reales:**
 
-- Ruta: [`routes/web.php`](../routes/web.php) — línea 32
-- Controlador: [`PlanesController::eliminar()`](../app/Http/Controllers/PlanesController.php) — líneas 108–119
+- Ruta: [`routes/web.php`](../../routes/web.php) — línea 32
+- Controlador: [`PlanesController::eliminar()`](../../app/Http/Controllers/PlanesController.php) — líneas 108–119
 
 ![Pantalla de eliminación de plan](clase-17/PantallaDeEliminacion.png)
 
@@ -198,10 +198,10 @@ votos (Tarea 5)
 
 | Modelo | Archivo | Relaciones principales |
 | --- | --- | --- |
-| `PlanActivity` | [`app/Models/PlanActivity.php`](../app/Models/PlanActivity.php) | `belongsTo(Plan::class)`, `belongsTo(User::class)` |
-| `Invitacion` | [`app/Models/Invitacion.php`](../app/Models/Invitacion.php) | `belongsTo(Plan::class)`, `belongsTo(User::class)` |
-| `Opcion` | [`app/Models/Opcion.php`](../app/Models/Opcion.php) | `belongsTo(Plan::class)`, `belongsTo(User::class, 'user_id')`, `hasMany(Voto::class)` |
-| `Voto` | [`app/Models/Voto.php`](../app/Models/Voto.php) | `belongsTo(Opcion::class)`, `belongsTo(User::class)` |
+| `PlanActivity` | [`app/Models/PlanActivity.php`](../../app/Models/PlanActivity.php) | `belongsTo(Plan::class)`, `belongsTo(User::class)` |
+| `Invitacion` | [`app/Models/Invitacion.php`](../../app/Models/Invitacion.php) | `belongsTo(Plan::class)`, `belongsTo(User::class)` |
+| `Opcion` | [`app/Models/Opcion.php`](../../app/Models/Opcion.php) | `belongsTo(Plan::class)`, `belongsTo(User::class, 'user_id')`, `hasMany(Voto::class)` |
+| `Voto` | [`app/Models/Voto.php`](../../app/Models/Voto.php) | `belongsTo(Opcion::class)`, `belongsTo(User::class)` |
 
 Relaciones a incorporar en los modelos base:
 
@@ -223,7 +223,7 @@ public function votos()         { return $this->hasMany(Voto::class); }
 
 ### 4.4 Capa de Autorización y Seguridad (`app/Policies/`)
 
-Se incorpora una política formal de acceso [`app/Policies/PlanPolicy.php`](../app/Policies/PlanPolicy.php) para gobernar el flujo colaborativo y blindar la integridad del sistema:
+Se incorpora una política formal de acceso [`app/Policies/PlanPolicy.php`](../../app/Policies/PlanPolicy.php) para gobernar el flujo colaborativo y blindar la integridad del sistema:
 
 - **Organizador / Creador:** Puede editar, cancelar, eliminar el plan, enviar invitaciones por correo y cerrar votaciones.
 - **Participante Aceptado:** Puede ver la sala, proponer opciones (fechas o lugares), votar y abandonar el plan. **No puede borrar ni cancelar el plan**.
@@ -235,10 +235,10 @@ Se incorpora una política formal de acceso [`app/Policies/PlanPolicy.php`](../a
 
 | Controlador nuevo | Responsabilidad |
 | --- | --- |
-| [`HistorialController`](../app/Http/Controllers/HistorialController.php) | Consulta cronológica de auditoría con aislamiento estricto por usuario y filtros temáticos |
-| [`InvitacionesController`](../app/Http/Controllers/InvitacionesController.php) | Enviar invitaciones por correo y gestionar aceptación/rechazo vía token |
-| [`OpcionesController`](../app/Http/Controllers/OpcionesController.php) | Proponer y retirar fechas o lugares en planes activos |
-| [`VotosController`](../app/Http/Controllers/VotosController.php) | Emitir y retirar votos de forma atómica con `DB::transaction` |
+| [`HistorialController`](../../app/Http/Controllers/HistorialController.php) | Consulta cronológica de auditoría con aislamiento estricto por usuario y filtros temáticos |
+| [`InvitacionesController`](../../app/Http/Controllers/InvitacionesController.php) | Enviar invitaciones por correo y gestionar aceptación/rechazo vía token |
+| [`OpcionesController`](../../app/Http/Controllers/OpcionesController.php) | Proponer y retirar fechas o lugares en planes activos |
+| [`VotosController`](../../app/Http/Controllers/VotosController.php) | Emitir y retirar votos de forma atómica con `DB::transaction` |
 
 Validaciones extraídas a Form Requests dedicados:
 
@@ -249,7 +249,7 @@ Validaciones extraídas a Form Requests dedicados:
 
 ### 4.6 Rutas nuevas
 
-En [`routes/web.php`](../routes/web.php) — dentro del grupo protegido `Route::middleware('auth')`:
+En [`routes/web.php`](../../routes/web.php) — dentro del grupo protegido `Route::middleware('auth')`:
 
 ```php
 // Historial de actividad (Auditoría / Deuda Técnica Tarea 4)
@@ -280,12 +280,12 @@ Route::delete('/opciones/{opcion}/votar',    [VotosController::class, 'quitar'])
 1. **Feedback Dual Nativo (Reemplazo integral de SweetAlert2 sin CDNs):**
    - **Modal de Confirmación Bloqueante (`<x-dialog-confirm />`):** Utiliza `<dialog>` nativo de HTML5 con backdrop oscuro para acciones críticas y destructivas (eliminar plan, cancelar, abandonar).
    - **Toast Flotante Auto-Dismissable (`<x-toast-alerta />`):** Ubicado en la esquina superior derecha (`fixed top-5 right-5 z-50`). No altera el flujo de la página (*Zero Layout Shift*), se muestra con animación suave, **desaparece automáticamente a los 3 segundos** (3000ms) y ofrece un botón de descarte manual `×` (Nielsen H3).
-2. **Modularización de "Mis Planes" ([`planes/listar.blade.php`](../resources/views/planes/listar.blade.php)):** Descompuesta en parciales (`_filtros.blade.php`, `_tabla.blade.php`, `_modal_crear.blade.php`).
+2. **Modularización de "Mis Planes" ([`planes/listar.blade.php`](../../resources/views/planes/listar.blade.php)):** Descompuesta en parciales (`_filtros.blade.php`, `_tabla.blade.php`, `_modal_crear.blade.php`).
 3. **Refactorización del Organizador (H6 y H8):** En `_modal_crear.blade.php`, se retira el campo editable de organizador y se muestra un badge informativo de solo lectura: *«Organizador: {{ auth()->user()->name }}»*.
-4. **Pantalla de Historial de Actividad ([`planes/historial.blade.php`](../resources/views/planes/historial.blade.php)):**
+4. **Pantalla de Historial de Actividad ([`planes/historial.blade.php`](../../resources/views/planes/historial.blade.php)):**
    - **Tarjetas de Actividad (`ActivityCard`):** Responden a las **4 dimensiones autónomas** del evento (*qué ocurrió, cuándo, cuál fue el resultado, qué elemento involucró*).
    - **Filtros Temáticos (Ley de Hick):** Acotados a $n = 4$ chips (`Todos`, `Estados`, `Creaciones`, `Participación`) con área táctil ≥ 44 px (Ley de Fitts).
-5. **Nueva Pantalla de Sala Colaborativa ([`planes/detalle.blade.php`](../resources/views/planes/detalle.blade.php)):**
+5. **Nueva Pantalla de Sala Colaborativa ([`planes/detalle.blade.php`](../../resources/views/planes/detalle.blade.php)):**
    - **Cabecera (`_cabecera.blade.php`):** Título, estado y fecha límite.
    - **Panel de Participantes (`_participantes.blade.php`):** Lista de miembros con roles (`Organizador` vs `Participante`) y botón accesible "Invitar participante" (≥ 44 px de target táctil, Ley de Fitts).
    - **Sala de Votación (`_sala_votacion.blade.php`):** Pestañas semánticas para separar "Fechas" y "Lugares" (Ley de Hick, $n \le 4$), tarjetas de opción autónomas con recuento de votos y separación antagónica de 12px (`gap-3`) entre botones de votar y eliminar opción.
@@ -348,10 +348,10 @@ flowchart TD
 | Capa | Archivos modificados / refactorizados | Archivos nuevos |
 | --- | --- | --- |
 | **BD (Migraciones)** | — | 4 migraciones (`plan_activities`, `invitaciones`, `opciones`, `votos`) |
-| **Modelos** | [`Plan.php`](../app/Models/Plan.php), [`User.php`](../app/Models/User.php) | `PlanActivity.php`, `Invitacion.php`, `Opcion.php`, `Voto.php` |
-| **Seguridad** | — | [`PlanPolicy.php`](../app/Policies/PlanPolicy.php) |
-| **Controladores** | [`PlanesController.php`](../app/Http/Controllers/PlanesController.php) | `HistorialController.php`, `InvitacionesController.php`, `OpcionesController.php`, `VotosController.php` |
+| **Modelos** | [`Plan.php`](../../app/Models/Plan.php), [`User.php`](../../app/Models/User.php) | `PlanActivity.php`, `Invitacion.php`, `Opcion.php`, `Voto.php` |
+| **Seguridad** | — | [`PlanPolicy.php`](../../app/Policies/PlanPolicy.php) |
+| **Controladores** | [`PlanesController.php`](../../app/Http/Controllers/PlanesController.php) | `HistorialController.php`, `InvitacionesController.php`, `OpcionesController.php`, `VotosController.php` |
 | **Validación** | — | `GuardarPlanRequest.php`, `ProponerOpcionRequest.php` |
-| **Rutas** | [`routes/web.php`](../routes/web.php) | — |
+| **Rutas** | [`routes/web.php`](../../routes/web.php) | — |
 | **Vistas** | `layouts/app.blade.php`, `planes/listar.blade.php` | `components/dialog-confirm.blade.php`, `components/toast-alerta.blade.php`, `planes/historial.blade.php`, `planes/detalle.blade.php` (+ parciales) |
 | **Pruebas** | — | 6 suites de tests PHPUnit en `tests/Feature/` y `tests/Unit/` |

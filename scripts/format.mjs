@@ -33,6 +33,19 @@ try {
     hasError = true;
 }
 
+// 3. Formateador y Linter de Markdown con markdownlint
+console.log('📝 3. Verificando documentación Markdown con markdownlint...');
+try {
+    const mdCmd = isFix
+        ? 'npx markdownlint "**/*.md" --fix --ignore-path .markdownlintignore'
+        : 'npx markdownlint "**/*.md" --ignore-path .markdownlintignore';
+    execSync(mdCmd, { stdio: 'inherit' });
+    console.log('✅ Markdown (markdownlint): Formato correcto.');
+} catch (error) {
+    console.error('❌ Markdown (markdownlint): Se detectaron problemas de formato en archivos Markdown.');
+    hasError = true;
+}
+
 if (hasError) {
     console.error('\n⚠️ Hubo discrepancias de formato. Ejecuta "pnpm run format" para solucionarlas automáticamente.');
     process.exit(1);

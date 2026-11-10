@@ -50,7 +50,7 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
 
         // Ana va al plan y acepta la invitación
         await pageAna.goto(pageLucas.url());
-        const btnAceptarAna = pageAna.getByRole('button', { name: /Aceptar invitación/i });
+        const btnAceptarAna = pageAna.getByRole('button', { name: /Aceptar invitación/i }).first();
         if (await btnAceptarAna.isVisible()) {
             await btnAceptarAna.click();
         }
@@ -64,7 +64,7 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
 
         // Carlos va al plan y acepta la invitación
         await pageCarlos.goto(pageLucas.url());
-        const btnAceptarCarlos = pageCarlos.getByRole('button', { name: /Aceptar invitación/i });
+        const btnAceptarCarlos = pageCarlos.getByRole('button', { name: /Aceptar invitación/i }).first();
         if (await btnAceptarCarlos.isVisible()) {
             await btnAceptarCarlos.click();
         }
@@ -75,9 +75,9 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
         await pageLucas.reload();
         await pageLucas.getByRole('tab', { name: /Gastos y Liquidación/i }).click();
 
-        await pageLucas.getByRole('button', { name: '+ Registrar Gasto' }).click();
+        await pageLucas.getByRole('button', { name: /Registrar (nuevo )?gasto/i }).click();
         await pageLucas.getByLabel('Concepto o descripción').fill('Cena de bienvenida');
-        await pageLucas.getByLabel('Monto total ($)').fill('60.00');
+        await pageLucas.getByLabel(/Monto total/i).fill('60.00');
         await pageLucas.getByRole('button', { name: 'Guardar Gasto' }).click();
 
         await expect(pageLucas.getByText('Cena de bienvenida')).toBeVisible();
@@ -90,9 +90,9 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
         await pageAna.reload();
         await pageAna.getByRole('tab', { name: /Gastos y Liquidación/i }).click();
 
-        await pageAna.getByRole('button', { name: '+ Registrar Gasto' }).click();
+        await pageAna.getByRole('button', { name: /Registrar (nuevo )?gasto/i }).click();
         await pageAna.getByLabel('Concepto o descripción').fill('Transporte compartido');
-        await pageAna.getByLabel('Monto total ($)').fill('45.00');
+        await pageAna.getByLabel(/Monto total/i).fill('45.00');
         await pageAna.locator('#select-tipo-division').selectOption('personalizada');
 
         // Llenar montos individuales personalizados
@@ -115,12 +115,15 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
         await pageCarlos.reload();
         await pageCarlos.getByRole('tab', { name: /Gastos y Liquidación/i }).click();
 
-        await pageCarlos.getByRole('button', { name: /Registrar Pago/i }).first().click();
+        await pageCarlos
+            .getByRole('button', { name: /Registrar Pago/i })
+            .first()
+            .click();
         await pageCarlos.locator('#select-pago-receptor').selectOption({ label: 'Usuario 1' });
         await pageCarlos.locator('#input-pago-monto').fill('20.00');
         await pageCarlos.getByRole('button', { name: 'Enviar Pago' }).click();
 
-        await expect(pageCarlos.getByText('pendiente')).toBeVisible();
+        await expect(pageCarlos.locator('.badge-estado-pago', { hasText: 'pendiente' }).first()).toBeVisible();
         await pageCarlos.screenshot({ path: 'docs/evidencias/tarea-8/03-pago-pendiente.png', fullPage: true });
 
         // -------------------------------------------------------------
@@ -133,7 +136,7 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
         await expect(btnConfirmar).toBeVisible();
         await btnConfirmar.click();
 
-        await expect(pageAna.getByText('confirmado')).toBeVisible();
+        await expect(pageAna.locator('.badge-estado-pago', { hasText: 'confirmado' }).first()).toBeVisible();
         await expect(pageAna.getByText('¡Pago confirmado!')).toBeVisible();
 
         await pageAna.screenshot({ path: 'docs/evidencias/tarea-8/04-pago-confirmado-saldos.png', fullPage: true });
@@ -143,9 +146,7 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
         await ctxCarlos.close();
     });
 
-    test('Usuario sin permisos o ajeno al plan no puede ver ni modificar los gastos del grupo', async ({
-        browser,
-    }) => {
+    test('Usuario sin permisos o ajeno al plan no puede ver ni modificar los gastos del grupo', async ({ browser }) => {
         const ctxLucas = await browser.newContext();
         const pageLucas = await ctxLucas.newPage();
 

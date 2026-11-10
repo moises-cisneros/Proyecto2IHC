@@ -1,0 +1,16 @@
+node_modules/
+vendor/
+public/
+storage/
+bootstrap/cache/
+.phpunit.cache/
+.git/
+.agent/
+.agents/
+.claude/
+.cursor/
+.opencode/
+.codegraph/
+.gemini/
+openspec/
+openspec/**

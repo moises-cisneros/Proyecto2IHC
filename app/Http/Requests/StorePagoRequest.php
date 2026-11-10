@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Plan;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StorePagoRequest extends FormRequest
@@ -18,13 +19,13 @@ class StorePagoRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'receptor_id' => ['required', 'integer', 'exists:users,id'],
-            'monto'       => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
+            'monto' => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
         ];
     }
 
@@ -40,7 +41,7 @@ class StorePagoRequest extends FormRequest
                 $plan = Plan::find($plan);
             }
 
-            if (!$plan) {
+            if (! $plan) {
                 return;
             }
 
@@ -60,7 +61,7 @@ class StorePagoRequest extends FormRequest
                 ->unique()
                 ->values();
 
-            if (!$participantesValidos->contains($receptorId)) {
+            if (! $participantesValidos->contains($receptorId)) {
                 $validator->errors()->add('receptor_id', 'El destinatario del pago no pertenece a este plan.');
             }
         });
@@ -73,9 +74,9 @@ class StorePagoRequest extends FormRequest
     {
         return [
             'receptor_id.required' => 'Debes seleccionar a quién va dirigido el pago.',
-            'receptor_id.exists'   => 'El usuario seleccionado no es válido.',
-            'monto.required'       => 'Debes ingresar el monto a pagar.',
-            'monto.min'            => 'El monto debe ser mayor a cero.',
+            'receptor_id.exists' => 'El usuario seleccionado no es válido.',
+            'monto.required' => 'Debes ingresar el monto a pagar.',
+            'monto.min' => 'El monto debe ser mayor a cero.',
         ];
     }
 }

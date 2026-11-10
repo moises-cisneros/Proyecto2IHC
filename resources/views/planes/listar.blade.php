@@ -6,11 +6,9 @@
 
     <div class="encabezado-planes">
         <h1>Mis planes</h1>
-        @if ($seccion === 'creados')
-            <button class="boton" onclick="document.getElementById('modal-crear').showModal()">
-                + Crear plan
-            </button>
-        @endif
+        <button class="boton" onclick="document.getElementById('modal-crear').showModal()">
+            + Crear plan
+        </button>
     </div>
 
     {{-- Pestañas de Navegación por Propósito y Rol (Arquitectura de Información - Nivel 1) --}}

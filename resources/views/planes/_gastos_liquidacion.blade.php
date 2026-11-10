@@ -17,7 +17,7 @@
                 Total Gastado en el Plan
             </div>
             <div style="font-size: 26px; font-weight: 800; color: #1c1c1a;">
-                ${{ number_format($saldos['total_gastado'], 2) }}
+                Bs {{ number_format($saldos['total_gastado'], 2) }}
             </div>
             <div style="font-size: 13px; color: #8e8e88; margin-top: 4px;">
                 {{ $gastos->count() }} {{ $gastos->count() === 1 ? 'gasto registrado' : 'gastos registrados' }}
@@ -30,7 +30,7 @@
                 Tu Balance Neto
             </div>
             <div style="font-size: 26px; font-weight: 800; color: {{ $totalNeto > 0 ? '#25663a' : ($totalNeto < 0 ? '#991b1b' : '#1f2937') }};">
-                {{ $totalNeto > 0 ? '+' : '' }}${{ number_format($totalNeto, 2) }}
+                {{ $totalNeto > 0 ? '+Bs ' : ($totalNeto < 0 ? '-Bs ' : 'Bs ') }}{{ number_format(abs($totalNeto), 2) }}
             </div>
             <div style="font-size: 13px; color: {{ $totalNeto > 0 ? '#2e5939' : ($totalNeto < 0 ? '#b91c1c' : '#6b7280') }}; margin-top: 4px;">
                 @if ($totalNeto > 0)
@@ -61,7 +61,7 @@
                         style="min-height: 44px; width: 100%; border-radius: 50px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; gap: 8px;"
                         onclick="abrirModalPagoDirecto('', '')"
                         aria-label="Registrar pago a un compañero">
-                    💸 Registrar Pago
+                    <x-icono nombre="pago" style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 6px;" /> Registrar Pago
                 </button>
             @endcan
         </div>
@@ -72,13 +72,14 @@
         {{-- Columna 1: Cuentas por Pagar (Debes) --}}
         <div style="background: #ffffff; border: 1px solid #e3e3df; border-radius: 14px; padding: 20px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
-                <span style="font-size: 18px;" aria-hidden="true">📤</span>
+                <x-icono nombre="pago" style="width: 20px; height: 20px; color: #9b2c2c;" />
                 <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #1c1c1a;">Debes a tus compañeros</h3>
             </div>
 
             @if ($misDeudas->isEmpty())
-                <div style="padding: 16px; background: #f9fafb; border-radius: 10px; text-align: center; color: #6f6f6a; font-size: 14px;">
-                    ✓ No tienes deudas pendientes con ningún participante.
+                <div style="padding: 16px; background: #f9fafb; border-radius: 10px; text-align: center; color: #6f6f6a; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <x-icono nombre="check" style="width: 16px; height: 16px; color: #25663a;" />
+                    <span>No tienes deudas pendientes con ningún participante.</span>
                 </div>
             @else
                 <div style="display: flex; flex-direction: column; gap: 12px;">
@@ -86,7 +87,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: #fff5f5; border: 1px solid #fed7d7; border-radius: 10px;">
                             <div>
                                 <div style="font-weight: 700; color: #9b2c2c; font-size: 15px;">
-                                    ${{ number_format($deuda['monto'], 2) }}
+                                    Bs {{ number_format($deuda['monto'], 2) }}
                                 </div>
                                 <div style="font-size: 13px; color: #4a5568;">
                                     Acreedor: <span style="font-weight: 600;">{{ $deuda['acreedor']->name ?? 'Compañero' }}</span>
@@ -97,7 +98,7 @@
                                         class="boton"
                                         style="min-height: 44px; min-width: 44px; padding: 8px 16px; border-radius: 50px; font-size: 13px; font-weight: 600;"
                                         onclick="abrirModalPagoDirecto('{{ $deuda['acreedor_id'] }}', '{{ $deuda['monto'] }}')"
-                                        aria-label="Pagar ${{ number_format($deuda['monto'], 2) }} a {{ $deuda['acreedor']->name }}">
+                                        aria-label="Pagar Bs {{ number_format($deuda['monto'], 2) }} a {{ $deuda['acreedor']->name }}">
                                     Pagar deuda
                                 </button>
                             @endcan
@@ -110,7 +111,7 @@
         {{-- Columna 2: Cuentas por Cobrar (Te deben) --}}
         <div style="background: #ffffff; border: 1px solid #e3e3df; border-radius: 14px; padding: 20px;">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
-                <span style="font-size: 18px;" aria-hidden="true">📥</span>
+                <x-icono nombre="dinero" style="width: 20px; height: 20px; color: #22543d;" />
                 <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #1c1c1a;">Te deben tus compañeros</h3>
             </div>
 
@@ -124,7 +125,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; background: #f0fff4; border: 1px solid #c6f6d5; border-radius: 10px;">
                             <div>
                                 <div style="font-weight: 700; color: #22543d; font-size: 15px;">
-                                    ${{ number_format($cobro['monto'], 2) }}
+                                    Bs {{ number_format($cobro['monto'], 2) }}
                                 </div>
                                 <div style="font-size: 13px; color: #4a5568;">
                                     Deudor: <span style="font-weight: 600;">{{ $cobro['deudor']->name ?? 'Compañero' }}</span>
@@ -166,9 +167,9 @@
                         <div>
                             <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 4px;">
                                 <span style="font-size: 17px; font-weight: 700; color: #1c1c1a;">
-                                    ${{ number_format($pago->monto, 2) }}
+                                    Bs {{ number_format($pago->monto, 2) }}
                                 </span>
-                                <span style="font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 50px; text-transform: uppercase;
+                                <span class="badge-estado-pago" style="font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 50px; text-transform: uppercase;
                                       background: {{ $pago->estado === 'confirmado' ? '#edf7ef' : ($pago->estado === 'rechazado' ? '#fee2e2' : '#fef3c7') }};
                                       color: {{ $pago->estado === 'confirmado' ? '#25663a' : ($pago->estado === 'rechazado' ? '#991b1b' : '#92400e') }};">
                                     {{ $pago->estado }}
@@ -194,18 +195,20 @@
                                         @csrf
                                         <button type="submit"
                                                 class="boton"
-                                                style="min-height: 44px; min-width: 44px; padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; background: #25663a; color: #ffffff;"
-                                                aria-label="Confirmar pago de ${{ number_format($pago->monto, 2) }}">
-                                            ✓ Confirmar pago
+                                                style="min-height: 44px; min-width: 44px; padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; background: #25663a; color: #ffffff; display: inline-flex; align-items: center; gap: 6px;"
+                                                aria-label="Confirmar pago de Bs {{ number_format($pago->monto, 2) }}">
+                                            <x-icono nombre="check" style="width: 14px; height: 14px;" />
+                                            <span>Confirmar pago</span>
                                         </button>
                                     </form>
 
                                     <button type="button"
                                             class="boton boton-claro"
-                                            style="min-height: 44px; min-width: 44px; padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; color: #991b1b; border-color: #fca5a5;"
+                                            style="min-height: 44px; min-width: 44px; padding: 8px 18px; border-radius: 50px; font-size: 13px; font-weight: 600; color: #991b1b; border-color: #fca5a5; display: inline-flex; align-items: center; gap: 6px;"
                                             onclick="document.getElementById('modal-rechazar-{{ $pago->id }}').showModal()"
-                                            aria-label="Rechazar pago de ${{ number_format($pago->monto, 2) }}">
-                                        ✕ Rechazar
+                                            aria-label="Rechazar pago de Bs {{ number_format($pago->monto, 2) }}">
+                                        <x-icono nombre="bloqueado" style="width: 14px; height: 14px;" />
+                                        <span>Rechazar</span>
                                     </button>
                                 @else
                                     <span style="font-size: 13px; color: #8a6100; font-weight: 500;">
@@ -213,8 +216,9 @@
                                     </span>
                                 @endcan
                             @elseif ($pago->estado === 'confirmado')
-                                <span style="font-size: 13px; color: #25663a; font-weight: 600;">
-                                    ✓ Liquidado el {{ $pago->fecha_resolucion?->format('d/m/Y') }}
+                                <span style="font-size: 13px; color: #25663a; font-weight: 600; display: inline-flex; align-items: center; gap: 6px;">
+                                    <x-icono nombre="check" style="width: 14px; height: 14px;" />
+                                    <span>Liquidado el {{ $pago->fecha_resolucion?->format('d/m/Y') }}</span>
                                 </span>
                             @endif
                         </div>
@@ -293,7 +297,7 @@
                                     {{ $gasto->concepto }}
                                 </span>
                                 <span style="font-weight: 800; font-size: 16px; color: #25663a; white-space: nowrap;">
-                                    ${{ number_format($gasto->monto_total, 2) }}
+                                    Bs {{ number_format($gasto->monto_total, 2) }}
                                 </span>
                             </div>
                             <div style="font-size: 13px; color: #6f6f6a; margin-bottom: 10px;">
@@ -307,7 +311,7 @@
                                 <div style="display: flex; flex-wrap: wrap; gap: 6px;">
                                     @foreach ($gasto->divisiones as $div)
                                         <span style="background: #f4f4f2; border: 1px solid #e3e3df; border-radius: 6px; padding: 2px 8px; font-size: 12px;">
-                                            {{ $div->user->name ?? 'Usuario' }}: <strong>${{ number_format($div->monto_asignado, 2) }}</strong>
+                                            {{ $div->user->name ?? 'Usuario' }}: <strong>Bs {{ number_format($div->monto_asignado, 2) }}</strong>
                                         </span>
                                     @endforeach
                                 </div>
@@ -347,7 +351,7 @@
 
         <div style="margin-bottom: 16px;">
             <label for="input-gasto-monto" style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 6px;">
-                Monto total ($)
+                Monto total (Bs)
             </label>
             <input type="number"
                    id="input-gasto-monto"
@@ -453,7 +457,7 @@
 
         <div style="margin-bottom: 24px;">
             <label for="input-pago-monto" style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 6px;">
-                Monto pagado ($)
+                Monto pagado (Bs)
             </label>
             <input type="number"
                    id="input-pago-monto"
@@ -537,12 +541,12 @@
 
         var diff = Math.abs(suma - montoTotal);
         if (diff < 0.01 && montoTotal > 0) {
-            aviso.textContent = '✓ Los montos asignados coinciden exactamente con el total ($' + suma.toFixed(2) + ').';
+            aviso.textContent = 'Los montos asignados coinciden exactamente con el total (Bs ' + suma.toFixed(2) + ').';
             aviso.style.background = '#edf7ef';
             aviso.style.color = '#25663a';
             aviso.style.border = '1px solid #c2e2c8';
         } else {
-            aviso.textContent = '⚠️ Suma actual: $' + suma.toFixed(2) + ' / Total requerido: $' + montoTotal.toFixed(2) + ' (Diferencia: $' + (montoTotal - suma).toFixed(2) + ')';
+            aviso.textContent = 'Aviso: Suma actual: Bs ' + suma.toFixed(2) + ' / Total requerido: Bs ' + montoTotal.toFixed(2) + ' (Diferencia: Bs ' + (montoTotal - suma).toFixed(2) + ')';
             aviso.style.background = '#fff4d6';
             aviso.style.color = '#8a6100';
             aviso.style.border = '1px solid #ffe683';
