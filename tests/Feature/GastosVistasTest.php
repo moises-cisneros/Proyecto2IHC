@@ -65,7 +65,7 @@ class GastosVistasTest extends TestCase
         $response->assertOk();
         $response->assertSee('Gastos y Liquidación');
         $response->assertSee('Alquiler de Cabaña');
-        $response->assertSee('$120.00');
+        $response->assertSee('Bs 120.00');
         $response->assertSee('Total Gastado en el Plan');
     }
 
@@ -91,7 +91,7 @@ class GastosVistasTest extends TestCase
                 'plan_id' => $plan->id,
                 'user_id' => $u->id,
                 'email' => $u->email,
-                'token' => 'token-pago-view-' . $u->id,
+                'token' => 'token-pago-view-'.$u->id,
                 'estado' => 'aceptada',
             ]);
         }

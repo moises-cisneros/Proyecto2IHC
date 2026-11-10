@@ -200,9 +200,13 @@ Abstraída de [`public/css/app.css`](../public/css/app.css):
     2. **«Confirmados»:** Urgencia media/resolutiva. Planes con fecha y lugar definitivos acordados.
     3. **«Cancelados o pasados»:** Baja urgencia. Histórico inmutable para consulta o depuración definitiva.
 * **Grilla Tabular Recta y Alineación de Acciones:**
-  * Cabeceras de tabla con anchos fijos y previsibles (`Nombre del Plan` 28%, `Organizador/Estado` 18%, `Fecha y Hora` 20%, `Lugar` 14%, `Acciones` 20%).
+  * Cabeceras de tabla con anchos fijos y previsibles envueltas en `.tabla-contenedor` (`Nombre del Plan` 30%, `Organizador` 16%, `Fecha límite` 13%, `Estado` 12%, `Acciones` 29% con padding lateral simétrico de 20px y min-width de 880px con scroll horizontal responsivo).
   * Altura estándar de fila de **68px** para mantener ritmo visual continuo.
-  * Grupo de acciones en flex alineado al final con separación de `8px` (`gap-2`) y botones con área mínima de contacto de **44×44px** (Fitts).
+  * Grupo de acciones en flex alineado al final con separación de `8px` (`gap-2`), botones con área mínima de contacto de **44×44px** (Fitts) y contención perimetral estricta para evitar desbordes visuales.
+* **Barra de Navegación Fija y Compacta (Sticky Navigation):**
+  * Posición `position: sticky; top: 0; z-index: 40;`, altura compacta de 60px y marca de 24px, garantizando distancia $D = 0$ (Fitts) sin canibalizar el viewport vertical de lectura.
+  * **Componente de Navegación (`<x-nav-link>`)**: Píldoras ergonómicas (`min-height: 40px`, padding `6px 14px`, `border-radius: 50px`) con tipografía `13px` semi-bold e íconos SVG vectoriales (`15×15px`). Estado activo en `#1c1c1a` (texto blanco) e inactivo transparente con hover suave (`rgba(0,0,0,0.08)`).
+  * **Chip de Usuario y Salida**: Avatar circular con la inicial en alto contraste, nombre recortado con elipsis preventiva y botón `.boton-salir` con ícono de cierre y confirmación ergonómica.
 * **Estados Vacíos Empáticos y Orientados a la Acción:**
   * Si una sección o pestaña no tiene elementos, no se oculta silenciosamente ni muestra una tabla vacía: despliega una tarjeta de estado vacío con ícono suave, mensaje contextual en lenguaje natural y botón primario guiado (ej. «Crear mi primer plan»).
 * **Acceso Ergonómico a la Sala en Listado:**
@@ -242,4 +246,3 @@ Abstraída de [`public/css/app.css`](../public/css/app.css):
   * Pagos recibidos pendientes muestran dos botones antagónicos separados por `12px` (`gap-3`) con altura ≥ 44 px:
     * Botón primario de éxito «Confirmar pago» (verde cálido `#25663a`).
     * Botón secundario destructivo «Rechazar» que despliega modal `<dialog>` con textarea obligatorio para el motivo de rechazo.
-

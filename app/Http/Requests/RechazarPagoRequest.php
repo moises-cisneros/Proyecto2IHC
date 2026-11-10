@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RechazarPagoRequest extends FormRequest
@@ -17,7 +18,7 @@ class RechazarPagoRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -33,8 +34,8 @@ class RechazarPagoRequest extends FormRequest
     {
         return [
             'motivo_rechazo.required' => 'Para rechazar un pago debes indicar obligatoriamente un motivo.',
-            'motivo_rechazo.min'      => 'El motivo de rechazo debe tener al menos 5 caracteres.',
-            'motivo_rechazo.max'      => 'El motivo de rechazo no puede exceder los 1000 caracteres.',
+            'motivo_rechazo.min' => 'El motivo de rechazo debe tener al menos 5 caracteres.',
+            'motivo_rechazo.max' => 'El motivo de rechazo no puede exceder los 1000 caracteres.',
         ];
     }
 }

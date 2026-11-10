@@ -1,34 +1,33 @@
 {{-- Barra de navegación --}}
-<nav class="barra">
+<nav class="barra" aria-label="Navegación principal">
     <div style="display: flex; align-items: center; gap: 24px;">
-        <a href="{{ route('planes.listar') }}" class="marca">Planazo</a>
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <a href="{{ route('planes.listar') }}"
-               class="boton {{ request()->routeIs('planes.*') && !request()->routeIs('historial.*') ? '' : 'boton-claro' }}"
-               style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;"
-               aria-label="Ir a Mis Planes">
+        <a href="{{ route('planes.listar') }}" class="marca" aria-label="Planazo - Inicio">Planazo</a>
+
+        <div class="nav-menu" role="menubar" aria-label="Secciones de la aplicación">
+            <x-nav-link :href="route('planes.listar')" :activo="request()->routeIs('planes.*') && !request()->routeIs('historial.*')" icono="calendario" aria-label="Ir a Mis Planes">
                 Mis Planes
-            </a>
-            <a href="{{ route('historial.index') }}"
-               class="boton {{ request()->routeIs('historial.*') ? '' : 'boton-claro' }}"
-               style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none;"
-               aria-label="Ir al Historial de Actividad">
+            </x-nav-link>
+
+            <x-nav-link :href="route('historial.index')" :activo="request()->routeIs('historial.*')" icono="historial" aria-label="Ir al Historial de Actividad">
                 Historial
-            </a>
+            </x-nav-link>
         </div>
     </div>
 
     <div class="barra-derecha">
-        <span>{{ auth()->user()->name }}</span>
+        <div class="nav-usuario" title="Usuario autenticado: {{ auth()->user()->name }}">
+            <span class="nav-usuario-avatar" aria-hidden="true">
+                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            </span>
+            <span class="nav-usuario-nombre">{{ auth()->user()->name }}</span>
+        </div>
 
-        {{-- Botón para cerrar sesión --}}
-        <form method="POST" action="{{ route('salir') }}">
+        {{-- Botón accesible para cerrar sesión --}}
+        <form method="POST" action="{{ route('salir') }}" style="margin: 0;">
             @csrf
-            <button type="submit"
-                    class="boton boton-claro"
-                    style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center;"
-                    aria-label="Cerrar sesión">
-                Salir
+            <button type="submit" class="boton-salir" aria-label="Cerrar sesión">
+                <x-icono nombre="salir" />
+                <span>Salir</span>
             </button>
         </form>
     </div>

@@ -18,27 +18,156 @@ body {
     background: #f6f6f4;
 }
 
-/* ── Barra de navegación (arriba) ─────────────────────────────── */
+/* ── Barra de navegación fija y compacta (Sticky Navigation - NN/g) ── */
 .barra {
+    position: sticky;
+    top: 0;
+    z-index: 40;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 24px;
+    padding: 0 24px;
+    height: 60px;
     background: #ffe683;
     border-bottom: 1px solid #e3e3df;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .marca {
-    font-size: 50px;
+    font-size: 24px;
     font-weight: 700;
     color: #1c1c1a;
     text-decoration: none;
+    line-height: 1;
+    letter-spacing: -0.5px;
 }
 
+/* ── Menú de Navegación del Header (UI/UX Ergonómico) ────────── */
+.nav-menu {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.nav-item {
+    min-height: 40px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        box-shadow 0.15s ease;
+    box-sizing: border-box;
+    white-space: nowrap;
+}
+
+.nav-item-inactivo {
+    color: #1c1c1a;
+    background: transparent;
+}
+
+.nav-item-inactivo:hover {
+    background: rgba(0, 0, 0, 0.08);
+    color: #000000;
+}
+
+.nav-item-activo {
+    background: #1c1c1a;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.nav-item-activo:hover {
+    background: #2e2e2c;
+    color: #ffffff;
+}
+
+.nav-item-icono {
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+}
+
+/* ── Perfil de Usuario y Acciones del Header ─────────────────── */
 .barra-derecha {
     display: flex;
     align-items: center;
     gap: 12px;
+}
+
+.nav-usuario {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px 4px 5px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 50px;
+    box-sizing: border-box;
+}
+
+.nav-usuario-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #1c1c1a;
+    color: #ffffff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    flex-shrink: 0;
+}
+
+.nav-usuario-nombre {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1c1c1a;
+    max-width: 150px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.boton-salir {
+    min-height: 40px;
+    min-width: 40px;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 600;
+    background: #ffffff;
+    color: #1c1c1a;
+    border: 1px solid #e3e3df;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease,
+        color 0.15s ease;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+.boton-salir:hover {
+    background: #fff5f5;
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
+.boton-salir .icono-svg {
+    width: 14px;
+    height: 14px;
 }
 
 /* ── Contenedor central ───────────────────────────────────────── */
@@ -365,7 +494,101 @@ body {
     background: #ffd93d;
 }
 
-/* ── Tabla de planes ──────────────────────────────────────────── */
+/* ── Contenedor responsivo y límites de la tabla ──────────────── */
+.tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #ffffff;
+    border: 1px solid #e3e3df;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.tabla-contenedor .tabla {
+    width: 100%;
+    min-width: 880px;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+.tabla-contenedor .tabla th,
+.tabla-contenedor .tabla td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid #e3e3df;
+    vertical-align: middle;
+}
+
+/* Padding simétrico en los extremos de la fila (Ley de la Proximidad / Envolvente) */
+.tabla-contenedor .tabla th:first-child,
+.tabla-contenedor .tabla td:first-child {
+    padding-left: 20px;
+}
+
+.tabla-contenedor .tabla th:last-child,
+.tabla-contenedor .tabla td:last-child {
+    padding-right: 20px;
+    text-align: right;
+}
+
+.tabla-contenedor .tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ── Tabla de planes (fallback si no tiene contenedor) ────────── */
+.tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    background: #ffffff;
+    border: 1px solid #e3e3df;
+    border-radius: 12px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.tabla-contenedor .tabla {
+    width: 100%;
+    min-width: 880px;
+    table-layout: fixed;
+    border-collapse: collapse;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    margin-bottom: 0;
+}
+
+.tabla-contenedor .tabla th,
+.tabla-contenedor .tabla td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid #e3e3df;
+    vertical-align: middle;
+}
+
+/* Padding simétrico en los extremos de la fila (Ley de la Proximidad / Envolvente) */
+.tabla-contenedor .tabla th:first-child,
+.tabla-contenedor .tabla td:first-child {
+    padding-left: 20px;
+}
+
+.tabla-contenedor .tabla th:last-child,
+.tabla-contenedor .tabla td:last-child {
+    padding-right: 20px;
+    text-align: right;
+}
+
+.tabla-contenedor .tabla tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ── Tabla de planes (fallback si no tiene contenedor) ────────── */
 .tabla {
     width: 100%;
     table-layout: fixed;
@@ -419,6 +642,8 @@ body {
     white-space: nowrap;
     vertical-align: middle;
     text-align: right;
+    padding-right: 20px;
+    box-sizing: border-box;
 }
 
 .acciones-grupo {
