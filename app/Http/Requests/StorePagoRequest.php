@@ -26,6 +26,7 @@ class StorePagoRequest extends FormRequest
         return [
             'receptor_id' => ['required', 'integer', 'exists:users,id'],
             'monto' => ['required', 'numeric', 'min:0.01', 'max:999999.99'],
+            'comprobante' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:4096'],
         ];
     }
 
@@ -77,6 +78,9 @@ class StorePagoRequest extends FormRequest
             'receptor_id.exists' => 'El usuario seleccionado no es válido.',
             'monto.required' => 'Debes ingresar el monto a pagar.',
             'monto.min' => 'El monto debe ser mayor a cero.',
+            'comprobante.image' => 'El comprobante debe ser una imagen válida.',
+            'comprobante.mimes' => 'El comprobante debe estar en formato JPEG, PNG o WebP.',
+            'comprobante.max' => 'El comprobante no debe superar los 4 MB.',
         ];
     }
 }
