@@ -79,6 +79,13 @@ Panel del receptor (`Ana`) tras confirmar el pago, reflejando la actualización 
 
 ---
 
+### 5. Inspección de Comprobante Bancario Real y Verificación Asistida
+
+Modal accesible de inspección en alta resolución (`BNB.png`) con extracción del monto detectado (Bs 20.00) y banco emisor (`BNB`).
+![Inspección de Comprobante](tarea-8/05-modal-inspeccion-comprobante.png)
+
+---
+
 ## 🧪 Verificación de Suites de Pruebas
 
 ### 1. PHPUnit (Backend y Controlador)
@@ -126,10 +133,12 @@ El servicio de escaneo inteligente se diseñó mediante el contrato `Comprobante
 
 ### 3. Matriz de Conciliación y Manejo de Casos Borde
 
+Se incorporó un generador reproducible de fixtures sintéticos limpios (`scripts/generate-comprobante-fixtures.mjs`, ejecutable vía `pnpm run fixtures:comprobantes`) que sintetiza comprobantes con estructuras bancarias verosímiles de entidades bolivianas (BNB, Banco Unión, Yape, Yastá) sin exponer datos personales ni información confidencial:
+
 | Escenario de Negocio | Fixture de Prueba | Resultado del Escaneo | Consecuencia en Sistema |
 | :--- | :--- | :--- | :--- |
-| **Happy Path (Coincidente)** | `comprobante_coincidente.png` | `es_comprobante: true`, Monto: Bs 100.00 | Estado de escaneo: `verificado`. Badge verde para el acreedor, facilitando la confirmación inmediata. |
-| **Sad Path (Discrepancia)** | `comprobante_discrepante.png` | `es_comprobante: true`, Monto: Bs 35.50 (deuda: Bs 100.00) | Estado de escaneo: `discrepante`. Alerta visual destacada para el receptor y sustento para rechazo con motivo obligatorio. |
+| **Happy Path (Coincidente)** | `comprobante_bnb_20bs.png` / `comprobante_coincidente.png` | `es_comprobante: true`, Monto: Bs 20.00 / Bs 100.00 | Estado de escaneo: `verificado`. Badge verde para el acreedor, facilitando la confirmación inmediata. |
+| **Sad Path (Discrepancia)** | `comprobante_discrepante.png` | `es_comprobante: true`, Monto: Bs 35.50 (deuda esperada distinta) | Estado de escaneo: `discrepante`. Alerta visual destacada para el receptor y sustento para rechazo con motivo obligatorio. |
 | **Sad Path (Documento Inválido)** | `comprobante_invalido.png` | `es_comprobante: false`, Monto: `null` | Estado de escaneo: `invalido`. Badge de advertencia sin auto-verificación. |
 | **Seguridad Negativa (Anti-IDOR)** | N/A | Intento de auto-confirmación por deudor | Bloqueo estricto con `403 Forbidden` (`PagoPolicy`). |
 
@@ -138,4 +147,4 @@ El servicio de escaneo inteligente se diseñó mediante el contrato `Comprobante
 - `tests/Unit/ComprobanteScannerTest.php` (7 tests: extracción, detección de discrepancias, tolerancia monetaria y persistencia).
 - `tests/Feature/GastosComprobanteControllerTest.php` (5 tests: upload multipart, escaneo automático, perfil de cobro, 302 anónimo y 403 no participante).
 - `tests/Feature/GastosComprobanteVistaTest.php` (4 tests: renderizado de datos de cobro del receptor, badges de escaneo, modal `<dialog>` de comprobante y directivas `@can`).
-- `tests/Feature/ConciliacionComprobantePipelineTest.php` (4 tests: pipeline completo con fixtures de comprobantes reales).
+- `tests/Feature/ConciliacionComprobantePipelineTest.php` (4 tests: pipeline completo con fixtures de comprobantes sintéticos bolivianos).

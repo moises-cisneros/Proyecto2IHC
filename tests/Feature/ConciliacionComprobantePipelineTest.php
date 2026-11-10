@@ -157,6 +157,49 @@ class ConciliacionComprobantePipelineTest extends TestCase
         $this->assertTrue($pago->esEscaneoInvalido());
     }
 
+    public function test_flujo_con_comprobante_sintetico_bnb_20bs_concilia_exitosamente(): void
+    {
+        Storage::fake('public');
+
+        $organizador = User::factory()->create(['name' => 'Organizador BNB']);
+        $deudor = User::factory()->create(['name' => 'Deudor BNB']);
+        $plan = Plan::factory()->create(['user_id' => $organizador->id]);
+
+        Invitacion::create([
+            'plan_id' => $plan->id,
+            'user_id' => $deudor->id,
+            'email' => $deudor->email,
+            'token' => 'token-deudor-bnb-20',
+            'estado' => 'aceptada',
+        ]);
+
+        $fixturePath = base_path('tests/fixtures/comprobantes/comprobante_bnb_20bs.png');
+        $this->assertFileExists($fixturePath);
+
+        $uploadedFile = new UploadedFile(
+            $fixturePath,
+            'comprobante_bnb_20bs.png',
+            'image/png',
+            null,
+            true
+        );
+
+        $responsePago = $this->actingAs($deudor)->post(route('planes.pagos.guardar', $plan), [
+            'receptor_id' => $organizador->id,
+            'monto' => 20.00,
+            'comprobante' => $uploadedFile,
+        ]);
+
+        $responsePago->assertRedirect(route('planes.detalle', ['plan' => $plan, 'tab' => 'gastos']));
+
+        $pago = $plan->pagos()->first();
+        $this->assertNotNull($pago);
+        $this->assertEquals('pendiente', $pago->estado);
+        $this->assertEquals('verificado', $pago->estado_escaneo);
+        $this->assertEquals(20.00, (float) $pago->monto_detectado);
+        $this->assertEquals('Banco Nacional de Bolivia', $pago->banco_detectado);
+    }
+
     public function test_pago_con_comprobante_no_puede_ser_confirmado_por_el_mismo_deudor_403(): void
     {
         $organizador = User::factory()->create();

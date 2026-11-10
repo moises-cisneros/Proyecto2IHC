@@ -12,10 +12,10 @@ class GeminiComprobanteScanner implements ComprobanteScannerInterface
 {
     public function __construct(
         protected ?string $apiKey = null,
-        protected string $model = 'gemini-1.5-flash',
+        protected string $model = 'gemini-2.5-flash',
     ) {
         $this->apiKey = $apiKey ?: config('services.gemini.key');
-        $this->model = config('services.gemini.model', 'gemini-1.5-flash');
+        $this->model = config('services.gemini.model', 'gemini-2.5-flash');
     }
 
     /**
