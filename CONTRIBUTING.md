@@ -65,6 +65,29 @@ Podés iniciar sesión inmediatamente con cualquiera de las cuentas precargadas 
   docker compose down
   ```
 
+### 5. Servicios Externos y Driver de Comprobantes (Modo Offline vs IA)
+
+La aplicación implementa un escaneo de comprobantes bancarios desacoplado mediante el patrón Driver:
+
+* **Modo Offline / Evaluación por Defecto (`COMPROBANTE_SCANNER_DRIVER=fake`):**
+  No requiere **ninguna API key externa ni conexión a internet**. Viene configurado por defecto en `.env.example` y durante las pruebas automatizadas, operando 100% aislado con fixtures deterministas.
+* **Modo IA Multimodal (`COMPROBANTE_SCANNER_DRIVER=gemini` - Opcional):**
+  Para activar el análisis real en vivo mediante visión computacional, basta con agregar en `.env`:
+
+  ```env
+  COMPROBANTE_SCANNER_DRIVER=gemini
+  GEMINI_API_KEY=tu_api_key_de_google_ai_studio
+  GEMINI_MODEL=gemini-2.5-flash
+  ```
+
+  *(Se obtiene una API key gratuita en [Google AI Studio](https://aistudio.google.com/)).*
+
+* **Generación de fixtures sintéticos limpios:**
+
+  ```bash
+  pnpm run fixtures:comprobantes
+  ```
+
 ---
 
 ## 🛠️ Perfil 2: Desarrollador / Colaborador Activo (Construir e Implementar)

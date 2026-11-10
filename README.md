@@ -47,6 +47,32 @@ Si tu objetivo es probar y calificar la aplicación inmediatamente:
 
 ---
 
+### 💳 Conciliación Inteligente de Comprobantes (Modo Offline vs Modo IA)
+
+El módulo de liquidación de gastos incluye un servicio de escaneo y validación de comprobantes bancarios diseñado mediante el patrón **Driver**:
+
+- **Modo Offline / Evaluación por Defecto (`fake`):**
+  No requiere **ninguna API key ni conexión a internet**. Viene configurado por defecto (`COMPROBANTE_SCANNER_DRIVER=fake` en `.env.example`). Interpreta comprobantes sintéticos de manera determinista, permitiendo probar la aplicación y ejecutar los tests E2E y unitarios de forma 100% aislada y sin costo.
+- **Modo IA con Visión Multimodal (`gemini` - Opcional):**
+  Si deseas habilitar la extracción real en vivo con IA para cualquier foto o comprobante bancario, basta con configurar tu clave en el archivo `.env`:
+
+  ```env
+  COMPROBANTE_SCANNER_DRIVER=gemini
+  GEMINI_API_KEY=tu_api_key_de_google_ai_studio
+  GEMINI_MODEL=gemini-2.5-flash
+  ```
+
+  *(Se puede generar una clave gratuita en [Google AI Studio](https://aistudio.google.com/)).*
+
+- **Generador de Comprobantes Sintéticos Limpios:**
+  Para pruebas reproducibles sin exponer datos sensibles ni cuentas bancarias reales, el repositorio incluye un generador que sintetiza comprobantes móviles con estilo bancario boliviano (BNB, Banco Unión, Yape, Yastá):
+
+  ```bash
+  pnpm run fixtures:comprobantes
+  ```
+
+---
+
 ### Perfil 2: Desarrollador / Colaborador
 
 Si vas a programar, refactorizar o añadir funcionalidades:
@@ -204,7 +230,7 @@ flowchart TD
 4. **Flujo 4 (Sala Colaborativa, Deliberación y Cierre - `/planes/{plan}`):** Espacio interactivo unificado que bifurca la experiencia según el rol gobernado por políticas (`PlanPolicy`):
    - **Carril Participante:** Aceptación de invitación, propuesta de opciones (fechas/lugares), votación reactiva por aprobación (Approval Voting) con alternancia de votos y salida de emergencia voluntaria (Nielsen H3).
    - **Carril Organizador:** Envío de invitaciones por correo, supervisión de quórum, resolución obligatoria de empates con motivo justificado ($\ge 5$ caracteres) y confirmación oficial que congela la sala (`403` a votos y propuestas posteriores).
-5. **Flujo 5 (Gastos, Liquidación y Saldos Netos):** Proceso post-evento activado exclusivamente en planes confirmados. Registro de gastos grupales (partes iguales $Monto/N$ o cuotas personalizadas), cálculo automatizado de la matriz de saldos netos cruzados y ciclo de liquidación de deudas con estados controlados (`pendiente` emitido por el deudor &rarr; `confirmado` o `rechazado` con motivo obligatorio por el acreedor).
+5. **Flujo 5 (Gastos, Liquidación y Conciliación Inteligente):** Proceso post-evento activado exclusivamente en planes confirmados. Registro de gastos grupales (partes iguales $Monto/N$ o cuotas personalizadas), cálculo automatizado de la matriz de saldos netos cruzados, configuración de datos de cobro por participante (Alias, CBU, QR) y ciclo de liquidación de deudas con comprobante bancario adjunto, validación inteligente (IA Gemini Vision o Fake) y estados controlados (`pendiente` &rarr; `verificado` / `discrepante` &rarr; `confirmado` o `rechazado` con motivo obligatorio).
 6. **Servicio Transversal (Auditoría y Trazabilidad - `/historial`):** Bitácora inmutable accesible desde la navegación global. Registra en 4 dimensiones (Qué, Quién, Cuándo, Resultado) todas las transiciones de estado, propuestas, votos, desempates y liquidaciones, con selector temático de 4 chips.
 
 ---
