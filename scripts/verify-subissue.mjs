@@ -157,8 +157,8 @@ try {
     process.exit(1);
 }
 
-// 6. Verificar formateador del proyecto (excluyendo markdown)
-console.log('🧹 Verificando estándar de formato (Laravel Pint + Prettier, excluyendo Markdown)...');
+// 6. Verificar formateador del proyecto (Pint, Prettier y Markdownlint)
+console.log('🧹 Verificando estándar de formato (Laravel Pint + Prettier + Markdownlint)...');
 try {
     run('node scripts/format.mjs --check');
     console.log('✅ Formato de código verificado correctamente.');
