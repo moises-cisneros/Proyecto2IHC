@@ -95,7 +95,9 @@ class GastosController extends Controller
 
         if ($request->hasFile('comprobante')) {
             $archivo = $request->file('comprobante');
-            $rutaAlmacenada = $archivo->store('comprobantes', 'public');
+            $nombreLimpio = preg_replace('/[^a-zA-Z0-9_\.-]/', '_', $archivo->getClientOriginalName());
+            $nombreArchivo = time().'_'.$nombreLimpio;
+            $rutaAlmacenada = $archivo->storeAs('comprobantes', $nombreArchivo, 'public');
             $datosPago['comprobante_path'] = $rutaAlmacenada;
 
             /** @var ComprobanteScannerInterface $scanner */
