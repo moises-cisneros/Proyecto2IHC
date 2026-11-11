@@ -227,12 +227,6 @@ class PlanesController extends Controller
             'estado_resultante' => 'confirmado',
         ]);
 
-        Evento::registrar('plan_confirmado', [
-            'con_desempate' => ! empty($plan->motivo_desempate),
-            'tiene_propuesta_fecha' => ! empty($plan->propuesta_fecha_id),
-            'tiene_propuesta_lugar' => ! empty($plan->propuesta_lugar_id),
-        ]);
-
         return redirect()->route('planes.detalle', $plan)
             ->with('exito', '¡Plan confirmado con éxito! La votación ha concluido.');
     }

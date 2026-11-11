@@ -93,6 +93,25 @@ class AnaliticaBackendTest extends TestCase
         ]);
     }
 
+    public function test_confirmar_plan_desde_cambio_de_estado_registra_evento_plan_confirmado(): void
+    {
+        $organizador = User::factory()->create();
+        $plan = Plan::factory()->create([
+            'user_id' => $organizador->id,
+            'organizador' => $organizador->name,
+            'estado' => 'pendiente',
+            'fecha_limite' => now()->addDays(2),
+        ]);
+
+        $this->actingAs($organizador)->put(route('planes.estado', $plan), [
+            'estado' => 'confirmado',
+        ])->assertRedirect(route('planes.listar'));
+
+        $this->assertDatabaseHas('eventos', [
+            'evento' => 'plan_confirmado',
+        ]);
+    }
+
     public function test_guardar_plan_desde_controlador_registra_evento_plan_guardado(): void
     {
         $user = User::factory()->create();
