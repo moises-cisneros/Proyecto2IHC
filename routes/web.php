@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AutentificacionController;
 use App\Http\Controllers\ColaboracionController;
+use App\Http\Controllers\EventosController;
 use App\Http\Controllers\GastosController;
 use App\Http\Controllers\HistorialController;
 use App\Http\Controllers\PerfilCobroController;
@@ -52,4 +53,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/historial', [HistorialController::class, 'index'])->name('historial.index');
 
+    // Analítica de interacción (Clase 21 - embudo y eventos)
+    Route::post('/eventos', [EventosController::class, 'guardar'])->name('eventos.guardar');
+    Route::get('/analitica', [EventosController::class, 'analitica'])->name('analitica.index');
 });

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\ConfirmarPlanRequest;
 use App\Http\Requests\StorePlanRequest;
 use App\Http\Requests\UpdatePlanRequest;
+use App\Models\Evento;
 use App\Models\Plan;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -113,6 +114,11 @@ class PlanesController extends Controller
         $plan->user_id = auth()->id();
         $plan->save();
 
+        Evento::registrar('plan_guardado', [
+            'longitud_nombre' => strlen($plan->nombre),
+            'tiene_fecha_limite' => ! empty($plan->fecha_limite),
+        ]);
+
         return redirect()->route('planes.listar')->with('exito', '¡Plan creado!');
     }
 
@@ -219,6 +225,12 @@ class PlanesController extends Controller
             'accion' => 'estado',
             'descripcion' => $descripcionHistorial,
             'estado_resultante' => 'confirmado',
+        ]);
+
+        Evento::registrar('plan_confirmado', [
+            'con_desempate' => ! empty($plan->motivo_desempate),
+            'tiene_propuesta_fecha' => ! empty($plan->propuesta_fecha_id),
+            'tiene_propuesta_lugar' => ! empty($plan->propuesta_lugar_id),
         ]);
 
         return redirect()->route('planes.detalle', $plan)
