@@ -115,52 +115,52 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 ### C. Capa de Autorización (`app/Policies/`)
 
 - Centraliza la seguridad, los permisos y el aislamiento de datos por recurso mediante **Laravel Policies**:
-  - Aplica el **Principio de Menor Privilegio (Zero-Trust)**: La autenticación solo comprueba identidad; ninguna acción sobre un recurso se ejecuta sin verificar explícitamente autorización de pertenencia o rol.
-  - En el dominio de planes (`PlanPolicy.php`):
-    - Solo el **Creador** puede editar, cancelar o eliminar el recurso.
-    - Los **Participantes aceptados** pueden colaborar activamente (proponer opciones, votar y abandonar el plan según H3).
-    - Los **Invitados pendientes** tienen acceso de solo lectura hasta aceptar o rechazar su invitación.
-    - Los **Recursos en estado terminal o cancelado** bloquean de forma terminante cualquier mutación posterior.
-  - En el dominio de gastos y liquidación (`GastoPolicy.php` y `PagoPolicy.php`):
-    - Solo los **Participantes aceptados y el Creador** pueden registrar gastos y consultar saldos del plan.
-    - Solo el **Deudor** puede registrar un pago a favor de su acreedor.
-    - Solo el **Receptor (acreedor)** puede confirmar o rechazar un pago pendiente. El deudor tiene estrictamente bloqueada la auto-confirmación (`403 Forbidden`).
-    - Pagos en estado `confirmado` o `rechazado` son terminales e inmutables (prevención de doble aplicación / idempotencia).
+    - Aplica el **Principio de Menor Privilegio (Zero-Trust)**: La autenticación solo comprueba identidad; ninguna acción sobre un recurso se ejecuta sin verificar explícitamente autorización de pertenencia o rol.
+    - En el dominio de planes (`PlanPolicy.php`):
+        - Solo el **Creador** puede editar, cancelar o eliminar el recurso.
+        - Los **Participantes aceptados** pueden colaborar activamente (proponer opciones, votar y abandonar el plan según H3).
+        - Los **Invitados pendientes** tienen acceso de solo lectura hasta aceptar o rechazar su invitación.
+        - Los **Recursos en estado terminal o cancelado** bloquean de forma terminante cualquier mutación posterior.
+    - En el dominio de gastos y liquidación (`GastoPolicy.php` y `PagoPolicy.php`):
+        - Solo los **Participantes aceptados y el Creador** pueden registrar gastos y consultar saldos del plan.
+        - Solo el **Deudor** puede registrar un pago a favor de su acreedor.
+        - Solo el **Receptor (acreedor)** puede confirmar o rechazar un pago pendiente. El deudor tiene estrictamente bloqueada la auto-confirmación (`403 Forbidden`).
+        - Pagos en estado `confirmado` o `rechazado` son terminales e inmutables (prevención de doble aplicación / idempotencia).
 - **Aislamiento Multiusuario y Prevención de Accesos Indebidos (Anti-IDOR):**
-  - Todo endpoint o acción debe garantizar de forma sistemática:
-    1. **Autenticación obligatoria:** Middleware `auth` en `routes/web.php` intercepta peticiones anónimas (redirección `302` a login).
-    2. **Autorización granular en backend:** Invocación explícita de `Gate::authorize()` o `$this->authorize()` en controladores, arrojando código HTTP `403 Forbidden` ante cualquier intento de acceso o mutación por parte de usuarios ajenos o no autorizados.
-    3. **Filtrado estricto en persistencia:** Las consultas y listados Eloquent filtran por el identificador o membresía del usuario autenticado para impedir exposición de datos ajenos.
-    4. **Divulgación ergonómica en frontend:** Directivas `@can` en Blade para ocultar o inhabilitar controles a usuarios sin privilegios (Nielsen H5).
+    - Todo endpoint o acción debe garantizar de forma sistemática:
+        1. **Autenticación obligatoria:** Middleware `auth` en `routes/web.php` intercepta peticiones anónimas (redirección `302` a login).
+        2. **Autorización granular en backend:** Invocación explícita de `Gate::authorize()` o `$this->authorize()` en controladores, arrojando código HTTP `403 Forbidden` ante cualquier intento de acceso o mutación por parte de usuarios ajenos o no autorizados.
+        3. **Filtrado estricto en persistencia:** Las consultas y listados Eloquent filtran por el identificador o membresía del usuario autenticado para impedir exposición de datos ajenos.
+        4. **Divulgación ergonómica en frontend:** Directivas `@can` en Blade para ocultar o inhabilitar controles a usuarios sin privilegios (Nielsen H5).
 - Invocada mediante `Gate::authorize()` / `$this->authorize()` en controladores o directivas `@can` en Blade.
 
 ### D. Capa de Persistencia y Modelos (`app/Models/`)
 
 - Mapea las tablas relacionales mediante **Eloquent ORM**.
 - Define relaciones formales:
-  - `Plan`: `user()` (organizador), `actividades()`, `invitaciones()`, `participantes()`, `opciones()`, `gastos()`, `pagos()`.
-  - `User`: `planes()`, `actividades()`, `votos()`, `gastosPagados()`, `gastosAsignados()`, `pagosRealizados()`, `pagosRecibidos()`.
-  - `PlanActivity`: `plan()`, `usuario()`.
-  - `Invitacion`: `plan()`, `usuario()`.
-  - `Opcion`: `plan()`, `proponente()`, `votos()`.
-  - `Voto`: `opcion()`, `usuario()`.
-  - `Gasto`: `plan()`, `pagador()`, `divisiones()`.
-  - `GastoDivision`: `gasto()`, `participante()`.
-  - `Pago`: `plan()`, `deudor()`, `receptor()`.
+    - `Plan`: `user()` (organizador), `actividades()`, `invitaciones()`, `participantes()`, `opciones()`, `gastos()`, `pagos()`.
+    - `User`: `planes()`, `actividades()`, `votos()`, `gastosPagados()`, `gastosAsignados()`, `pagosRealizados()`, `pagosRecibidos()`.
+    - `PlanActivity`: `plan()`, `usuario()`.
+    - `Invitacion`: `plan()`, `usuario()`.
+    - `Opcion`: `plan()`, `proponente()`, `votos()`.
+    - `Voto`: `opcion()`, `usuario()`.
+    - `Gasto`: `plan()`, `pagador()`, `divisiones()`.
+    - `GastoDivision`: `gasto()`, `participante()`.
+    - `Pago`: `plan()`, `deudor()`, `receptor()`.
 - Servicio de Dominio / Cálculo de Saldos (`Plan::calcularSaldosNetos()`):
-  - Procesa la sumatoria de gastos pagados menos cuotas asignadas, cruzando pagos confirmados para producir la matriz neta de deudas (`quién debe a quién y cuánto`).
+    - Procesa la sumatoria de gastos pagados menos cuotas asignadas, cruzando pagos confirmados para producir la matriz neta de deudas (`quién debe a quién y cuánto`).
 - Garantiza integridad mediante constraints únicos (`unique(['opcion_id', 'user_id'])`).
 
 ### E. Capa de Presentación (`resources/views/`)
 
 - Plantillas Blade modulares desacopladas en componentes y vistas de dominio:
-  - **`layouts/app.blade.php`**: Shell maestro libre de CDNs externos.
-  - **`components/icono.blade.php`**: Componente de íconos SVG vectoriales nativos (Heroicons/Lucide) accesibles (`aria-hidden="true"`, `.sr-only`) con adaptación cromática reactiva vía `stroke="currentColor"`.
-  - **`components/dialog-confirm.blade.php`**: Diálogo modal nativo de HTML5 (`<dialog>`) para confirmaciones ergonómicas de Fitts y Hick.
-  - **`components/toast-alerta.blade.php`**: Notificación flotante nativa (`fixed top-5 right-5 z-50`) con auto-cierre a los 3 segundos para mensajes de sesión sin alterar el layout.
-  - **`planes/listar.blade.php`**: Orquestador del listado que incluye parciales (`_filtros.blade.php`, `_tabla_seccion.blade.php`, `_modal_crear.blade.php`).
-  - **`planes/historial.blade.php`**: Vista de auditoría cronológica con tarjetas autónomas de 4 dimensiones y filtros temáticos de Hick ($n = 4$).
-  - **`planes/detalle.blade.php`**: Sala colaborativa que incluye parciales (`_cabecera.blade.php`, `_participantes.blade.php`, `_sala_votacion.blade.php`, `_gastos_liquidacion.blade.php`).
+    - **`layouts/app.blade.php`**: Shell maestro libre de CDNs externos.
+    - **`components/icono.blade.php`**: Componente de íconos SVG vectoriales nativos (Heroicons/Lucide) accesibles (`aria-hidden="true"`, `.sr-only`) con adaptación cromática reactiva vía `stroke="currentColor"`.
+    - **`components/dialog-confirm.blade.php`**: Diálogo modal nativo de HTML5 (`<dialog>`) para confirmaciones ergonómicas de Fitts y Hick.
+    - **`components/toast-alerta.blade.php`**: Notificación flotante nativa (`fixed top-5 right-5 z-50`) con auto-cierre a los 3 segundos para mensajes de sesión sin alterar el layout.
+    - **`planes/listar.blade.php`**: Orquestador del listado que incluye parciales (`_filtros.blade.php`, `_tabla_seccion.blade.php`, `_modal_crear.blade.php`).
+    - **`planes/historial.blade.php`**: Vista de auditoría cronológica con tarjetas autónomas de 4 dimensiones y filtros temáticos de Hick ($n = 4$).
+    - **`planes/detalle.blade.php`**: Sala colaborativa que incluye parciales (`_cabecera.blade.php`, `_participantes.blade.php`, `_sala_votacion.blade.php`, `_gastos_liquidacion.blade.php`).
 - **Prohibido:** Ejecutar consultas directas a la base de datos dentro de los archivos Blade.
 
 ---
@@ -177,10 +177,10 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 
 - **Estados posibles:** `pendiente` ➔ `confirmado` | `rechazado`.
 - **Reglas y Consecuencias de Estado:**
-  1. Al registrar un pago el deudor, nace en estado `pendiente`. **Consecuencia:** NO reduce la deuda ni altera saldos.
-  2. El receptor (acreedor) revisa el pago:
-     - **Si confirma:** El estado pasa a `confirmado`. **Consecuencia:** Reduce la deuda neta y actualiza saldos de ambos participantes. La confirmación es inmutable y no puede repetirse (idempotencia).
-     - **Si rechaza:** Requiere motivo obligatorio de rechazo. El estado pasa a `rechazado`. **Consecuencia:** La deuda se mantiene exigible en su totalidad.
+    1. Al registrar un pago el deudor, nace en estado `pendiente`. **Consecuencia:** NO reduce la deuda ni altera saldos.
+    2. El receptor (acreedor) revisa el pago:
+        - **Si confirma:** El estado pasa a `confirmado`. **Consecuencia:** Reduce la deuda neta y actualiza saldos de ambos participantes. La confirmación es inmutable y no puede repetirse (idempotencia).
+        - **Si rechaza:** Requiere motivo obligatorio de rechazo. El estado pasa a `rechazado`. **Consecuencia:** La deuda se mantiene exigible en su totalidad.
 
 ### Flujo Colaborativo y de Liquidación
 

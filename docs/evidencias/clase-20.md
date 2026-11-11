@@ -6,8 +6,8 @@ Entrega formal del trabajo en clase con nota sobre **Arquitectura de Informació
 
 ## 👥 Integrantes del Equipo
 
-* **Moises Cisneros**
-* **Erick Teran Tabera**
+- **Moises Cisneros**
+- **Erick Teran Tabera**
 
 ---
 
@@ -15,12 +15,12 @@ Entrega formal del trabajo en clase con nota sobre **Arquitectura de Informació
 
 En la pantalla principal de listado de planes (`/planes`), todos los registros se encontraban mezclados en una única tabla continua y desestructurada:
 
-* Los planes creados por el usuario (rol organizador) y los planes a los que fue invitado (rol participante) compartían el mismo espacio visual sin distinción jerárquica.
-* Las fechas límite no contaban con separación por urgencia, obligando al usuario a calcular mentalmente cuáles planes correspondían al día de hoy, cuáles eran futuros y cuáles ya habían vencido.
-* **Sobrecarga Cognitiva:** Para responder una pregunta cotidiana (*«¿a qué planes me invitaron?»* o *«¿qué tengo que atender hoy?»*), el usuario debía escanear fila por fila examinando la columna de organizador y las fechas una por una.
+- Los planes creados por el usuario (rol organizador) y los planes a los que fue invitado (rol participante) compartían el mismo espacio visual sin distinción jerárquica.
+- Las fechas límite no contaban con separación por urgencia, obligando al usuario a calcular mentalmente cuáles planes correspondían al día de hoy, cuáles eran futuros y cuáles ya habían vencido.
+- **Sobrecarga Cognitiva:** Para responder una pregunta cotidiana (_«¿a qué planes me invitaron?»_ o _«¿qué tengo que atender hoy?»_), el usuario debía escanear fila por fila examinando la columna de organizador y las fechas una por una.
 
 ### Tarea de Evaluación Elegida para la Prueba
->
+
 > **«Consulta cuáles son los planes donde te invitaron a participar y qué planes tienes programados para hoy».**
 
 ---
@@ -108,21 +108,21 @@ Planes segmentados por pestañas semánticas (`Mis planes creados` vs `Planes do
 
 Se solicitó a un compañero de otro grupo resolver la tarea sin darle instrucciones previas sobre qué menús o pestañas abrir:
 
-* **Consigna entregada al evaluador:** *«Consulta cuáles son los planes donde te invitaron a participar y qué planes tienes programados para hoy»*.
-* **Resultado de la prueba:** **Sin ayuda (Resuelta exitosamente).**
-* **Observaciones y tiempos:**
-  * El evaluador hizo clic inmediatamente en la pestaña *«Planes donde participo»* guiado por el texto explícito de la pestaña.
-  * Localizó el plan programado para hoy en el bloque *«Hoy · 1»* sin necesidad de escanear el resto de la página.
-  * *¿Dónde dudó?* No dudó en la navegación; consultó si el badge numérico se actualizaba al filtrar, lo cual se confirmó funcional.
-* **Ajuste posterior implementado:**  
+- **Consigna entregada al evaluador:** _«Consulta cuáles son los planes donde te invitaron a participar y qué planes tienes programados para hoy»_.
+- **Resultado de la prueba:** **Sin ayuda (Resuelta exitosamente).**
+- **Observaciones y tiempos:**
+    - El evaluador hizo clic inmediatamente en la pestaña _«Planes donde participo»_ guiado por el texto explícito de la pestaña.
+    - Localizó el plan programado para hoy en el bloque _«Hoy · 1»_ sin necesidad de escanear el resto de la página.
+    - _¿Dónde dudó?_ No dudó en la navegación; consultó si el badge numérico se actualizaba al filtrar, lo cual se confirmó funcional.
+- **Ajuste posterior implementado:**  
   Se agregó persistencia del parámetro `seccion` en el botón «Limpiar» y en los chips de filtros activos para asegurar que al remover un filtro el usuario permanezca en su pestaña seleccionada.
 
 ---
 
 ## 🔗 6. Enlaces a Commits y Sub-issues
 
-* **Issue Madre:** [Issue #56 — `[Requisito] — Clase 20: Arquitectura de Información`](https://github.com/moises-cisneros/Proyecto2IHC/issues/56)
-* **Sub-issue 1 (Backend / Segmentación y Agrupación):** [Sub-issue #57](https://github.com/moises-cisneros/Proyecto2IHC/issues/57)
-  * Commit Backend: [`5618319`](https://github.com/moises-cisneros/Proyecto2IHC/commit/5618319ed195da897914820a0f3e7bf053674a63) — `feat(controlador): segmentacion de planes por rol y agrupacion temporal (Refs #57, Refs #56)`
-* **Sub-issue 2 (Interfaz / Blade, Pestañas y Evidencias):** [Sub-issue #58](https://github.com/moises-cisneros/Proyecto2IHC/issues/58)
-  * Pull Request: [PR #60 — Pestañas de navegación por rol, bloques cronológicos y matriz de evidencias](https://github.com/moises-cisneros/Proyecto2IHC/pull/60)
+- **Issue Madre:** [Issue #56 — `[Requisito] — Clase 20: Arquitectura de Información`](https://github.com/moises-cisneros/Proyecto2IHC/issues/56)
+- **Sub-issue 1 (Backend / Segmentación y Agrupación):** [Sub-issue #57](https://github.com/moises-cisneros/Proyecto2IHC/issues/57)
+    - Commit Backend: [`5618319`](https://github.com/moises-cisneros/Proyecto2IHC/commit/5618319ed195da897914820a0f3e7bf053674a63) — `feat(controlador): segmentacion de planes por rol y agrupacion temporal (Refs #57, Refs #56)`
+- **Sub-issue 2 (Interfaz / Blade, Pestañas y Evidencias):** [Sub-issue #58](https://github.com/moises-cisneros/Proyecto2IHC/issues/58)
+    - Pull Request: [PR #60 — Pestañas de navegación por rol, bloques cronológicos y matriz de evidencias](https://github.com/moises-cisneros/Proyecto2IHC/pull/60)

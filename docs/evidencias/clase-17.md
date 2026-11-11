@@ -24,11 +24,11 @@ npm run docker:dev
 
 Este comando ejecuta internamente `docker compose up --build`, que levanta tres servicios:
 
-| Servicio | Descripción | Puerto |
-| --- | --- | --- |
-| `planazo_app` | Laravel (PHP 8.2) con `php artisan serve` | 8000 |
-| `planazo_mysql` | MySQL 8.0 con BD `proyecto2ihc` | 9306 |
-| `planazo_vite` | Node 24 con Vite + Tailwind HMR | 5173 |
+| Servicio        | Descripción                               | Puerto |
+| --------------- | ----------------------------------------- | ------ |
+| `planazo_app`   | Laravel (PHP 8.2) con `php artisan serve` | 8000   |
+| `planazo_mysql` | MySQL 8.0 con BD `proyecto2ihc`           | 9306   |
+| `planazo_vite`  | Node 24 con Vite + Tailwind HMR           | 5173   |
 
 El script de arranque (`docker/entrypoint.sh`) también crea el `.env`, genera el `APP_KEY` y ejecuta las migraciones automáticamente.
 
@@ -196,12 +196,12 @@ votos (Tarea 5)
 
 ### 4.3 Nuevos modelos y relaciones Eloquent
 
-| Modelo | Archivo | Relaciones principales |
-| --- | --- | --- |
-| `PlanActivity` | [`app/Models/PlanActivity.php`](../../app/Models/PlanActivity.php) | `belongsTo(Plan::class)`, `belongsTo(User::class)` |
-| `Invitacion` | [`app/Models/Invitacion.php`](../../app/Models/Invitacion.php) | `belongsTo(Plan::class)`, `belongsTo(User::class)` |
-| `Opcion` | [`app/Models/Opcion.php`](../../app/Models/Opcion.php) | `belongsTo(Plan::class)`, `belongsTo(User::class, 'user_id')`, `hasMany(Voto::class)` |
-| `Voto` | [`app/Models/Voto.php`](../../app/Models/Voto.php) | `belongsTo(Opcion::class)`, `belongsTo(User::class)` |
+| Modelo         | Archivo                                                            | Relaciones principales                                                                |
+| -------------- | ------------------------------------------------------------------ | ------------------------------------------------------------------------------------- |
+| `PlanActivity` | [`app/Models/PlanActivity.php`](../../app/Models/PlanActivity.php) | `belongsTo(Plan::class)`, `belongsTo(User::class)`                                    |
+| `Invitacion`   | [`app/Models/Invitacion.php`](../../app/Models/Invitacion.php)     | `belongsTo(Plan::class)`, `belongsTo(User::class)`                                    |
+| `Opcion`       | [`app/Models/Opcion.php`](../../app/Models/Opcion.php)             | `belongsTo(Plan::class)`, `belongsTo(User::class, 'user_id')`, `hasMany(Voto::class)` |
+| `Voto`         | [`app/Models/Voto.php`](../../app/Models/Voto.php)                 | `belongsTo(Opcion::class)`, `belongsTo(User::class)`                                  |
 
 Relaciones a incorporar en los modelos base:
 
@@ -233,12 +233,12 @@ Se incorpora una política formal de acceso [`app/Policies/PlanPolicy.php`](../.
 
 ### 4.5 Nuevos controladores y validación desacoplada
 
-| Controlador nuevo | Responsabilidad |
-| --- | --- |
-| [`HistorialController`](../../app/Http/Controllers/HistorialController.php) | Consulta cronológica de auditoría con aislamiento estricto por usuario y filtros temáticos |
-| [`InvitacionesController`](../../app/Http/Controllers/InvitacionesController.php) | Enviar invitaciones por correo y gestionar aceptación/rechazo vía token |
-| [`OpcionesController`](../../app/Http/Controllers/OpcionesController.php) | Proponer y retirar fechas o lugares en planes activos |
-| [`VotosController`](../../app/Http/Controllers/VotosController.php) | Emitir y retirar votos de forma atómica con `DB::transaction` |
+| Controlador nuevo                                                                 | Responsabilidad                                                                            |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| [`HistorialController`](../../app/Http/Controllers/HistorialController.php)       | Consulta cronológica de auditoría con aislamiento estricto por usuario y filtros temáticos |
+| [`InvitacionesController`](../../app/Http/Controllers/InvitacionesController.php) | Enviar invitaciones por correo y gestionar aceptación/rechazo vía token                    |
+| [`OpcionesController`](../../app/Http/Controllers/OpcionesController.php)         | Proponer y retirar fechas o lugares en planes activos                                      |
+| [`VotosController`](../../app/Http/Controllers/VotosController.php)               | Emitir y retirar votos de forma atómica con `DB::transaction`                              |
 
 Validaciones extraídas a Form Requests dedicados:
 
@@ -278,17 +278,17 @@ Route::delete('/opciones/{opcion}/votar',    [VotosController::class, 'quitar'])
 ### 4.7 Reestructuración de Vistas y Decisiones Ergonómicas (IHC)
 
 1. **Feedback Dual Nativo (Reemplazo integral de SweetAlert2 sin CDNs):**
-   - **Modal de Confirmación Bloqueante (`<x-dialog-confirm />`):** Utiliza `<dialog>` nativo de HTML5 con backdrop oscuro para acciones críticas y destructivas (eliminar plan, cancelar, abandonar).
-   - **Toast Flotante Auto-Dismissable (`<x-toast-alerta />`):** Ubicado en la esquina superior derecha (`fixed top-5 right-5 z-50`). No altera el flujo de la página (*Zero Layout Shift*), se muestra con animación suave, **desaparece automáticamente a los 3 segundos** (3000ms) y ofrece un botón de descarte manual `×` (Nielsen H3).
+    - **Modal de Confirmación Bloqueante (`<x-dialog-confirm />`):** Utiliza `<dialog>` nativo de HTML5 con backdrop oscuro para acciones críticas y destructivas (eliminar plan, cancelar, abandonar).
+    - **Toast Flotante Auto-Dismissable (`<x-toast-alerta />`):** Ubicado en la esquina superior derecha (`fixed top-5 right-5 z-50`). No altera el flujo de la página (_Zero Layout Shift_), se muestra con animación suave, **desaparece automáticamente a los 3 segundos** (3000ms) y ofrece un botón de descarte manual `×` (Nielsen H3).
 2. **Modularización de "Mis Planes" ([`planes/listar.blade.php`](../../resources/views/planes/listar.blade.php)):** Descompuesta en parciales (`_filtros.blade.php`, `_tabla.blade.php`, `_modal_crear.blade.php`).
-3. **Refactorización del Organizador (H6 y H8):** En `_modal_crear.blade.php`, se retira el campo editable de organizador y se muestra un badge informativo de solo lectura: *«Organizador: {{ auth()->user()->name }}»*.
+3. **Refactorización del Organizador (H6 y H8):** En `_modal_crear.blade.php`, se retira el campo editable de organizador y se muestra un badge informativo de solo lectura: _«Organizador: {{ auth()->user()->name }}»_.
 4. **Pantalla de Historial de Actividad ([`planes/historial.blade.php`](../../resources/views/planes/historial.blade.php)):**
-   - **Tarjetas de Actividad (`ActivityCard`):** Responden a las **4 dimensiones autónomas** del evento (*qué ocurrió, cuándo, cuál fue el resultado, qué elemento involucró*).
-   - **Filtros Temáticos (Ley de Hick):** Acotados a $n = 4$ chips (`Todos`, `Estados`, `Creaciones`, `Participación`) con área táctil ≥ 44 px (Ley de Fitts).
+    - **Tarjetas de Actividad (`ActivityCard`):** Responden a las **4 dimensiones autónomas** del evento (_qué ocurrió, cuándo, cuál fue el resultado, qué elemento involucró_).
+    - **Filtros Temáticos (Ley de Hick):** Acotados a $n = 4$ chips (`Todos`, `Estados`, `Creaciones`, `Participación`) con área táctil ≥ 44 px (Ley de Fitts).
 5. **Nueva Pantalla de Sala Colaborativa ([`planes/detalle.blade.php`](../../resources/views/planes/detalle.blade.php)):**
-   - **Cabecera (`_cabecera.blade.php`):** Título, estado y fecha límite.
-   - **Panel de Participantes (`_participantes.blade.php`):** Lista de miembros con roles (`Organizador` vs `Participante`) y botón accesible "Invitar participante" (≥ 44 px de target táctil, Ley de Fitts).
-   - **Sala de Votación (`_sala_votacion.blade.php`):** Pestañas semánticas para separar "Fechas" y "Lugares" (Ley de Hick, $n \le 4$), tarjetas de opción autónomas con recuento de votos y separación antagónica de 12px (`gap-3`) entre botones de votar y eliminar opción.
+    - **Cabecera (`_cabecera.blade.php`):** Título, estado y fecha límite.
+    - **Panel de Participantes (`_participantes.blade.php`):** Lista de miembros con roles (`Organizador` vs `Participante`) y botón accesible "Invitar participante" (≥ 44 px de target táctil, Ley de Fitts).
+    - **Sala de Votación (`_sala_votacion.blade.php`):** Pestañas semánticas para separar "Fechas" y "Lugares" (Ley de Hick, $n \le 4$), tarjetas de opción autónomas con recuento de votos y separación antagónica de 12px (`gap-3`) entre botones de votar y eliminar opción.
 6. **Salida de Emergencia (Nielsen H3):** Botón visible «Abandonar plan» con diálogo de confirmación para participantes invitados.
 
 ---
@@ -345,13 +345,13 @@ flowchart TD
     Backend --> Database
 ```
 
-| Capa | Archivos modificados / refactorizados | Archivos nuevos |
-| --- | --- | --- |
-| **BD (Migraciones)** | — | 4 migraciones (`plan_activities`, `invitaciones`, `opciones`, `votos`) |
-| **Modelos** | [`Plan.php`](../../app/Models/Plan.php), [`User.php`](../../app/Models/User.php) | `PlanActivity.php`, `Invitacion.php`, `Opcion.php`, `Voto.php` |
-| **Seguridad** | — | [`PlanPolicy.php`](../../app/Policies/PlanPolicy.php) |
-| **Controladores** | [`PlanesController.php`](../../app/Http/Controllers/PlanesController.php) | `HistorialController.php`, `InvitacionesController.php`, `OpcionesController.php`, `VotosController.php` |
-| **Validación** | — | `GuardarPlanRequest.php`, `ProponerOpcionRequest.php` |
-| **Rutas** | [`routes/web.php`](../../routes/web.php) | — |
-| **Vistas** | `layouts/app.blade.php`, `planes/listar.blade.php` | `components/dialog-confirm.blade.php`, `components/toast-alerta.blade.php`, `planes/historial.blade.php`, `planes/detalle.blade.php` (+ parciales) |
-| **Pruebas** | — | 6 suites de tests PHPUnit en `tests/Feature/` y `tests/Unit/` |
+| Capa                 | Archivos modificados / refactorizados                                            | Archivos nuevos                                                                                                                                    |
+| -------------------- | -------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **BD (Migraciones)** | —                                                                                | 4 migraciones (`plan_activities`, `invitaciones`, `opciones`, `votos`)                                                                             |
+| **Modelos**          | [`Plan.php`](../../app/Models/Plan.php), [`User.php`](../../app/Models/User.php) | `PlanActivity.php`, `Invitacion.php`, `Opcion.php`, `Voto.php`                                                                                     |
+| **Seguridad**        | —                                                                                | [`PlanPolicy.php`](../../app/Policies/PlanPolicy.php)                                                                                              |
+| **Controladores**    | [`PlanesController.php`](../../app/Http/Controllers/PlanesController.php)        | `HistorialController.php`, `InvitacionesController.php`, `OpcionesController.php`, `VotosController.php`                                           |
+| **Validación**       | —                                                                                | `GuardarPlanRequest.php`, `ProponerOpcionRequest.php`                                                                                              |
+| **Rutas**            | [`routes/web.php`](../../routes/web.php)                                         | —                                                                                                                                                  |
+| **Vistas**           | `layouts/app.blade.php`, `planes/listar.blade.php`                               | `components/dialog-confirm.blade.php`, `components/toast-alerta.blade.php`, `planes/historial.blade.php`, `planes/detalle.blade.php` (+ parciales) |
+| **Pruebas**          | —                                                                                | 6 suites de tests PHPUnit en `tests/Feature/` y `tests/Unit/`                                                                                      |

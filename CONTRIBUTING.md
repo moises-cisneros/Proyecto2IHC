@@ -26,67 +26,67 @@ cd Proyecto2IHC
 docker compose up --build
 ```
 
-*(El contenedor aprovisiona automáticamente la base de datos MySQL, corre las migraciones, siembra los datos de prueba y levanta Laravel y Vite).*
+_(El contenedor aprovisiona automáticamente la base de datos MySQL, corre las migraciones, siembra los datos de prueba y levanta Laravel y Vite)._
 
-* **Aplicación Web:** [http://localhost:9300](http://localhost:9300)
-* **Vite HMR:** `http://localhost:9373`
-* **MySQL 8.0:** `127.0.0.1:9306` (Base de datos: `planazo`, Usuario: `planazo_user`, Clave: `planazo_pass`)
+- **Aplicación Web:** [http://localhost:9300](http://localhost:9300)
+- **Vite HMR:** `http://localhost:9373`
+- **MySQL 8.0:** `127.0.0.1:9306` (Base de datos: `planazo`, Usuario: `planazo_user`, Clave: `planazo_pass`)
 
 ### 3. Credenciales de Prueba Precargadas
 
 Podés iniciar sesión inmediatamente con cualquiera de las cuentas precargadas en los seeders:
 
-| Nombre | Correo Electrónico | Contraseña | Rol / Propósito |
-| :--- | :--- | :--- | :--- |
-| **Lucas (Organizador)** | `lucas@example.com` | `password` | Creador de planes, organizador y moderador de sala. |
-| **Ana (Participante)** | `ana@example.com` | `password` | Participante con votos activos y propuestas. |
+| Nombre                    | Correo Electrónico   | Contraseña | Rol / Propósito                                                 |
+| :------------------------ | :------------------- | :--------- | :-------------------------------------------------------------- |
+| **Lucas (Organizador)**   | `lucas@example.com`  | `password` | Creador de planes, organizador y moderador de sala.             |
+| **Ana (Participante)**    | `ana@example.com`    | `password` | Participante con votos activos y propuestas.                    |
 | **Carlos (Participante)** | `carlos@example.com` | `password` | Participante para validación de quórum y liquidación de gastos. |
-| **Usuario General** | `test@example.com` | `password` | Usuario base de pruebas generales. |
+| **Usuario General**       | `test@example.com`   | `password` | Usuario base de pruebas generales.                              |
 
 ### 4. Ejecución de Pruebas Automatizadas
 
-* **Pruebas Backend (PHPUnit):**
+- **Pruebas Backend (PHPUnit):**
 
-  ```bash
-  docker compose exec planazo_app php artisan test
-  ```
+    ```bash
+    docker compose exec planazo_app php artisan test
+    ```
 
-* **Pruebas E2E en Navegador Visible (Playwright):**
-  *(Requiere Node.js en el host para abrir la ventana del navegador en tu pantalla):*
+- **Pruebas E2E en Navegador Visible (Playwright):**
+  _(Requiere Node.js en el host para abrir la ventana del navegador en tu pantalla):_
 
-  ```bash
-  pnpm install
-  pnpm run test:e2e:headed
-  ```
+    ```bash
+    pnpm install
+    pnpm run test:e2e:headed
+    ```
 
-* **Detener el entorno:**
+- **Detener el entorno:**
 
-  ```bash
-  docker compose down
-  ```
+    ```bash
+    docker compose down
+    ```
 
 ### 5. Servicios Externos y Driver de Comprobantes (Modo Offline vs IA)
 
 La aplicación implementa un escaneo de comprobantes bancarios desacoplado mediante el patrón Driver:
 
-* **Modo Offline / Evaluación por Defecto (`COMPROBANTE_SCANNER_DRIVER=fake`):**
+- **Modo Offline / Evaluación por Defecto (`COMPROBANTE_SCANNER_DRIVER=fake`):**
   No requiere **ninguna API key externa ni conexión a internet**. Viene configurado por defecto en `.env.example` y durante las pruebas automatizadas, operando 100% aislado con fixtures deterministas.
-* **Modo IA Multimodal (`COMPROBANTE_SCANNER_DRIVER=gemini` - Opcional):**
+- **Modo IA Multimodal (`COMPROBANTE_SCANNER_DRIVER=gemini` - Opcional):**
   Para activar el análisis real en vivo mediante visión computacional, basta con agregar en `.env`:
 
-  ```env
-  COMPROBANTE_SCANNER_DRIVER=gemini
-  GEMINI_API_KEY=tu_api_key_de_google_ai_studio
-  GEMINI_MODEL=gemini-2.5-flash
-  ```
+    ```env
+    COMPROBANTE_SCANNER_DRIVER=gemini
+    GEMINI_API_KEY=tu_api_key_de_google_ai_studio
+    GEMINI_MODEL=gemini-2.5-flash
+    ```
 
-  *(Se obtiene una API key gratuita en [Google AI Studio](https://aistudio.google.com/)).*
+    _(Se obtiene una API key gratuita en [Google AI Studio](https://aistudio.google.com/))._
 
-* **Generación de fixtures sintéticos limpios:**
+- **Generación de fixtures sintéticos limpios:**
 
-  ```bash
-  pnpm run fixtures:comprobantes
-  ```
+    ```bash
+    pnpm run fixtures:comprobantes
+    ```
 
 ---
 
@@ -114,21 +114,21 @@ pnpm dev
 
 ### 2. Metodología de Desarrollo: ODD y OpenSpec
 
-* **Flujo ODD (Organic-Driven Development) con Gentle-AI v4+ (Por defecto):**
-  * Desarrollo ágil guiado por TDD estricto (*RED &rarr; GREEN &rarr; REFACTOR*).
-  * Las decisiones de arquitectura, lecciones y estado se sincronizan en memoria persistente (**Engram**) y seguimiento en `odd/tasks/`.
-* **Flujo Formal con OpenSpec (Comandos `/opsx`):**
-  * Para entregas académicas que exijan especificación previa versionada en `openspec/changes/<cambio>/`.
+- **Flujo ODD (Organic-Driven Development) con Gentle-AI v4+ (Por defecto):**
+    - Desarrollo ágil guiado por TDD estricto (_RED &rarr; GREEN &rarr; REFACTOR_).
+    - Las decisiones de arquitectura, lecciones y estado se sincronizan en memoria persistente (**Engram**) y seguimiento en `odd/tasks/`.
+- **Flujo Formal con OpenSpec (Comandos `/opsx`):**
+    - Para entregas académicas que exijan especificación previa versionada en `openspec/changes/<cambio>/`.
 
 ### 3. Catálogo de Skills Canónicas (`.agents/skills/`)
 
 El repositorio incluye habilidades versionadas para que desarrolladores y agentes sigan protocolos uniformes:
 
-* **`information-architecture`:** Directivas de organización LATCH, chunking, rótulos y modelado de Task Flows vs App Maps.
-* **`interaction-decisions`:** Auditoría ergonómica basada en la Ley de Fitts, Ley de Hick y Carga Cognitiva (7 ± 2).
-* **`heuristic-evaluation`:** Protocolo para las 10 heurísticas de Nielsen (H1–H10) con escala de severidad 0-4.
-* **`e2e-testing`:** Pruebas Playwright orientadas a tareas humanas con localizadores semánticos (`getByRole`, `getByLabel`).
-* **`refactoring`:** Transformaciones Fowler seguras y preservación estricta de contratos.
+- **`information-architecture`:** Directivas de organización LATCH, chunking, rótulos y modelado de Task Flows vs App Maps.
+- **`interaction-decisions`:** Auditoría ergonómica basada en la Ley de Fitts, Ley de Hick y Carga Cognitiva (7 ± 2).
+- **`heuristic-evaluation`:** Protocolo para las 10 heurísticas de Nielsen (H1–H10) con escala de severidad 0-4.
+- **`e2e-testing`:** Pruebas Playwright orientadas a tareas humanas con localizadores semánticos (`getByRole`, `getByLabel`).
+- **`refactoring`:** Transformaciones Fowler seguras y preservación estricta de contratos.
 
 ---
 
@@ -161,14 +161,14 @@ Los requisitos docentes no se implementan en un único bloque masivo:
 
 1. El issue padre **nunca** se cierra con `Closes`; se referencia con `Refs #<padre>`.
 2. Se divide en **mínimo 3 sub-issues atómicos**:
-   * `backend` (migraciones, modelos, reglas de negocio)
-   * `controlador` (endpoints, validaciones Form Request, queries)
-   * `interfaz` (vistas Blade, accesibilidad, CSS Tailwind)
+    - `backend` (migraciones, modelos, reglas de negocio)
+    - `controlador` (endpoints, validaciones Form Request, queries)
+    - `interfaz` (vistas Blade, accesibilidad, CSS Tailwind)
 3. Vincular al árbol nativo de GitHub:
 
-   ```bash
-   gh api -X POST /repos/:owner/:repo/issues/:padre/sub_issues -F sub_issue_id=:id_global
-   ```
+    ```bash
+    gh api -X POST /repos/:owner/:repo/issues/:padre/sub_issues -F sub_issue_id=:id_global
+    ```
 
 4. Cada sub-issue se cierra con su correspondiente PR (`Closes #<sub-issue>`).
 
@@ -176,19 +176,19 @@ Los requisitos docentes no se implementan en un único bloque masivo:
 
 ### 5. Taxonomía de Etiquetas (Labels)
 
-| Categoría | Etiqueta | Color | Descripción |
-| :--- | :--- | :--- | :--- |
-| **Tipo** | `requisito` | `#0E8A16` (Verde) | Requisito docente madre (permanece abierto hasta revisión). |
-| | `sub-issue` | `#1D76DB` (Azul) | Sub-issue atómico vinculado a una tarea. |
-| | `refactor` | `#D4C5F9` (Lila) | Limpieza y reducción de deuda técnica. |
-| | `bug` | `#D73A4A` (Rojo) | Corrección de fallos. |
-| **Capa** | `backend` | `#FBCA04` (Ámbar) | Modelos Eloquent, base de datos y persistencia. |
-| | `controlador` | `#E99695` (Salmón) | Controllers, validación Form Requests y HTTP. |
-| | `interfaz` | `#7057FF` (Morado) | Vistas Blade, componentes UI y accesibilidad. |
-| | `testing` | `#0052CC` (Azul marino) | Suites PHPUnit y Playwright. |
-| **Transversal** | `seguridad` | `#B60205` (Bordó) | Autenticación, autorización (`PlanPolicy`) y menores privilegios. |
-| | `ihc` | `#5319E7` (Índigo) | Principios ergonómicos y heurísticas de Nielsen. |
-| | `accessibility` | `#F143AB` (Fucsia) | WCAG 2.1 AA y roles ARIA. |
+| Categoría       | Etiqueta        | Color                   | Descripción                                                       |
+| :-------------- | :-------------- | :---------------------- | :---------------------------------------------------------------- |
+| **Tipo**        | `requisito`     | `#0E8A16` (Verde)       | Requisito docente madre (permanece abierto hasta revisión).       |
+|                 | `sub-issue`     | `#1D76DB` (Azul)        | Sub-issue atómico vinculado a una tarea.                          |
+|                 | `refactor`      | `#D4C5F9` (Lila)        | Limpieza y reducción de deuda técnica.                            |
+|                 | `bug`           | `#D73A4A` (Rojo)        | Corrección de fallos.                                             |
+| **Capa**        | `backend`       | `#FBCA04` (Ámbar)       | Modelos Eloquent, base de datos y persistencia.                   |
+|                 | `controlador`   | `#E99695` (Salmón)      | Controllers, validación Form Requests y HTTP.                     |
+|                 | `interfaz`      | `#7057FF` (Morado)      | Vistas Blade, componentes UI y accesibilidad.                     |
+|                 | `testing`       | `#0052CC` (Azul marino) | Suites PHPUnit y Playwright.                                      |
+| **Transversal** | `seguridad`     | `#B60205` (Bordó)       | Autenticación, autorización (`PlanPolicy`) y menores privilegios. |
+|                 | `ihc`           | `#5319E7` (Índigo)      | Principios ergonómicos y heurísticas de Nielsen.                  |
+|                 | `accessibility` | `#F143AB` (Fucsia)      | WCAG 2.1 AA y roles ARIA.                                         |
 
 ---
 
@@ -200,6 +200,6 @@ Antes de solicitar revisión o hacer merge:
 2. Correr tests E2E: `pnpm run test:e2e`
 3. Validar consistencia y ausencia de IA:
 
-   ```bash
-   node scripts/verify-subissue.mjs
-   ```
+    ```bash
+    node scripts/verify-subissue.mjs
+    ```

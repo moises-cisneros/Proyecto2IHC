@@ -20,29 +20,27 @@ try {
     hasError = true;
 }
 
-// 2. Formateador Frontend con Prettier (excluyendo markdown por .prettierignore)
-console.log('🎨 2. Verificando Frontend (JS, TS, CSS, JSON) con Prettier (excluyendo *.md)...');
+// 2. Formateador Frontend y Markdown con Prettier
+console.log('🎨 2. Formateando archivos (JS, TS, CSS, JSON, Markdown) con Prettier...');
 try {
     const prettierCmd = isFix
-        ? 'npx prettier --write "**/*.{js,mjs,cjs,ts,css,json}"'
-        : 'npx prettier --check "**/*.{js,mjs,cjs,ts,css,json}"';
+        ? 'npx prettier --write "**/*.{js,mjs,cjs,ts,css,json,md}"'
+        : 'npx prettier --check "**/*.{js,mjs,cjs,ts,css,json,md}"';
     execSync(prettierCmd, { stdio: 'inherit' });
-    console.log('✅ Frontend (Prettier): Formato correcto.');
+    console.log('✅ Prettier (Frontend + Markdown): Formato correcto.');
 } catch (error) {
-    console.error('❌ Frontend (Prettier): Se detectaron archivos con problemas de formato.');
+    console.error('❌ Prettier: Se detectaron archivos con problemas de formato.');
     hasError = true;
 }
 
-// 3. Formateador y Linter de Markdown con markdownlint
-console.log('📝 3. Verificando documentación Markdown con markdownlint...');
+// 3. Linter de Markdown con markdownlint
+console.log('📝 3. Verificando consistencia de Markdown con markdownlint (Linter)...');
 try {
-    const mdCmd = isFix
-        ? 'npx markdownlint "**/*.md" --fix --ignore-path .markdownlintignore'
-        : 'npx markdownlint "**/*.md" --ignore-path .markdownlintignore';
+    const mdCmd = 'npx markdownlint "**/*.md" --ignore-path .markdownlintignore';
     execSync(mdCmd, { stdio: 'inherit' });
-    console.log('✅ Markdown (markdownlint): Formato correcto.');
+    console.log('✅ Markdown (markdownlint): Validación de sintaxis correcta.');
 } catch (error) {
-    console.error('❌ Markdown (markdownlint): Se detectaron problemas de formato en archivos Markdown.');
+    console.error('❌ Markdown (markdownlint): Se detectaron problemas de sintaxis o estructura en archivos Markdown.');
     hasError = true;
 }
 

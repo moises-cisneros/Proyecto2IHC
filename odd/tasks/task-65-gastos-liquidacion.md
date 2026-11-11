@@ -4,15 +4,15 @@
 
 - **Issue Madre:** #65 — `[Requisito] — Tarea 8: Proceso de Gastos y Liquidación con Estados y Consecuencias`
 - **Sub-issues:**
-  - #66: `[Backend] — Migraciones, modelos Gasto, GastoDivision, Pago, relaciones Eloquent y cálculo de saldos` (MERGED)
-  - #67: `[Controlador] — Endpoints de gastos y pagos, validaciones Form Request, transiciones de estado e idempotencia` (MERGED)
-  - #68: `[Interfaz] — Pestaña de Gastos en sala, modal de registro con división dinámica y panel de liquidación` (MERGED)
-  - #69: `[Testing] — Suite Playwright para escenario docente de 3 participantes, 2 gastos, división personalizada y pago confirmado` (MERGED)
-  - #77: `[Interfaz] — Ajustes ergonómicos en tablas, estandarización de moneda a Bs y componente nav-link` (MERGED)
-  - #79: `[Backend] — Servicio de escaneo inteligente de comprobantes, persistencia de análisis y perfil de cobro` (OPEN)
-  - #80: `[Controlador] — Endpoint de subida de comprobante, procesamiento de escaneo y gestión de perfil de cobro` (OPEN)
-  - #81: `[Interfaz] — Previsualización de comprobantes, badge de verificación y modal de datos de cobro` (OPEN)
-  - #82: `[Testing] — Tests automatizados de conciliación con fixtures y documentación de evidencias` (OPEN)
+    - #66: `[Backend] — Migraciones, modelos Gasto, GastoDivision, Pago, relaciones Eloquent y cálculo de saldos` (MERGED)
+    - #67: `[Controlador] — Endpoints de gastos y pagos, validaciones Form Request, transiciones de estado e idempotencia` (MERGED)
+    - #68: `[Interfaz] — Pestaña de Gastos en sala, modal de registro con división dinámica y panel de liquidación` (MERGED)
+    - #69: `[Testing] — Suite Playwright para escenario docente de 3 participantes, 2 gastos, división personalizada y pago confirmado` (MERGED)
+    - #77: `[Interfaz] — Ajustes ergonómicos en tablas, estandarización de moneda a Bs y componente nav-link` (MERGED)
+    - #79: `[Backend] — Servicio de escaneo inteligente de comprobantes, persistencia de análisis y perfil de cobro` (OPEN)
+    - #80: `[Controlador] — Endpoint de subida de comprobante, procesamiento de escaneo y gestión de perfil de cobro` (OPEN)
+    - #81: `[Interfaz] — Previsualización de comprobantes, badge de verificación y modal de datos de cobro` (OPEN)
+    - #82: `[Testing] — Tests automatizados de conciliación con fixtures y documentación de evidencias` (OPEN)
 
 ---
 

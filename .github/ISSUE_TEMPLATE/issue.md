@@ -7,13 +7,16 @@ assignees: ''
 ---
 
 ## Consigna / Objetivo
+
 <!-- Copia la consigna del docente o describe el objetivo principal de este requerimiento -->
 
 ## Historia de Usuario / Flujo
+
 <!-- Contexto de uso o flujo evaluado -->
+
 **Como** [rol del usuario]  
 **Quiero** [acción o necesidad]  
-**Para** [beneficio o valor esperado]  
+**Para** [beneficio o valor esperado]
 
 ## Criterios de Aceptación y Seguridad
 
@@ -23,13 +26,17 @@ assignees: ''
 - [ ] **Seguridad y Control de Acceso:** Aislamiento estricto por usuario/rol mediante middleware `auth`, autorización explícita en Policy y bloqueo con `403 Forbidden` ante accesos o mutaciones no autorizadas.
 
 ## Consideraciones de Interacción / IHC (Opcional según la entrega)
+
 <!-- Si la consigna exige IHC: detallar principios aplicados (Fitts, Hick, Carga Cognitiva) o lista de heurísticas (H1-H10) -->
+
 - **Decisión / Principio:**
 
 ## Sub-issues Atómicos
+
 <!-- Descomposición obligatoria en mínimo 3 sub-issues por capas arquitectónicas.
      Puede extenderse a 4 o más si la consigna requiere un sub-issue separado de pruebas/evidencias.
      IMPORTANTE: La issue madre permanece ABIERTA hasta la revisión docente final. -->
+
 - [ ] # [Capa 1: Backend / Persistencia]
 - [ ] # [Capa 2: Controlador / Lógica de negocio]
 - [ ] # [Capa 3: Interfaz / Blade / Accesibilidad]

@@ -10,7 +10,7 @@
         "build": "vite build",
         "format": "node scripts/format.mjs --fix",
         "format:check": "node scripts/format.mjs --check",
-        "format:md": "markdownlint \"**/*.md\" --fix --ignore-path .markdownlintignore",
+        "format:md": "prettier --write \"**/*.md\"",
         "lint:md": "markdownlint \"**/*.md\" --ignore-path .markdownlintignore",
         "test:e2e": "playwright test",
         "test:e2e:headed": "playwright test --headed",

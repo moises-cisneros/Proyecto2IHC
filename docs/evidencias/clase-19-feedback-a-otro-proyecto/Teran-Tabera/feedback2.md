@@ -9,7 +9,7 @@
 
 ## Primera impresión
 
- al querer editar la mascota no vi nada que me dijera que aqui es donde se edita la informacion
+al querer editar la mascota no vi nada que me dijera que aqui es donde se edita la informacion
 
 ## Funcionalidad asignada y resultado
 

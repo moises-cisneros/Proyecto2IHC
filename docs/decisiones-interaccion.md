@@ -12,9 +12,9 @@ $$T = a + b \log_{2}\left(\frac{2D}{W}\right)$$
 
 Donde:
 
-* $T$: Tiempo de adquisición motriz del objetivo.
-* $D$: Distancia inicial desde la posición del cursor/mano hacia el control interactivo.
-* $W$: Ancho efectivo proyectado del objetivo en la dirección del movimiento.
+- $T$: Tiempo de adquisición motriz del objetivo.
+- $D$: Distancia inicial desde la posición del cursor/mano hacia el control interactivo.
+- $W$: Ancho efectivo proyectado del objetivo en la dirección del movimiento.
 
 ### Problema / Línea Base (Alternativa Ingenua Descartada)
 
@@ -28,7 +28,7 @@ En la arquitectura heredada, el acceso a nuevas funcionalidades y botones de nav
 
 ### Impacto Cuantitativo
 
-* **Reducción del Índice de Dificultad:** Mediante la formulación del $ID$, al duplicar el área de contacto efectiva $W$ de 22 px a 44 px, el término $\log_{2}(2D/44) = \log_{2}(2D/22) - 1$, lo que representa una reducción de $1\text{ bit}$ en el $ID$ y una disminución estimada de ~**28%** en el tiempo de adquisición motriz $T$.
+- **Reducción del Índice de Dificultad:** Mediante la formulación del $ID$, al duplicar el área de contacto efectiva $W$ de 22 px a 44 px, el término $\log_{2}(2D/44) = \log_{2}(2D/22) - 1$, lo que representa una reducción de $1\text{ bit}$ en el $ID$ y una disminución estimada de ~**28%** en el tiempo de adquisición motriz $T$.
 
 ![Evidencia de Ley de Fitts en navegación](evidencias/tarea-4-historial/Fitts-despues.png)
 
@@ -42,9 +42,9 @@ $$T = b \log_{2}(n + 1)$$
 
 Donde:
 
-* $T$: Tiempo de reacción y decisión cognitiva del usuario.
-* $n$: Número de alternativas equiprobables presentadas de forma simultánea.
-* $b$: Constante empírica cognitiva (~$150\text{ms}$ a $200\text{ms}$ por bit).
+- $T$: Tiempo de reacción y decisión cognitiva del usuario.
+- $n$: Número de alternativas equiprobables presentadas de forma simultánea.
+- $b$: Constante empírica cognitiva (~$150\text{ms}$ a $200\text{ms}$ por bit).
 
 ### Problema / Línea Base (Alternativa Ingenua Descartada)
 
@@ -61,11 +61,11 @@ Se diseñó un selector temático de exactamente **$n = 4$ chips mutuamente excl
 
 ### Impacto Cuantitativo
 
-* **Para la alternativa dispersa con $n = 12$:**
+- **Para la alternativa dispersa con $n = 12$:**
   $$T_{12} = b \log_{2}(12 + 1) = b \log_{2}(13) \approx 3.700\,b$$
-* **Para el selector temático de $n = 4$ chips:**
+- **Para el selector temático de $n = 4$ chips:**
   $$T_4 = b \log_{2}(4 + 1) = b \log_{2}(5) \approx 2.322\,b$$
-* **Beneficio medible:**
+- **Beneficio medible:**
   $$\Delta T = \frac{3.700 - 2.322}{3.700} \approx \mathbf{37.24\%}\text{ de reducción en latencia de decisión cognitiva.}$$
 
 Adicionalmente, cada chip incluye retroalimentación de estado mediante `aria-pressed="true|false"` para accesibilidad por lectores de pantalla.
@@ -109,8 +109,8 @@ El componente Blade [`<x-activity-card />`](../resources/views/components/activi
 
 ### Impacto Ergonómico
 
-* **Cero sobrecarga de memoria:** La tarjeta es auto-explicativa; no requiere navegación adicional ni esfuerzo de deducción mental.
-* **Carga extrínseca minimizada:** El usuario reconoce de inmediato la severidad y el resultado de la acción gracias a los tokens cromáticos definidos en [`resources/DESIGN.md`](../resources/DESIGN.md).
+- **Cero sobrecarga de memoria:** La tarjeta es auto-explicativa; no requiere navegación adicional ni esfuerzo de deducción mental.
+- **Carga extrínseca minimizada:** El usuario reconoce de inmediato la severidad y el resultado de la acción gracias a los tokens cromáticos definidos en [`resources/DESIGN.md`](../resources/DESIGN.md).
 
 ![Evidencia de Carga Cognitiva y ActivityCard](evidencias/tarea-4-historial/CargaCognitiva-despues.png)
 
@@ -126,11 +126,11 @@ El componente Blade [`<x-activity-card />`](../resources/views/components/activi
 
 ## 4. Estado del Arte y Verificación Automatizada
 
-| Componente | Principio Evaluado | Criterio de Éxito | Estado |
-| --- | --- | --- | --- |
-| `nav.blade.php` | Ley de Fitts | Área táctil $\ge 44\times 44\text{px}$, etiqueta `aria-label` | ✅ Verificado |
-| Selector de chips | Ley de Hick | Exactamente $n=4$ alternativas, $\Delta T \approx -37\%$ | ✅ Verificado |
-| `ActivityCard` | Carga Cognitiva (H6) | 4 dimensiones explícitas, auto-contenido | ✅ Verificado |
-| `HistorialVistaTest` | Automatización | 5 casos de prueba Feature pasando al 100% | ✅ Verificado |
-| `HistorialConsultaTest` | Aislamiento | 6 casos de prueba Feature pasando al 100% | ✅ Verificado |
-| `PlanActivityTest` | Persistencia | 5 casos de prueba Unit pasando al 100% | ✅ Verificado |
+| Componente              | Principio Evaluado   | Criterio de Éxito                                             | Estado        |
+| ----------------------- | -------------------- | ------------------------------------------------------------- | ------------- |
+| `nav.blade.php`         | Ley de Fitts         | Área táctil $\ge 44\times 44\text{px}$, etiqueta `aria-label` | ✅ Verificado |
+| Selector de chips       | Ley de Hick          | Exactamente $n=4$ alternativas, $\Delta T \approx -37\%$      | ✅ Verificado |
+| `ActivityCard`          | Carga Cognitiva (H6) | 4 dimensiones explícitas, auto-contenido                      | ✅ Verificado |
+| `HistorialVistaTest`    | Automatización       | 5 casos de prueba Feature pasando al 100%                     | ✅ Verificado |
+| `HistorialConsultaTest` | Aislamiento          | 6 casos de prueba Feature pasando al 100%                     | ✅ Verificado |
+| `PlanActivityTest`      | Persistencia         | 5 casos de prueba Unit pasando al 100%                        | ✅ Verificado |

@@ -9,7 +9,7 @@
 
 ## Primera impresión
 
- al loggearme solo vi un par de botones y un espacio vacio
+al loggearme solo vi un par de botones y un espacio vacio
 
 ## Funcionalidad asignada y resultado
 

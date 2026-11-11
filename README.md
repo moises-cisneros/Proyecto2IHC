@@ -9,14 +9,14 @@
 Elige según tu modalidad preferida:
 
 - **Modo por defecto (Docker):**
-  - [Docker Desktop](https://www.docker.com/products/docker-desktop) (con Docker Compose).
-  - Git.
+    - [Docker Desktop](https://www.docker.com/products/docker-desktop) (con Docker Compose).
+    - Git.
 - **Modo manual (Host local):**
-  - PHP 8.2 o superior (con extensiones `pdo_mysql`, `mbstring`, `openssl`).
-  - Composer 2.x.
-  - Servidor MySQL 8.0 en ejecución.
-  - Node.js 18+ y npm.
-  - Git.
+    - PHP 8.2 o superior (con extensiones `pdo_mysql`, `mbstring`, `openssl`).
+    - Composer 2.x.
+    - Servidor MySQL 8.0 en ejecución.
+    - Node.js 18+ y npm.
+    - Git.
 
 ---
 
@@ -28,22 +28,23 @@ Si tu objetivo es probar y calificar la aplicación inmediatamente:
 
 1. Clona el repositorio:
 
-   ```bash
-   git clone https://github.com/moises-cisneros/Proyecto2IHC.git
-   cd Proyecto2IHC
-   ```
+    ```bash
+    git clone https://github.com/moises-cisneros/Proyecto2IHC.git
+    cd Proyecto2IHC
+    ```
 
 2. Inicia el entorno con Docker (comando estándar para cualquier sistema operativo):
 
-   ```bash
-   docker compose up --build
-   ```
+    ```bash
+    docker compose up --build
+    ```
 
-   *(Para comprobar que todas las herramientas base estén instaladas antes de iniciar, podés ejecutar `node scripts/setup.mjs`, `pnpm run setup` o `powershell ./scripts/setup.ps1`).*
+    _(Para comprobar que todas las herramientas base estén instaladas antes de iniciar, podés ejecutar `node scripts/setup.mjs`, `pnpm run setup` o `powershell ./scripts/setup.ps1`)._
+
 3. Abre tu navegador en [http://localhost:9300](http://localhost:9300).
 4. Inicia sesión con cualquiera de los usuarios de prueba precargados (por ejemplo: `test@example.com` / `password`).
 
-*(El script crea el `.env`, levanta MySQL, migra la base de datos, siembra los usuarios de prueba y arranca Laravel y Vite automáticamente).*
+_(El script crea el `.env`, levanta MySQL, migra la base de datos, siembra los usuarios de prueba y arranca Laravel y Vite automáticamente)._
 
 ---
 
@@ -56,20 +57,20 @@ El módulo de liquidación de gastos incluye un servicio de escaneo y validació
 - **Modo IA con Visión Multimodal (`gemini` - Opcional):**
   Si deseas habilitar la extracción real en vivo con IA para cualquier foto o comprobante bancario, basta con configurar tu clave en el archivo `.env`:
 
-  ```env
-  COMPROBANTE_SCANNER_DRIVER=gemini
-  GEMINI_API_KEY=tu_api_key_de_google_ai_studio
-  GEMINI_MODEL=gemini-2.5-flash
-  ```
+    ```env
+    COMPROBANTE_SCANNER_DRIVER=gemini
+    GEMINI_API_KEY=tu_api_key_de_google_ai_studio
+    GEMINI_MODEL=gemini-2.5-flash
+    ```
 
-  *(Se puede generar una clave gratuita en [Google AI Studio](https://aistudio.google.com/)).*
+    _(Se puede generar una clave gratuita en [Google AI Studio](https://aistudio.google.com/))._
 
 - **Generador de Comprobantes Sintéticos Limpios:**
   Para pruebas reproducibles sin exponer datos sensibles ni cuentas bancarias reales, el repositorio incluye un generador que sintetiza comprobantes móviles con estilo bancario boliviano (BNB, Banco Unión, Yape, Yastá):
 
-  ```bash
-  pnpm run fixtures:comprobantes
-  ```
+    ```bash
+    pnpm run fixtures:comprobantes
+    ```
 
 ---
 
@@ -81,27 +82,27 @@ Si vas a programar, refactorizar o añadir funcionalidades:
 
 - Iniciar entorno:
 
-  ```bash
-  docker compose up --build
-  ```
+    ```bash
+    docker compose up --build
+    ```
 
 - Correr migraciones adicionales:
 
-  ```bash
-  docker compose exec planazo_app php artisan migrate
-  ```
+    ```bash
+    docker compose exec planazo_app php artisan migrate
+    ```
 
 - Ejecutar pruebas:
 
-  ```bash
-  docker compose exec planazo_app php artisan test
-  ```
+    ```bash
+    docker compose exec planazo_app php artisan test
+    ```
 
 - Detener entorno:
 
-  ```bash
-  docker compose down
-  ```
+    ```bash
+    docker compose down
+    ```
 
 #### Opción B: Desarrollo Manual en Host Local
 
@@ -136,11 +137,11 @@ Las configuraciones locales de cada herramienta (`.agent/`, `.claude/`, `.cursor
 
 ## 🌐 Accesos y Servicios
 
-| Servicio | URL / Host | Puerto Host | Descripción |
-| :--- | :--- | :--- | :--- |
-| **Aplicación Web** | [http://localhost:9300](http://localhost:9300) | `9300` | Laravel 12 (PHP 8.2) + Servidor HTTP |
-| **Vite Dev Server (HMR)** | [http://localhost:9373](http://localhost:9373) | `9373` | Compilación de assets y recarga en caliente |
-| **Base de Datos MySQL** | `127.0.0.1` | `9306` | MySQL 8.0 (BD: `proyecto2ihc`, user: `root`, pass: `root`) |
+| Servicio                  | URL / Host                                     | Puerto Host | Descripción                                                |
+| :------------------------ | :--------------------------------------------- | :---------- | :--------------------------------------------------------- |
+| **Aplicación Web**        | [http://localhost:9300](http://localhost:9300) | `9300`      | Laravel 12 (PHP 8.2) + Servidor HTTP                       |
+| **Vite Dev Server (HMR)** | [http://localhost:9373](http://localhost:9373) | `9373`      | Compilación de assets y recarga en caliente                |
+| **Base de Datos MySQL**   | `127.0.0.1`                                    | `9306`      | MySQL 8.0 (BD: `proyecto2ihc`, user: `root`, pass: `root`) |
 
 ---
 
@@ -148,11 +149,11 @@ Las configuraciones locales de cada herramienta (`.agent/`, `.claude/`, `.cursor
 
 La base de datos se siembra automáticamente al iniciar Docker con tres cuentas listas para usar sin necesidad de registrarse:
 
-| Usuario | Correo Electrónico | Contraseña | Datos de inicio |
-| :--- | :--- | :--- | :--- |
-| **Test User** | `test@example.com` | `password` | Cuenta 1 de prueba |
-| **Test User 2** | `test2@example.com` | `password` | Cuenta 2 de prueba |
-| **Usuario 1** | `usuario1@example.com` | `password123` | Cuenta 3 de prueba |
+| Usuario         | Correo Electrónico     | Contraseña    | Datos de inicio    |
+| :-------------- | :--------------------- | :------------ | :----------------- |
+| **Test User**   | `test@example.com`     | `password`    | Cuenta 1 de prueba |
+| **Test User 2** | `test2@example.com`    | `password`    | Cuenta 2 de prueba |
+| **Usuario 1**   | `usuario1@example.com` | `password123` | Cuenta 3 de prueba |
 
 Para volver a sembrar los datos manualmente:
 
@@ -225,11 +226,11 @@ flowchart TD
 ### Detalle de los Flujos de la Aplicación
 
 1. **Flujo 1 (Acceso y Control de Sesión):** Puerta de entrada (`/ingresar`, `/registro`, `/recuperar`). Rate-limiting (`throttle:5,1`), protección contra enumeración de credenciales, autenticación con cuentas de prueba sembradas y regeneración de token CSRF al cerrar sesión.
-2. **Flujo 2 (Dashboard y Organización de Planes - `/mis-planes`):** Centro de navegación posautenticación. Aplica Arquitectura de la Información con dos pestañas semánticas por propósito/rol (*«Mis planes creados»* vs *«Planes donde participo»*), clasificación cronológica LATCH (*Hoy*, *Próximos*, *Vencidos*), y filtros rápidos acotados ($\le 4$ opciones) conforme a la Ley de Hick.
+2. **Flujo 2 (Dashboard y Organización de Planes - `/mis-planes`):** Centro de navegación posautenticación. Aplica Arquitectura de la Información con dos pestañas semánticas por propósito/rol (_«Mis planes creados»_ vs _«Planes donde participo»_), clasificación cronológica LATCH (_Hoy_, _Próximos_, _Vencidos_), y filtros rápidos acotados ($\le 4$ opciones) conforme a la Ley de Hick.
 3. **Flujo 3 (Creación y Ciclo de Vida del Plan):** Diálogo modal nativo `<dialog>` de creación ágil con captura automática del organizador desde la sesión (`auth()->user()->name`), validación preventiva de fechas pasadas (`after_or_equal:today`) y transición segura de la máquina de estados (`pendiente` &rarr; `confirmado` &rarr; `cancelado` inmutable).
 4. **Flujo 4 (Sala Colaborativa, Deliberación y Cierre - `/planes/{plan}`):** Espacio interactivo unificado que bifurca la experiencia según el rol gobernado por políticas (`PlanPolicy`):
-   - **Carril Participante:** Aceptación de invitación, propuesta de opciones (fechas/lugares), votación reactiva por aprobación (Approval Voting) con alternancia de votos y salida de emergencia voluntaria (Nielsen H3).
-   - **Carril Organizador:** Envío de invitaciones por correo, supervisión de quórum, resolución obligatoria de empates con motivo justificado ($\ge 5$ caracteres) y confirmación oficial que congela la sala (`403` a votos y propuestas posteriores).
+    - **Carril Participante:** Aceptación de invitación, propuesta de opciones (fechas/lugares), votación reactiva por aprobación (Approval Voting) con alternancia de votos y salida de emergencia voluntaria (Nielsen H3).
+    - **Carril Organizador:** Envío de invitaciones por correo, supervisión de quórum, resolución obligatoria de empates con motivo justificado ($\ge 5$ caracteres) y confirmación oficial que congela la sala (`403` a votos y propuestas posteriores).
 5. **Flujo 5 (Gastos, Liquidación y Conciliación Inteligente):** Proceso post-evento activado exclusivamente en planes confirmados. Registro de gastos grupales (partes iguales $Monto/N$ o cuotas personalizadas), cálculo automatizado de la matriz de saldos netos cruzados, configuración de datos de cobro por participante (Alias, CBU, QR) y ciclo de liquidación de deudas con comprobante bancario adjunto, validación inteligente (IA Gemini Vision o Fake) y estados controlados (`pendiente` &rarr; `verificado` / `discrepante` &rarr; `confirmado` o `rechazado` con motivo obligatorio).
 6. **Servicio Transversal (Auditoría y Trazabilidad - `/historial`):** Bitácora inmutable accesible desde la navegación global. Registra en 4 dimensiones (Qué, Quién, Cuándo, Resultado) todas las transiciones de estado, propuestas, votos, desempates y liquidaciones, con selector temático de 4 chips.
 
@@ -240,14 +241,14 @@ flowchart TD
 La aplicación sigue una disciplina estricta de usabilidad, ergonomía y accesibilidad:
 
 - **Ley de Fitts:** $T = a + b \log_{2}(2D/W)$ — Todo botón o control interactivo (votar, proponer, invitar, confirmar) garantiza un área táctil mínima de **44×44px** (`min-height: 44px`). Los controles antagónicos mantienen una separación preventiva de **12px (`gap-3`)**.
-- **Ley de Hick:** $T = b \log_{2}(n + 1)$ — Clasificación en $n = 2$ pestañas en la sala de votación (*Fechas propuestas* vs *Lugares propuestos*) y $n = 4$ chips temáticos en el historial (*Todos, Estados, Creaciones, Participación*).
+- **Ley de Hick:** $T = b \log_{2}(n + 1)$ — Clasificación en $n = 2$ pestañas en la sala de votación (_Fechas propuestas_ vs _Lugares propuestos_) y $n = 4$ chips temáticos en el historial (_Todos, Estados, Creaciones, Participación_).
 - **Carga Cognitiva (7 ± 2 chunks):** Tarjetas sintéticas con los 4 metadatos esenciales para evitar sobrecarga mental.
 - **10 Heurísticas de Nielsen:**
-  - *H1 (Visibilidad del estado):* Contadores de votos en vivo y badges semánticos con texto e ícono.
-  - *H3 (Control y libertad):* Diálogo modal nativo `<dialog>` accesible para abandono de planes o retiro de votos.
-  - *H4 (Consistencia y estándares):* Cero dependencias externas (sin SweetAlert2 ni NProgress), usando `<dialog>` y `<x-toast-alerta />` flotante nativo de 3 segundos.
-  - *H5 (Prevención de errores):* Inhabilitación de controles y mensajes de sala cerrada para planes confirmados o vencidos.
-  - *H6 (Reconocimiento antes que recuerdo):* Organizador cargado automáticamente desde la sesión activa (`auth()->user()->name`).
+    - _H1 (Visibilidad del estado):_ Contadores de votos en vivo y badges semánticos con texto e ícono.
+    - _H3 (Control y libertad):_ Diálogo modal nativo `<dialog>` accesible para abandono de planes o retiro de votos.
+    - _H4 (Consistencia y estándares):_ Cero dependencias externas (sin SweetAlert2 ni NProgress), usando `<dialog>` y `<x-toast-alerta />` flotante nativo de 3 segundos.
+    - _H5 (Prevención de errores):_ Inhabilitación de controles y mensajes de sala cerrada para planes confirmados o vencidos.
+    - _H6 (Reconocimiento antes que recuerdo):_ Organizador cargado automáticamente desde la sesión activa (`auth()->user()->name`).
 
 ---
 
@@ -273,7 +274,7 @@ pnpm run test:e2e:headed
 pnpm run test:e2e:ui
 ```
 
-*(Para ejecución de pruebas puntuales, filtrado por nombres y el protocolo detallado para crear nuevas pruebas E2E, consultá [AGENTS.md](AGENTS.md) y [CONTRIBUTING.md](CONTRIBUTING.md)).*
+_(Para ejecución de pruebas puntuales, filtrado por nombres y el protocolo detallado para crear nuevas pruebas E2E, consultá [AGENTS.md](AGENTS.md) y [CONTRIBUTING.md](CONTRIBUTING.md))._
 
 ---
 
@@ -281,34 +282,34 @@ pnpm run test:e2e:ui
 
 - **Detener la aplicación:**
 
-  ```bash
-  docker compose down
-  ```
+    ```bash
+    docker compose down
+    ```
 
 - **Reiniciar desde cero (Limpiar contenedores y base de datos):**
 
-  ```bash
-  docker compose down -v
-  docker compose up --build
-  ```
+    ```bash
+    docker compose down -v
+    docker compose up --build
+    ```
 
 ---
 
 ## 🧭 Rutas y Funcionalidades de la Aplicación
 
 - **Acceso y Autenticación:**
-  - `/` ➔ Redirección automática a `/ingresar`.
-  - `/ingresar` ➔ Formulario de inicio de sesión (`login`).
-  - `/registro` ➔ Creación de nueva cuenta de usuario.
-  - `/recuperar` y `/restablecer/{token}` ➔ Recuperación de contraseña por correo.
+    - `/` ➔ Redirección automática a `/ingresar`.
+    - `/ingresar` ➔ Formulario de inicio de sesión (`login`).
+    - `/registro` ➔ Creación de nueva cuenta de usuario.
+    - `/recuperar` y `/restablecer/{token}` ➔ Recuperación de contraseña por correo.
 - **Gestión de Planes y Colaboración (Zona Autenticada):**
-  - `/mis-planes` ➔ Listado interactivo de planes personales con filtros por estado y fecha.
-  - `/planes` (POST) ➔ Creación de un nuevo plan (descripción, fecha límite y organizador automático).
-  - `/planes/{plan}` ➔ Sala colaborativa del plan: invitación a miembros, propuestas de fechas/lugares y votación grupal.
-  - `/planes/{plan}/editar` y `PUT /planes/{plan}` ➔ Edición de plan existente (organizador inmutable).
-  - `DELETE /planes/{plan}` ➔ Eliminación de plan con diálogo modal accesible.
-  - `PUT /planes/{plan}/estado` ➔ Transición de estados del plan (`pendiente` ➔ `confirmado` ➔ `cancelado`).
-  - `/historial` ➔ Bitácora cronológica e inmutable de eventos con selector de 4 categorías (Hick).
+    - `/mis-planes` ➔ Listado interactivo de planes personales con filtros por estado y fecha.
+    - `/planes` (POST) ➔ Creación de un nuevo plan (descripción, fecha límite y organizador automático).
+    - `/planes/{plan}` ➔ Sala colaborativa del plan: invitación a miembros, propuestas de fechas/lugares y votación grupal.
+    - `/planes/{plan}/editar` y `PUT /planes/{plan}` ➔ Edición de plan existente (organizador inmutable).
+    - `DELETE /planes/{plan}` ➔ Eliminación de plan con diálogo modal accesible.
+    - `PUT /planes/{plan}/estado` ➔ Transición de estados del plan (`pendiente` ➔ `confirmado` ➔ `cancelado`).
+    - `/historial` ➔ Bitácora cronológica e inmutable de eventos con selector de 4 categorías (Hick).
 
 ---
 
@@ -318,15 +319,15 @@ La suite de pruebas unitarias y de integración de Laravel se ejecuta mediante *
 
 - **Dentro del contenedor Docker (Recomendado):**
 
-  ```bash
-  docker compose exec planazo_app php artisan test
-  ```
+    ```bash
+    docker compose exec planazo_app php artisan test
+    ```
 
 - **Desde el host local (si se cuenta con PHP y Composer instalados):**
 
-  ```bash
-  php artisan test
-  ```
+    ```bash
+    php artisan test
+    ```
 
 ---
 
