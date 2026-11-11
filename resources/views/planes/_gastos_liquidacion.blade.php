@@ -499,7 +499,7 @@
 {{-- Modal accesible para Registrar Pago --}}
 @can('create', [\App\Models\Pago::class, $plan])
 <dialog id="modal-crear-pago" style="border: none; border-radius: 16px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
-    <form method="POST" action="{{ route('planes.pagos.guardar', $plan) }}" enctype="multipart/form-data">
+    <form id="form-crear-pago" method="POST" action="{{ route('planes.pagos.guardar', $plan) }}" enctype="multipart/form-data">
         @csrf
         <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: #1c1c1a;">Registrar Pago</h2>
         <p style="margin: 0 0 20px 0; font-size: 14px; color: #6f6f6a;">
@@ -572,17 +572,36 @@
             </div>
         </div>
 
+        {{-- Banner de feedback durante el procesamiento (Nielsen H1) --}}
+        <div id="aviso-procesando-pago"
+             style="display: none; margin-bottom: 18px; padding: 12px 14px; background: #fff4d6; border: 1px solid #ffe683; border-radius: 10px; color: #8a6100; font-size: 13px; align-items: center; gap: 10px;"
+             role="status"
+             aria-live="polite">
+            <x-icono nombre="spinner" clases="w-5 h-5 flex-shrink-0" />
+            <div>
+                <strong>Procesando tu pago...</strong>
+                <div style="font-size: 12px; margin-top: 2px; color: #78350f;">
+                    Estamos registrando la transferencia y analizando el comprobante. Por favor, no cierres esta ventana.
+                </div>
+            </div>
+        </div>
+
         <div style="display: flex; justify-content: flex-end; gap: 12px;">
             <button type="button"
+                    id="btn-cancelar-pago"
                     class="boton boton-claro"
                     style="min-height: 44px; min-width: 44px; border-radius: 50px;"
                     onclick="document.getElementById('modal-crear-pago').close()">
                 Cancelar
             </button>
             <button type="submit"
+                    id="btn-submit-pago"
                     class="boton"
-                    style="min-height: 44px; min-width: 44px; border-radius: 50px; background: #25663a; color: #ffffff;">
-                Enviar Pago
+                    style="min-height: 44px; min-width: 44px; border-radius: 50px; background: #25663a; color: #ffffff; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                <span id="spinner-submit-pago" style="display: none;">
+                    <x-icono nombre="spinner" clases="w-4 h-4" />
+                </span>
+                <span id="texto-btn-submit-pago">Enviar Pago</span>
             </button>
         </div>
     </form>
@@ -662,6 +681,8 @@
     function abrirModalPagoDirecto(receptorId, montoSugerido) {
         var modal = document.getElementById('modal-crear-pago');
         if (!modal) return;
+
+        resetearEstadoModalPago();
 
         var select = document.getElementById('select-pago-receptor');
         var inputMonto = document.getElementById('input-pago-monto');
@@ -794,4 +815,90 @@
             aviso.style.border = '1px solid #ffe683';
         }
     }
+
+    function resetearEstadoModalPago() {
+        var form = document.getElementById('form-crear-pago');
+        var btnSubmit = document.getElementById('btn-submit-pago');
+        var btnCancelar = document.getElementById('btn-cancelar-pago');
+        var spinner = document.getElementById('spinner-submit-pago');
+        var textoBtn = document.getElementById('texto-btn-submit-pago');
+        var aviso = document.getElementById('aviso-procesando-pago');
+
+        if (form) {
+            delete form.dataset.enviando;
+        }
+        if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.classList.remove('boton-procesando');
+        }
+        if (btnCancelar) {
+            btnCancelar.disabled = false;
+            btnCancelar.style.pointerEvents = 'auto';
+            btnCancelar.style.opacity = '1';
+        }
+        if (spinner) {
+            spinner.style.display = 'none';
+        }
+        if (textoBtn) {
+            textoBtn.textContent = 'Enviar Pago';
+        }
+        if (aviso) {
+            aviso.style.display = 'none';
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        var formPago = document.getElementById('form-crear-pago');
+        var modalPago = document.getElementById('modal-crear-pago');
+
+        if (formPago) {
+            formPago.addEventListener('submit', function (e) {
+                if (formPago.dataset.enviando === '1') {
+                    e.preventDefault();
+                    return;
+                }
+
+                if (!formPago.checkValidity()) {
+                    return;
+                }
+
+                var btnSubmit = document.getElementById('btn-submit-pago');
+                var btnCancelar = document.getElementById('btn-cancelar-pago');
+                var spinner = document.getElementById('spinner-submit-pago');
+                var textoBtn = document.getElementById('texto-btn-submit-pago');
+                var aviso = document.getElementById('aviso-procesando-pago');
+
+                if (spinner) spinner.style.display = 'inline-block';
+                if (textoBtn) textoBtn.textContent = 'Procesando pago...';
+                if (aviso) aviso.style.display = 'flex';
+
+                if (btnCancelar) {
+                    btnCancelar.disabled = true;
+                    btnCancelar.style.pointerEvents = 'none';
+                    btnCancelar.style.opacity = '0.5';
+                }
+
+                if (btnSubmit) {
+                    btnSubmit.classList.add('boton-procesando');
+                    setTimeout(function () {
+                        btnSubmit.disabled = true;
+                    }, 20);
+                }
+            });
+        }
+
+        if (modalPago) {
+            modalPago.addEventListener('cancel', function (e) {
+                if (formPago && formPago.dataset.enviando === '1') {
+                    e.preventDefault();
+                }
+            });
+        }
+    });
+
+    window.addEventListener('pageshow', function (e) {
+        if (e.persisted) {
+            resetearEstadoModalPago();
+        }
+    });
 </script>

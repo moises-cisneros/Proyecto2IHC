@@ -38,6 +38,10 @@ class GastosComprobanteVistaTest extends TestCase
         $response->assertSee('input-pago-comprobante', false);
         $response->assertSee('organizador.alias.qr', false);
         $response->assertSee('modal-configurar-cobro', false);
+        $response->assertSee('aviso-procesando-pago', false);
+        $response->assertSee('btn-submit-pago', false);
+        $response->assertSee('spinner-submit-pago', false);
+        $response->assertSee('Procesando tu pago', false);
     }
 
     public function test_lista_pagos_renderiza_badge_de_verificacion_y_enlace_a_comprobante(): void

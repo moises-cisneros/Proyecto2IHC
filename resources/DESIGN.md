@@ -246,3 +246,8 @@ Abstraída de [`public/css/app.css`](../public/css/app.css):
   * Pagos recibidos pendientes muestran dos botones antagónicos separados por `12px` (`gap-3`) con altura ≥ 44 px:
     * Botón primario de éxito «Confirmar pago» (verde cálido `#25663a`).
     * Botón secundario destructivo «Rechazar» que despliega modal `<dialog>` con textarea obligatorio para el motivo de rechazo.
+* **Modal de Registro y Envío de Pago con Bloqueo y Feedback Inmediato (Nielsen H1 y H5):**
+  * Al enviar el formulario de pago (`#modal-crear-pago`), el botón primario «Enviar Pago» se bloquea de inmediato (`.boton-procesando` / `disabled`), cambia su rótulo a *«Procesando pago...»* y despliega un ícono SVG animado (`.icono-spinner`).
+  * El botón «Cancelar» se inhabilita para prevenir cancelaciones accidentales a mitad de la subida.
+  * Se renderiza un banner informativo accesible (`role="status"`, `aria-live="polite"`, fondo ámbar cálido `#fff4d6`, borde `#ffe683`, texto `#8a6100`) indicando el escaneo del comprobante y evitando que el usuario reintente el envío.
+  * El evento `cancel` del `<dialog>` queda interceptado mientras el proceso esté activo para impedir el cierre por tecla `Escape`.
