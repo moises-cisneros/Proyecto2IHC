@@ -55,6 +55,15 @@ class Plan extends Model
                     'descripcion' => "Estado cambiado a {$plan->estado}.",
                     'estado_resultante' => $plan->estado,
                 ]);
+
+                if ($plan->estado === 'confirmado') {
+                    Evento::registrar('plan_confirmado', [
+                        'con_desempate' => ! empty($plan->motivo_desempate),
+                        'tiene_propuesta_fecha' => ! empty($plan->propuesta_fecha_id),
+                        'tiene_propuesta_lugar' => ! empty($plan->propuesta_lugar_id),
+                        'tiene_fecha_limite' => ! empty($plan->fecha_limite),
+                    ]);
+                }
             } else {
                 $plan->actividades()->create([
                     'user_id' => $userId,

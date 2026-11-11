@@ -6,7 +6,7 @@
 
     <div class="encabezado-planes">
         <h1>Mis planes</h1>
-        <button class="boton" onclick="document.getElementById('modal-crear').showModal()">
+        <button class="boton" onclick="abrirModalCrear('{{ $seccion }}')">
             + Crear plan
         </button>
     </div>
@@ -109,7 +109,7 @@
                 @endif
             </p>
             @if ($seccion === 'creados' && !$buscar && !$estado && !$fecha)
-                <button class="boton" onclick="document.getElementById('modal-crear').showModal()">
+                <button class="boton" onclick="abrirModalCrear('{{ $seccion }}')">
                     + Crear mi primer plan
                 </button>
             @endif
@@ -197,4 +197,21 @@
     {{-- Modal accesible para crear nuevo plan con organizador automático --}}
     @include('planes._modal_crear')
 
+@endsection
+
+@section('scripts')
+    <script>
+        function abrirModalCrear(seccion) {
+            const modal = document.getElementById('modal-crear');
+            if (modal) {
+                modal.showModal();
+                if (typeof window.track === 'function') {
+                    window.track('plan_creacion_iniciada', {
+                        desde_seccion: seccion || 'creados',
+                        tiene_planes_previos: {{ $planes->count() > 0 ? 'true' : 'false' }},
+                    });
+                }
+            }
+        }
+    </script>
 @endsection
