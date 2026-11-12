@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DomainException;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -200,7 +201,7 @@ class Plan extends Model
         }
 
         if ($this->esInmutable()) {
-            throw new \DomainException("No se pueden asignar opciones a un plan en estado {$this->estado}.");
+            throw new DomainException("No se pueden asignar opciones a un plan en estado {$this->estado}.");
         }
 
         if ($opcion->tipo === 'fecha') {
@@ -397,6 +398,60 @@ class Plan extends Model
             'balances' => $balances,
             'deudas' => $deudas,
         ];
+    }
+
+    /**
+     * Determina si un usuario posee saldos deudores pendientes en los gastos del plan.
+     */
+    public function usuarioTieneDeuda(int $userId): bool
+    {
+        $saldos = $this->calcularSaldosNetos();
+        foreach ($saldos['deudas'] as $deuda) {
+            if ((int) $deuda['deudor_id'] === $userId && (float) $deuda['monto'] > 0.009) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Retira formalmente a un participante del plan, anulando sus votos emitidos,
+     * desvinculando su membresía y registrando la actividad en la bitácora.
+     *
+     * @throws DomainException
+     */
+    public function retirarParticipante(User $user): void
+    {
+        if ((int) $this->user_id === (int) $user->id) {
+            throw new DomainException('El organizador no puede retirarse del plan.');
+        }
+
+        if ($this->usuarioTieneDeuda($user->id)) {
+            throw new DomainException('No puedes retirarte mientras tengas deudas pendientes.');
+        }
+
+        // 1. Eliminar físicamente los registros de votos emitidos por el usuario en opciones del plan
+        $opcionIds = $this->opciones()->pluck('id');
+        Voto::whereIn('opcion_id', $opcionIds)
+            ->where('user_id', $user->id)
+            ->delete();
+
+        // 2. Desvincular de la relación de participantes (invitaciones)
+        $this->invitaciones()
+            ->where(function ($q) use ($user) {
+                $q->where('user_id', $user->id)
+                    ->orWhere('email', $user->email);
+            })
+            ->delete();
+
+        // 3. Registrar actividad formal en el historial del plan
+        $this->actividades()->create([
+            'user_id' => $user->id,
+            'accion' => 'participante_retirado',
+            'descripcion' => "{$user->name} se retiró del plan.",
+            'estado_resultante' => $this->estado,
+        ]);
     }
 
     //  para busqueda y filtros
