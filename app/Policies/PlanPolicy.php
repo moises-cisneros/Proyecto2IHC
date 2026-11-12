@@ -112,6 +112,24 @@ class PlanPolicy
     }
 
     /**
+     * Determine whether the user can withdraw/retire from the plan.
+     * Only accepted participants in pending plans can withdraw.
+     * The organizer cannot withdraw.
+     */
+    public function retirarse(User $user, Plan $plan): bool
+    {
+        if ($plan->estado !== 'pendiente') {
+            return false;
+        }
+
+        if ($this->isCreator($user, $plan)) {
+            return false;
+        }
+
+        return $this->isParticipante($user, $plan);
+    }
+
+    /**
      * Determine whether the user can abandon the plan.
      * Only accepted participants can abandon. The creator cannot abandon their own plan.
      */

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ConfirmarPlanRequest;
+use App\Http\Requests\RetirarsePlanRequest;
 use App\Http\Requests\StorePlanRequest;
 use App\Http\Requests\UpdatePlanRequest;
 use App\Models\Evento;
@@ -238,5 +239,45 @@ class PlanesController extends Controller
 
         return redirect()->route('planes.detalle', $plan)
             ->with('exito', '¡Plan confirmado con éxito! La votación ha concluido.');
+    }
+
+    /**
+     * Retirar al usuario autenticado como participante del plan.
+     */
+    public function retirarse(RetirarsePlanRequest $request, Plan $plan): RedirectResponse
+    {
+        Gate::authorize('retirarse', $plan);
+
+        $userId = auth()->id();
+
+        // Si el usuario tiene saldos pendientes deudores en gastos, bloquear el retiro
+        if ($plan->usuarioTieneDeuda($userId)) {
+            Evento::registrar('error_freno_tarea', [
+                'motivo' => 'deuda_pendiente',
+                'plan_id' => $plan->id,
+                'user_id' => $userId,
+            ]);
+            Evento::registrar('retiro_bloqueado_deuda', [
+                'plan_id' => $plan->id,
+                'user_id' => $userId,
+            ]);
+
+            return redirect()->back()
+                ->with('error', 'No puedes retirarte del plan mientras tengas deudas pendientes por liquidar.');
+        }
+
+        $plan->retirarParticipante(auth()->user());
+
+        Evento::registrar('participante_retirado', [
+            'plan_id' => $plan->id,
+            'user_id' => $userId,
+        ]);
+        Evento::registrar('retiro_confirmado', [
+            'plan_id' => $plan->id,
+            'user_id' => $userId,
+        ]);
+
+        return redirect()->route('planes.listar')
+            ->with('exito', 'Te has retirado del plan exitosamente.');
     }
 }
