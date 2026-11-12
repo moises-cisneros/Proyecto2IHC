@@ -169,12 +169,12 @@ test.describe('Tarea 9 — Analítica de Interacción en toda la app y funcional
         await expect(pageLucas.getByRole('heading', { name: 'Analítica de Interacción y Telemetría' })).toBeVisible();
 
         // Validar presencia de los 6 embudos de interacción
-        await expect(pageLucas.getByText('Creación y Confirmación')).toBeVisible();
-        await expect(pageLucas.getByText('Deliberación y Votación')).toBeVisible();
-        await expect(pageLucas.getByText('Invitaciones y Convocatoria')).toBeVisible();
-        await expect(pageLucas.getByText('Gastos y Liquidación')).toBeVisible();
-        await expect(pageLucas.getByText('Retiro de Participantes')).toBeVisible();
-        await expect(pageLucas.getByText('Búsquedas y Filtros')).toBeVisible();
+        await expect(pageLucas.getByRole('heading', { name: 'Creación y Confirmación' })).toBeVisible();
+        await expect(pageLucas.getByRole('heading', { name: 'Deliberación y Votación' })).toBeVisible();
+        await expect(pageLucas.getByRole('heading', { name: 'Invitaciones y Convocatoria' })).toBeVisible();
+        await expect(pageLucas.getByRole('heading', { name: 'Gastos y Liquidación' })).toBeVisible();
+        await expect(pageLucas.getByRole('heading', { name: 'Retiro de Participantes' })).toBeVisible();
+        await expect(pageLucas.getByRole('heading', { name: 'Búsquedas y Filtros' })).toBeVisible();
 
         // Validar barra de progreso y métricas de retiro
         await expect(pageLucas.locator('#retiro-iniciados')).toBeVisible();

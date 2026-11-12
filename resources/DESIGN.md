@@ -148,9 +148,23 @@
 ### A. Dev Floating Toolbar (`dev_toolbar.blade.php`)
 
 - Píldora discreta fija en esquina inferior derecha (`fixed bottom-4 right-4 z-50`): `[📊 Telemetría Dev · /analitica]`.
-- Exclusiva para entornos `local` y `testing`. No contamina el menú de navegación del usuario común.
+- Exclusiva para entornos `local` y `testing`. No contamina el menú de navegación del usuario común (Nielsen H8).
 
-### B. Tarjetas de Embudo (`.tarjeta-embudo`)
+### B. Tarjetas de Embudo y Métricas Horizontales (`.tarjeta-embudo`)
 
-- Fondo `#ffffff`, borde `#e3e3df`, radio `12px`, padding `20px`.
-- Contadores destacados (`text-2xl font-bold`), barras de progreso horizontales con token `#ffe683` (`brand-bar`), porcentaje de conversión y tasa de abandono (_drop-off_).
+- **Estructura Modular:**
+    - **Barra de Depuración (`.tarjeta-embudo-header`):** Franja superior oscura `#1c1c1a` con indicador activo verde lima (`#a3e635`), comando en monospace `12px` (`/analitica · [Macroflujo] (solo desarrollo)`) y píldora `#ffe683` con el número de embudo.
+    - **Cuerpo (`.tarjeta-embudo-cuerpo`):** Fondo `#ffffff`, borde perimetral `#e3e3df`, bordes redondeados inferiores `14px`, padding `20px 22px`.
+- **Métricas Horizontales por Paso:**
+    - Contadores destacados en display (`text-[28px] font-extrabold #1c1c1a`, `line-height: 1`).
+    - Nombre técnico del evento en monospace inferior (`text-xs text-muted font-mono`).
+- **Caja de Finalización (`.caja-porcentaje-terminan`):**
+    - Contenedor rectangular redondeado (`rounded-xl`), fondo verde lima `#ecfccb`, borde `#bef264` y padding `10px 18px`.
+    - Porcentaje de éxito en `26px font-black #365314` con la etiqueta explícita `terminan` (erradicando la jerga técnica negativa de _drop-off_ en favor de métricas constructivas de finalización de tarea).
+- **Barra de Avance Brand-Bar:**
+    - Contenedor de radio completo (`rounded-full`, altura `8px`, fondo `#f4f4f2`, borde `#e3e3df`) con relleno de token oficial `#ffe683` (`brand-bar`) mapeado reactivamente de $0\%$ a $100\%$.
+
+### C. Listado de Eventos Recientes (`Últimos eventos`)
+
+- Tarjetas individuales en lista vertical con fondo `#ffffff`, borde `#e3e3df`, bordes redondeados `12px` y padding `14px 18px`.
+- Jerarquía tipográfica: Nombre del evento en negrita (`font-mono text-sm #1c1c1a`), propiedades de la acción en texto secundario (`text-xs #6f6f6a`) y marca temporal en hora oficial de Bolivia (`UTC-4`).
