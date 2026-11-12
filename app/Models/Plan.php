@@ -416,6 +416,22 @@ class Plan extends Model
     }
 
     /**
+     * Obtiene el monto total de deuda acumulada que un usuario debe saldar en el plan.
+     */
+    public function obtenerMontoDeudaUsuario(int $userId): float
+    {
+        $saldos = $this->calcularSaldosNetos();
+        $total = 0.0;
+        foreach ($saldos['deudas'] as $deuda) {
+            if ((int) $deuda['deudor_id'] === $userId && (float) $deuda['monto'] > 0.009) {
+                $total += (float) $deuda['monto'];
+            }
+        }
+
+        return round($total, 2);
+    }
+
+    /**
      * Retira formalmente a un participante del plan, anulando sus votos emitidos,
      * desvinculando su membresía y registrando la actividad en la bitácora.
      *
