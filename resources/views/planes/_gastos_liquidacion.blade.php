@@ -9,6 +9,9 @@
         $misCobros = collect($saldos['deudas'])->where('acreedor_id', $miId)->values();
         $totalNeto = $miBalance['neto'] ?? 0.0;
         $participantesPlan = collect([$plan->user])->merge($plan->participantes)->unique('id')->values();
+        $deudasPorAcreedor = $misDeudas->mapWithKeys(function ($d) {
+            return [$d['acreedor_id'] => (float) $d['monto']];
+        });
         $datosCobroParticipantes = $participantesPlan->mapWithKeys(function ($u) {
             return [$u->id => [
                 'nombre' => $u->name,
@@ -229,8 +232,16 @@
                                 <dialog id="modal-comprobante-{{ $pago->id }}" style="border: none; border-radius: 16px; padding: 24px; width: 100%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);">
                                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                                         <h3 style="margin: 0; font-size: 17px; font-weight: 700; color: #1c1c1a;">Comprobante de Pago</h3>
-                                        <button type="button" onclick="document.getElementById('modal-comprobante-{{ $pago->id }}').close()" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: #6f6f6a;">&times;</button>
+                                        <button type="button" onclick="document.getElementById('modal-comprobante-{{ $pago->id }}').close()" style="border: none; background: transparent; font-size: 20px; cursor: pointer; color: #6f6f6a;" aria-label="Cerrar modal">&times;</button>
                                     </div>
+
+                                    @if ($pago->monto_detectado && abs((float) $pago->monto_detectado - (float) $pago->monto) < 0.01)
+                                        <div class="badge-ia-verificado" style="background: #edf7ef; color: #25663a; border: 1px solid #c2e2c8; padding: 10px 14px; border-radius: 10px; font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 8px; margin-bottom: 14px;">
+                                            <x-icono nombre="check" style="width: 16px; height: 16px; color: #25663a;" />
+                                            <span>Comprobante verificado por IA: Monto coincide (Bs {{ number_format($pago->monto, 2) }})</span>
+                                        </div>
+                                    @endif
+
                                     <div style="text-align: center; margin-bottom: 16px;">
                                         <img src="{{ asset('storage/' . $pago->comprobante_path) }}" alt="Comprobante de pago" style="max-width: 100%; max-height: 350px; border-radius: 10px; border: 1px solid #e5e7eb;">
                                     </div>
@@ -243,8 +254,22 @@
                                             <div><strong>Banco emisor:</strong> {{ $pago->banco_detectado }}</div>
                                         @endif
                                     </div>
-                                    <div style="margin-top: 16px; text-align: right;">
-                                        <button type="button" class="boton boton-claro" style="border-radius: 50px; min-height: 40px;" onclick="document.getElementById('modal-comprobante-{{ $pago->id }}').close()">Cerrar</button>
+                                    <div style="margin-top: 16px; display: flex; justify-content: flex-end; align-items: center; gap: 12px;">
+                                        <button type="button" class="boton boton-claro" style="border-radius: 50px; min-height: 44px; min-width: 44px; padding: 8px 18px;" onclick="document.getElementById('modal-comprobante-{{ $pago->id }}').close()">Cerrar</button>
+                                        @if ($pago->estado === 'pendiente')
+                                            @can('confirmar', $pago)
+                                                <form method="POST" action="{{ route('pagos.confirmar', $pago) }}" style="margin: 0;">
+                                                    @csrf
+                                                    <button type="submit"
+                                                            class="boton"
+                                                            style="min-height: 44px; min-width: 44px; padding: 8px 20px; border-radius: 50px; font-size: 13px; font-weight: 600; background: #25663a; color: #ffffff; display: inline-flex; align-items: center; gap: 6px;"
+                                                            aria-label="Confirmar pago verificado de Bs {{ number_format($pago->monto, 2) }}">
+                                                        <x-icono nombre="check" style="width: 14px; height: 14px;" />
+                                                        <span>Confirmar pago en 1 clic</span>
+                                                    </button>
+                                                </form>
+                                            @endcan
+                                        @endif
                                     </div>
                                 </dialog>
                             @endif
@@ -540,9 +565,41 @@
             </div>
         </div>
 
+        {{-- Selector ergonómico de intención (Ley de Hick & Fitts): Pago Total vs Parcial --}}
+        <div id="selector-modalidad-pago" style="margin-bottom: 16px;">
+            <label style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 8px;">
+                Modalidad de pago
+            </label>
+            <div role="radiogroup" aria-label="Seleccionar modalidad de pago" style="display: flex; gap: 12px; flex-wrap: wrap;">
+                <label id="label-pago-total"
+                       style="flex: 1; min-width: 170px; min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1px solid #c2e2c8; background: #edf7ef; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 600; color: #25663a;">
+                    <input type="radio"
+                           name="modalidad_pago"
+                           id="radio-pago-total"
+                           value="total"
+                           checked
+                           onchange="cambiarModalidadPago('total')">
+                    <span id="texto-radio-pago-total">Pagar totalidad (Bs 0.00)</span>
+                </label>
+
+                <label id="label-pago-parcial"
+                       style="flex: 1; min-width: 170px; min-height: 44px; display: inline-flex; align-items: center; gap: 8px; padding: 10px 14px; border: 1px solid #d1d1cd; background: #ffffff; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 500; color: #4a4a49;">
+                    <input type="radio"
+                           name="modalidad_pago"
+                           id="radio-pago-parcial"
+                           value="parcial"
+                           onchange="cambiarModalidadPago('parcial')">
+                    <span>Pago parcial</span>
+                </label>
+            </div>
+            <div id="aviso-pago-modalidad" style="font-size: 12px; color: #25663a; margin-top: 6px;">
+                Liquidación completa sin fricción de tipeo (campo numérico protegido).
+            </div>
+        </div>
+
         <div style="margin-bottom: 18px;">
             <label for="input-pago-monto" style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 6px;">
-                Monto pagado (Bs)
+                Monto a pagar (Bs)
             </label>
             <input type="number"
                    id="input-pago-monto"
@@ -550,8 +607,11 @@
                    step="0.01"
                    min="0.01"
                    required
+                   readonly
+                   oninput="verificarMontoParcial(this.value)"
                    placeholder="0.00"
-                   style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; min-height: 44px; box-sizing: border-box;">
+                   style="width: 100%; padding: 12px 14px; border: 1px solid #d1d1cd; border-radius: 10px; font-size: 14px; min-height: 44px; box-sizing: border-box; background: #f9fafb;">
+            <div id="aviso-saldo-restante" style="display: none; font-size: 12px; margin-top: 4px;"></div>
         </div>
 
         <div style="margin-bottom: 24px;">
@@ -677,6 +737,8 @@
 
 <script>
     var datosCobroParticipantes = @json($datosCobroParticipantes);
+    var deudasPorAcreedor = @json($deudasPorAcreedor);
+    var deudaSeleccionadaActual = 0.0;
 
     function abrirModalPagoDirecto(receptorId, montoSugerido) {
         var modal = document.getElementById('modal-crear-pago');
@@ -686,6 +748,8 @@
 
         var select = document.getElementById('select-pago-receptor');
         var inputMonto = document.getElementById('input-pago-monto');
+        var radioTotal = document.getElementById('radio-pago-total');
+        var textoRadioTotal = document.getElementById('texto-radio-pago-total');
 
         if (select && receptorId) {
             select.value = receptorId;
@@ -693,10 +757,118 @@
         } else if (select) {
             actualizarDatosReceptor(select.value);
         }
-        if (inputMonto && montoSugerido) {
-            inputMonto.value = parseFloat(montoSugerido).toFixed(2);
+
+        if (montoSugerido && parseFloat(montoSugerido) > 0) {
+            deudaSeleccionadaActual = parseFloat(montoSugerido);
+        } else if (receptorId && deudasPorAcreedor[receptorId]) {
+            deudaSeleccionadaActual = parseFloat(deudasPorAcreedor[receptorId]);
+        } else {
+            deudaSeleccionadaActual = 0.0;
         }
+
+        if (textoRadioTotal) {
+            textoRadioTotal.textContent = 'Pagar totalidad (Bs ' + deudaSeleccionadaActual.toFixed(2) + ')';
+        }
+
+        if (radioTotal) {
+            radioTotal.checked = true;
+        }
+
+        cambiarModalidadPago('total');
+
+        if (inputMonto && deudaSeleccionadaActual > 0) {
+            inputMonto.value = deudaSeleccionadaActual.toFixed(2);
+        }
+
         modal.showModal();
+    }
+
+    function cambiarModalidadPago(modalidad) {
+        var inputMonto = document.getElementById('input-pago-monto');
+        var labelTotal = document.getElementById('label-pago-total');
+        var labelParcial = document.getElementById('label-pago-parcial');
+        var avisoModalidad = document.getElementById('aviso-pago-modalidad');
+        var avisoSaldo = document.getElementById('aviso-saldo-restante');
+
+        if (modalidad === 'total') {
+            if (labelTotal) {
+                labelTotal.style.background = '#edf7ef';
+                labelTotal.style.borderColor = '#c2e2c8';
+                labelTotal.style.color = '#25663a';
+                labelTotal.style.fontWeight = '600';
+            }
+            if (labelParcial) {
+                labelParcial.style.background = '#ffffff';
+                labelParcial.style.borderColor = '#d1d1cd';
+                labelParcial.style.color = '#4a4a49';
+                labelParcial.style.fontWeight = '500';
+            }
+            if (inputMonto) {
+                inputMonto.readOnly = true;
+                inputMonto.style.background = '#f9fafb';
+                inputMonto.value = deudaSeleccionadaActual > 0 ? deudaSeleccionadaActual.toFixed(2) : '';
+            }
+            if (avisoModalidad) {
+                avisoModalidad.textContent = 'Liquidación completa sin fricción de tipeo (campo numérico protegido).';
+                avisoModalidad.style.color = '#25663a';
+            }
+            if (avisoSaldo) {
+                avisoSaldo.style.display = 'none';
+            }
+        } else {
+            // Parcial
+            if (labelTotal) {
+                labelTotal.style.background = '#ffffff';
+                labelTotal.style.borderColor = '#d1d1cd';
+                labelTotal.style.color = '#4a4a49';
+                labelTotal.style.fontWeight = '500';
+            }
+            if (labelParcial) {
+                labelParcial.style.background = '#edf7ef';
+                labelParcial.style.borderColor = '#c2e2c8';
+                labelParcial.style.color = '#25663a';
+                labelParcial.style.fontWeight = '600';
+            }
+            if (inputMonto) {
+                inputMonto.readOnly = false;
+                inputMonto.style.background = '#ffffff';
+                inputMonto.focus();
+            }
+            if (avisoModalidad) {
+                avisoModalidad.textContent = 'Indica el monto parcial que deseas liquidar hoy.';
+                avisoModalidad.style.color = '#4a4a49';
+            }
+            verificarMontoParcial(inputMonto ? inputMonto.value : 0);
+        }
+    }
+
+    function verificarMontoParcial(valor) {
+        var radioParcial = document.getElementById('radio-pago-parcial');
+        if (!radioParcial || !radioParcial.checked) return;
+
+        var avisoSaldo = document.getElementById('aviso-saldo-restante');
+        if (!avisoSaldo) return;
+
+        var monto = parseFloat(valor || 0);
+        if (deudaSeleccionadaActual <= 0) {
+            avisoSaldo.style.display = 'none';
+            return;
+        }
+
+        avisoSaldo.style.display = 'block';
+
+        if (monto > deudaSeleccionadaActual + 0.009) {
+            avisoSaldo.textContent = 'Alerta: El monto ingresado (Bs ' + monto.toFixed(2) + ') supera la deuda exigible (Bs ' + deudaSeleccionadaActual.toFixed(2) + ').';
+            avisoSaldo.style.color = '#991b1b';
+            avisoSaldo.style.fontWeight = '600';
+        } else if (monto > 0) {
+            var saldoRestante = (deudaSeleccionadaActual - monto);
+            avisoSaldo.textContent = 'Saldo restante estimado tras este pago: Bs ' + saldoRestante.toFixed(2);
+            avisoSaldo.style.color = '#25663a';
+            avisoSaldo.style.fontWeight = '500';
+        } else {
+            avisoSaldo.style.display = 'none';
+        }
     }
 
     function actualizarDatosReceptor(receptorId) {
@@ -706,6 +878,26 @@
         var contenedorQr = document.getElementById('contenedor-qr-receptor');
         var imgQr = document.getElementById('img-qr-receptor');
         var avisoSinCobro = document.getElementById('aviso-sin-cobro');
+
+        if (receptorId && deudasPorAcreedor[receptorId]) {
+            deudaSeleccionadaActual = parseFloat(deudasPorAcreedor[receptorId]);
+        } else {
+            deudaSeleccionadaActual = 0.0;
+        }
+
+        var textoRadioTotal = document.getElementById('texto-radio-pago-total');
+        if (textoRadioTotal) {
+            textoRadioTotal.textContent = 'Pagar totalidad (Bs ' + deudaSeleccionadaActual.toFixed(2) + ')';
+        }
+
+        var radioTotal = document.getElementById('radio-pago-total');
+        if (radioTotal && radioTotal.checked) {
+            var inputMonto = document.getElementById('input-pago-monto');
+            if (inputMonto) {
+                inputMonto.value = deudaSeleccionadaActual > 0 ? deudaSeleccionadaActual.toFixed(2) : '';
+                inputMonto.readOnly = true;
+            }
+        }
 
         if (!contenedor) return;
 
