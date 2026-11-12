@@ -51,6 +51,13 @@
         Participación
     </a>
 
+    <a href="{{ route('historial.index', ['categoria' => 'gastos']) }}"
+       class="boton {{ $categoria === 'gastos' ? '' : 'boton-claro' }}"
+       style="min-height: 44px; min-width: 44px; padding: 10px 18px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 500; text-decoration: none;"
+       aria-pressed="{{ $categoria === 'gastos' ? 'true' : 'false' }}">
+        Gastos
+    </a>
+
 </div>
 
 {{-- Listado de eventos o estado vacío ilustrado --}}

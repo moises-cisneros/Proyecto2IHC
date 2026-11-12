@@ -85,6 +85,15 @@ class GastosController extends Controller
 
         $montoFloat = round((float) $request->monto, 2);
 
+        $saldos = $plan->calcularSaldosNetos();
+        $deuda = collect($saldos['deudas'] ?? [])->first(function ($d) use ($request) {
+            return (int) $d['deudor_id'] === (int) auth()->id() && (int) $d['acreedor_id'] === (int) $request->receptor_id;
+        });
+
+        if ($deuda && $montoFloat > ((float) $deuda['monto'] + 0.009)) {
+            return back()->withErrors(['monto' => "El monto ingresado (Bs {$montoFloat}) excede la deuda exigible de Bs {$deuda['monto']}."]);
+        }
+
         $datosPago = [
             'deudor_id' => auth()->id(),
             'receptor_id' => $request->receptor_id,
