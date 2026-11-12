@@ -43,13 +43,13 @@
                     Editar plan
                 </a>
             @endcan
-            @can('abandonar', $plan)
+            @can('retirarse', $plan)
                 <button type="button"
-                        class="boton boton-claro"
-                        style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; color: #b90e13; border-color: #fca5a5;"
-                        onclick="document.getElementById('modal-abandonar').showModal()"
-                        aria-label="Abandonar este plan">
-                    Abandonar plan
+                        class="boton boton-claro boton-retirarse"
+                        style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; color: #c0392b; border-color: #fca5a5;"
+                        onclick="if (window.track) { window.track('retiro_iniciado', { plan_id: {{ $plan->id }} }); } document.getElementById('modal-retirarse').showModal();"
+                        aria-label="Retirarme del plan">
+                    Retirarme del plan
                 </button>
             @endcan
         </div>
@@ -84,30 +84,88 @@
     @endcan
 </div>
 
-{{-- Diálogo modal accesible para confirmar abandono de plan (Nielsen H3) --}}
-@can('abandonar', $plan)
-<dialog id="modal-abandonar" style="border: none; border-radius: 16px; padding: 28px; width: 100%; max-width: 480px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
-    <form method="POST" action="{{ route('planes.abandonar', $plan) }}">
-        @csrf
-        <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: #1c1c1a;">¿Abandonar este plan?</h2>
-        <p style="margin: 0 0 20px 0; font-size: 14px; color: #6f6f6a; line-height: 1.5;">
-            Dejarás de figurar como colaborador de <strong>&laquo;{{ $plan->nombre }}&raquo;</strong> y todos los votos que hayas emitido en las propuestas serán retirados. Esta acción no se puede deshacer.
-        </p>
-
-        {{-- Separación antagónica de 12px (gap-3) según Ley de Fitts y desambiguación léxica H3 --}}
-        <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
-            <button type="button"
-                    class="boton boton-claro"
-                    style="min-height: 44px; min-width: 44px; padding: 10px 18px; border-radius: 50px;"
-                    onclick="document.getElementById('modal-abandonar').close()">
-                Permanecer en el plan
-            </button>
-            <button type="submit"
-                    class="boton"
-                    style="min-height: 44px; min-width: 44px; padding: 10px 22px; border-radius: 50px; background-color: rgb(185, 14, 19); color: #ffffff;">
-                Sí, abandonar plan
-            </button>
+{{-- Diálogo modal accesible para confirmar retiro de plan (Nielsen H3, H5, H6, Hick y Fitts) --}}
+@can('retirarse', $plan)
+    @php
+        $usuarioTieneDeuda = $plan->usuarioTieneDeuda(auth()->id());
+        $montoDeuda = $usuarioTieneDeuda ? $plan->obtenerMontoDeudaUsuario(auth()->id()) : 0.0;
+    @endphp
+    <dialog id="modal-retirarse" style="border: none; border-radius: 16px; padding: 28px; width: 100%; max-width: 500px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+        <div style="margin-bottom: 16px;">
+            <h2 style="margin: 0 0 8px 0; font-size: 20px; font-weight: 700; color: #1c1c1a; display: flex; align-items: center; gap: 8px;">
+                <x-icono nombre="bloqueado" style="width: 22px; height: 22px; color: #c0392b;" />
+                ¿Retirarse de este plan?
+            </h2>
+            <p style="margin: 0; font-size: 14px; color: #6f6f6a; line-height: 1.5;">
+                Estás por retirarte como colaborador de <strong>&laquo;{{ $plan->nombre }}&raquo;</strong>.
+            </p>
         </div>
-    </form>
-</dialog>
+
+        @if ($usuarioTieneDeuda)
+            {{-- Banner informativo de advertencia y bloqueo por deuda pendiente (Nielsen H5 y H6) --}}
+            <div style="margin-bottom: 20px; padding: 16px; background-color: #fbeceb; border: 1px solid #f5c6cb; border-radius: 12px; color: #c0392b;">
+                <div style="font-weight: 700; font-size: 14px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px;">
+                    <x-icono nombre="tarjeta" style="width: 18px; height: 18px; color: #c0392b;" />
+                    No puedes retirarte: tienes deudas pendientes
+                </div>
+                <p style="margin: 0 0 12px 0; font-size: 13px; line-height: 1.4; color: #7f1d1d;">
+                    Tienes un saldo deudor acumulado de <strong>Bs {{ number_format($montoDeuda, 2) }}</strong> en los gastos compartidos de este plan. Para retirarte, primero debes liquidar tus cuentas pendientes con los demás miembros.
+                </p>
+                <a href="{{ route('planes.detalle', ['plan' => $plan, 'tab' => 'gastos']) }}"
+                   class="boton boton-claro"
+                   style="min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; padding: 8px 16px; font-size: 13px; font-weight: 600; text-decoration: none; border-color: #f5c6cb; color: #c0392b;"
+                   aria-label="Ir a Gastos y Liquidación para saldar deuda">
+                    <x-icono nombre="dinero" style="width: 16px; height: 16px; margin-right: 6px;" /> Ir a Gastos y Liquidación
+                </a>
+            </div>
+
+            {{-- Botón de acción para cerrar en caso de bloqueo con botón destructivo inhabilitado (Fitts >= 12px) --}}
+            <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
+                <button type="button"
+                        class="boton boton-claro"
+                        style="min-height: 44px; min-width: 44px; padding: 10px 20px; border-radius: 50px;"
+                        onclick="document.getElementById('modal-retirarse').close()"
+                        aria-label="Mantener plan">
+                    Mantener plan
+                </button>
+                <button type="button"
+                        class="boton boton-rojo"
+                        disabled
+                        style="min-height: 44px; min-width: 44px; padding: 10px 22px; border-radius: 50px; background-color: #c0392b; color: #ffffff; opacity: 0.5; cursor: not-allowed;"
+                        title="Bloqueado por deudas pendientes"
+                        aria-disabled="true">
+                    Sí, retirarme del plan
+                </button>
+            </div>
+        @else
+            {{-- Flujo normal sin deuda: advertencia sobre anulación de votos (Nielsen H5) --}}
+            <div style="margin-bottom: 20px; padding: 14px 16px; background-color: #fff4d6; border: 1px solid #ffe683; border-radius: 12px; color: #8a6100; font-size: 13px; line-height: 1.4;">
+                <div style="font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 6px;">
+                    <x-icono nombre="calendario" style="width: 16px; height: 16px; color: #8a6100;" />
+                    Anulación automática de votos
+                </div>
+                Al confirmar tu retiro, todos los votos que hayas emitido en las propuestas de fechas y lugares serán eliminados inmediatamente, recalculando el conteo de la sala en tiempo real. Esta acción es definitiva.
+            </div>
+
+            <form method="POST" action="{{ route('planes.retirarse', $plan) }}">
+                @csrf
+                {{-- Separación antagónica de >= 12px (gap-3) según Ley de Fitts y desambiguación léxica H3/Hick --}}
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 24px;">
+                    <button type="button"
+                            class="boton boton-claro"
+                            style="min-height: 44px; min-width: 44px; padding: 10px 20px; border-radius: 50px;"
+                            onclick="document.getElementById('modal-retirarse').close()"
+                            aria-label="Mantener plan">
+                        Mantener plan
+                    </button>
+                    <button type="submit"
+                            class="boton boton-rojo"
+                            style="min-height: 44px; min-width: 44px; padding: 10px 22px; border-radius: 50px; background-color: #c0392b; color: #ffffff;"
+                            aria-label="Sí, retirarme del plan">
+                        Sí, retirarme del plan
+                    </button>
+                </div>
+            </form>
+        @endif
+    </dialog>
 @endcan
