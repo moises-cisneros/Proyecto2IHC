@@ -61,6 +61,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Actividades donde el usuario es destinatario o contraparte bilateral.
+     */
+    public function actividadesRecibidas(): HasMany
+    {
+        return $this->hasMany(PlanActivity::class, 'destinatario_id');
+    }
+
+    /**
      * Planes creados por el usuario.
      */
     public function planes(): HasMany

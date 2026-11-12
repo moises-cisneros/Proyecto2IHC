@@ -17,6 +17,7 @@ class PlanActivity extends Model
     protected $fillable = [
         'plan_id',
         'user_id',
+        'destinatario_id',
         'accion',
         'descripcion',
         'estado_resultante',
@@ -49,6 +50,25 @@ class PlanActivity extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Usuario destinatario o contraparte de la accion.
+     */
+    public function destinatario(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'destinatario_id');
+    }
+
+    /**
+     * Scope para filtrar actividades donde el usuario es autor o destinatario bilateral.
+     */
+    public function scopeVisiblesParaUsuario($query, int $userId)
+    {
+        return $query->where(function ($q) use ($userId) {
+            $q->where('user_id', $userId)
+                ->orWhere('destinatario_id', $userId);
+        });
     }
 
     /**

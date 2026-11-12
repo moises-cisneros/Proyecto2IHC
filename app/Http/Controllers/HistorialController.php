@@ -14,8 +14,8 @@ class HistorialController extends Controller
     {
         $categoria = $request->input('categoria') ?? $request->input('filtro') ?? 'todos';
 
-        $query = PlanActivity::with('plan')
-            ->where('user_id', auth()->id());
+        $query = PlanActivity::with(['plan', 'user', 'destinatario'])
+            ->visiblesParaUsuario(auth()->id());
 
         if ($categoria === 'estados') {
             $query->where('accion', 'cambio_estado');
