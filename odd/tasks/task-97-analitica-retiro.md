@@ -15,7 +15,7 @@ Estado: EN PROGRESO — Orquestación ODD para Issue Madre #97 y Sub-issues #98 
 ## Tasks
 
 - [x] T1 (S1): [Backend] Motor analítico multi-embudo y agregación de métricas en modelo Evento (Sub-issue #98)
-- [ ] T2 (S1, S2, S3): [Controlador] Instrumentación de eventos en controladores y endpoint seguro /analitica (Sub-issue #99)
+- [x] T2 (S1, S2, S3): [Controlador] Instrumentación de eventos en controladores y endpoint seguro /analitica (Sub-issue #99)
 - [ ] T3 (S1, S3): [Interfaz] Rediseño del dashboard de analítica, Dev Floating Toolbar y cliente analitica.js (Sub-issue #100)
 - [ ] T4 (S4, S5, S6): [Backend] Dominio de retiro de participantes, anulación de votos y bloqueo estricto por deuda (Sub-issue #101)
 - [ ] T5 (S4, S5): [Controlador] Endpoint POST /retirarse, Form Request y Policy de autorización (Sub-issue #102)

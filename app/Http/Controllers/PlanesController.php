@@ -84,6 +84,15 @@ class PlanesController extends Controller
         $totalHoy = $hoy->count();
         $totalProximos = $proximos->count();
 
+        if ($buscar !== '' && $planes->isEmpty()) {
+            Evento::registrar('busqueda_sin_resultados', [
+                'termino' => $buscar,
+                'seccion' => $seccion,
+                'estado' => $estado,
+                'fecha' => $fecha,
+            ]);
+        }
+
         return view('planes.listar', compact(
             'planes',
             'vencidos',
