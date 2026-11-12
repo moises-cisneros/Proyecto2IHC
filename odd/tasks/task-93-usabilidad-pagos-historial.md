@@ -1,6 +1,6 @@
 # ODD Feature: Refactor de usabilidad, trazabilidad bilateral y refinamiento de pagos (Issue #93)
 
-Estado: EN PROGRESO — Orquestación ODD para Issue Madre #93 y Sub-issues #94, #95 y #96
+Estado: COMPLETADO — Orquestación ODD para Issue Madre #93 y Sub-issues #94, #95 y #96
 
 ## Specs
 
@@ -15,8 +15,11 @@ Estado: EN PROGRESO — Orquestación ODD para Issue Madre #93 y Sub-issues #94,
 
 - [x] T1 (S1, S2): [Backend] Migración para destinatario_id en plan_activities, visibilidad bilateral en PlanActivity y descripciones normalizadas a Bs en GastosController (Route: inline, Commit: 6e0e0ca, PR: #105 - MERGED)
 - [x] T2 (S3, S6): [Controlador] Filtro categoria=gastos en HistorialController y validación de monto máximo exigible en StorePagoRequest (Route: inline, Commit: 50906c8, PR: #106 - MERGED)
-- [ ] T3 (S4, S5): [Interfaz] Rediseño ergonómico de modal de pago con selector total/parcial y badge asistido por IA (Route: inline, Commit: pending)
+- [x] T3 (S4, S5): [Interfaz] Rediseño ergonómico de modal de pago con selector total/parcial y badge asistido por IA (Route: inline, Commit: 2f38333, PR: #107 - MERGED)
 
 ## Log
 
 - L1: "Implementa las subissues de la issu #93 con odd de gentle-ai, empieza una subissue con su PR, luego mergeas y empiezas con la siguiente hasta terminar toda la issue, el odd es de la issue #93 comprendida en sus subissues."
+- L2: "Sub-issue #94 completada y mergeada mediante PR #105 (Closes #94)."
+- L3: "Sub-issue #95 completada y mergeada mediante PR #106 (Closes #95)."
+- L4: "Sub-issue #96 completada y mergeada mediante PR #107 (Closes #96)."
