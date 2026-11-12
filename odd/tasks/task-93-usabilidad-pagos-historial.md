@@ -14,7 +14,7 @@ Estado: EN PROGRESO — Orquestación ODD para Issue Madre #93 y Sub-issues #94,
 ## Tasks
 
 - [x] T1 (S1, S2): [Backend] Migración para destinatario_id en plan_activities, visibilidad bilateral en PlanActivity y descripciones normalizadas a Bs en GastosController (Route: inline, Commit: 6e0e0ca, PR: #105 - MERGED)
-- [ ] T2 (S3, S6): [Controlador] Filtro categoria=gastos en HistorialController y validación de monto máximo exigible en StorePagoRequest (Route: inline, Commit: pending)
+- [x] T2 (S3, S6): [Controlador] Filtro categoria=gastos en HistorialController y validación de monto máximo exigible en StorePagoRequest (Route: inline, Commit: 50906c8, PR: #106 - MERGED)
 - [ ] T3 (S4, S5): [Interfaz] Rediseño ergonómico de modal de pago con selector total/parcial y badge asistido por IA (Route: inline, Commit: pending)
 
 ## Log
