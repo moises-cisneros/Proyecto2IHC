@@ -1,6 +1,6 @@
 # ODD Feature: Analítica de interacción en toda la app y funcionalidad de retirarse de un plan (Issue #97)
 
-Estado: EN PROGRESO — Orquestación ODD para Issue Madre #97 y Sub-issues #98 a #104 (Alcance actual: #98 a #102)
+Estado: COMPLETADO — Orquestación ODD completada al 100% para Issue Madre #97 y todas las sub-issues #98 a #104.
 
 ## Specs
 
@@ -19,10 +19,11 @@ Estado: EN PROGRESO — Orquestación ODD para Issue Madre #97 y Sub-issues #98 
 - [x] T3 (S1, S3): [Interfaz] Rediseño del dashboard de analítica, Dev Floating Toolbar y cliente analitica.js (Sub-issue #100)
 - [x] T4 (S4, S5, S6): [Backend] Dominio de retiro de participantes, anulación de votos y bloqueo estricto por deuda (Sub-issue #101)
 - [x] T5 (S4, S5): [Controlador] Endpoint POST /retirarse, Form Request y Policy de autorización (Sub-issue #102)
-- [ ] T6 (S5, S6): [Interfaz] Botón accesible de retiro, diálogo de advertencia y banner de bloqueo por deuda (Sub-issue #103 - Pendiente para siguiente fase)
-- [ ] T7 (S7): [Testing/Docs] Suite Playwright E2E de retiro/analítica, reporte de evidencias y auditoría de diseño (Sub-issue #104 - Pendiente para siguiente fase)
+- [x] T6 (S5, S6): [Interfaz] Botón accesible de retiro, diálogo de advertencia y banner de bloqueo por deuda (Sub-issue #103)
+- [x] T7 (S7): [Testing/Docs] Suite Playwright E2E de retiro/analítica, reporte de evidencias y auditoría de diseño (Sub-issue #104)
 
 ## Log
 
 - L1: "Inicio de orquestación ODD para Issue #97 y sub-issues #98 a #104, programando implementación secuencial de sub-issues #98 a #102."
 - L2: "Sub-issues #98 a #102 completadas con TDD, linteo Pint, verificación y PRs mergeados a main. Las sub-issues #103 (Interfaz UI) y #104 (E2E Playwright y evidencias) quedan programadas y especificadas para la siguiente fase."
+- L3: "Sub-issues #103 y #104 completadas: interfaz de retiro, suite Playwright E2E pasando al 100%, capturas de evidencia y matriz docs/evidencias/tarea-9.md generada."
