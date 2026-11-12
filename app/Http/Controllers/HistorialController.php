@@ -23,6 +23,8 @@ class HistorialController extends Controller
             $query->where('accion', 'creacion');
         } elseif ($categoria === 'participacion') {
             $query->whereIn('accion', ['invitacion', 'voto', 'propuesta', 'participacion']);
+        } elseif ($categoria === 'gastos') {
+            $query->whereIn('accion', ['gasto', 'pago', 'pago_confirmado', 'pago_rechazado']);
         }
 
         $actividades = $query->latest()->get();

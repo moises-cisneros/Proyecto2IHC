@@ -65,6 +65,20 @@ class StorePagoRequest extends FormRequest
             if (! $participantesValidos->contains($receptorId)) {
                 $validator->errors()->add('receptor_id', 'El destinatario del pago no pertenece a este plan.');
             }
+
+            // Validar que el monto no exceda la deuda neta calculada
+            $monto = round((float) $this->input('monto', 0), 2);
+            $saldos = $plan->calcularSaldosNetos();
+            $deuda = collect($saldos['deudas'] ?? [])->first(function ($d) use ($authId, $receptorId) {
+                return (int) $d['deudor_id'] === $authId && (int) $d['acreedor_id'] === $receptorId;
+            });
+
+            if ($deuda && $monto > ((float) $deuda['monto'] + 0.009)) {
+                $validator->errors()->add(
+                    'monto',
+                    "El monto ingresado (Bs {$monto}) excede la deuda exigible de Bs {$deuda['monto']}."
+                );
+            }
         });
     }
 

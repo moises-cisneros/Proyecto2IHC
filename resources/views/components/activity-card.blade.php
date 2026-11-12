@@ -6,6 +6,9 @@
         'cambio_estado' => 'background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe;',
         'actualizacion' => 'background: #fefce8; color: #854d0e; border: 1px solid #fef08a;',
         'voto', 'participacion', 'invitacion' => 'background: #faf5ff; color: #6b21a8; border: 1px solid #e9d5ff;',
+        'gasto', 'pago' => 'background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0;',
+        'pago_confirmado' => 'background: #ecfdf5; color: #065f46; border: 1px solid #a7f3d0;',
+        'pago_rechazado' => 'background: #fef2f2; color: #991b1b; border: 1px solid #fecaca;',
         default => 'background: #f4f4f5; color: #3f3f46; border: 1px solid #e4e4e7;',
     };
 
@@ -22,6 +25,10 @@
         'actualizacion' => 'Actualización de datos',
         'voto' => 'Votación registrada',
         'invitacion' => 'Invitación enviada',
+        'gasto' => 'Gasto registrado',
+        'pago' => 'Pago registrado',
+        'pago_confirmado' => 'Pago confirmado',
+        'pago_rechazado' => 'Pago rechazado',
         default => ucfirst(str_replace('_', ' ', $actividad->accion)),
     };
 @endphp
@@ -75,6 +82,13 @@
             <span class="elemento-usuario" style="display: inline-flex; align-items: center; gap: 4px;">
                 Autor:
                 <strong style="color: #1c1c1a;">{{ $actividad->user->name }}</strong>
+            </span>
+        @endif
+
+        @if ($actividad->destinatario)
+            <span class="elemento-destinatario" style="display: inline-flex; align-items: center; gap: 4px;">
+                Destinatario:
+                <strong style="color: #1c1c1a;">{{ $actividad->destinatario->name }}</strong>
             </span>
         @endif
     </div>
