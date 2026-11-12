@@ -116,6 +116,7 @@ Para optimizar el uso de tokens y mantener el contexto ligero, los protocolos ex
 | **`interaction-decisions`**    | Al auditar o justificar decisiones ergonómicas de UI.   | Ley de Fitts: $T = a + b \log_{2}(2D/W)$, Ley de Hick: $T = b \log_{2}(n + 1)$, Carga Cognitiva y contraste Antes/Después. |
 | **`heuristic-evaluation`**     | Al ejecutar evaluaciones de usabilidad.                 | Escala de severidad 0-4 de Nielsen (H1–H10), issue tracker único y sub-issues de hallazgos.                                |
 | **`refactoring`**              | Al simplificar controladores o vistas monolíticas.      | Transformaciones Fowler seguras, preservación de tests y desacople de lógica sin alterar contratos observables.            |
+| **`design-system-audit`**      | Al crear o modificar vistas Blade, modales o CSS.       | Auditoría contra `resources/DESIGN.md`, prevención de emojis, verificación Fitts ($\ge 44$ px) y tokens oficiales.         |
 
 ---
 

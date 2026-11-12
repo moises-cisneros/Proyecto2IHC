@@ -137,11 +137,12 @@ Las configuraciones locales de cada herramienta (`.agent/`, `.claude/`, `.cursor
 
 ## 🌐 Accesos y Servicios
 
-| Servicio                  | URL / Host                                     | Puerto Host | Descripción                                                |
-| :------------------------ | :--------------------------------------------- | :---------- | :--------------------------------------------------------- |
-| **Aplicación Web**        | [http://localhost:9300](http://localhost:9300) | `9300`      | Laravel 12 (PHP 8.2) + Servidor HTTP                       |
-| **Vite Dev Server (HMR)** | [http://localhost:9373](http://localhost:9373) | `9373`      | Compilación de assets y recarga en caliente                |
-| **Base de Datos MySQL**   | `127.0.0.1`                                    | `9306`      | MySQL 8.0 (BD: `proyecto2ihc`, user: `root`, pass: `root`) |
+| Servicio                     | URL / Host                                                         | Puerto Host | Descripción                                                                |
+| :--------------------------- | :----------------------------------------------------------------- | :---------- | :------------------------------------------------------------------------- |
+| **Aplicación Web**           | [http://localhost:9300](http://localhost:9300)                     | `9300`      | Laravel 12 (PHP 8.2) + Servidor HTTP                                       |
+| **Vite Dev Server (HMR)**    | [http://localhost:9373](http://localhost:9373)                     | `9373`      | Compilación de assets y recarga en caliente                                |
+| **Base de Datos MySQL**      | `127.0.0.1`                                                        | `9306`      | MySQL 8.0 (BD: `proyecto2ihc`, user: `root`, pass: `root`)                 |
+| **Panel de Analítica (Dev)** | [http://localhost:9300/analitica](http://localhost:9300/analitica) | `9300`      | Telemetría interna de interacción y embudos (Solo entorno local / testing) |
 
 ---
 
@@ -183,7 +184,9 @@ flowchart TD
 
         subgraph S_Participante["Perspectiva: Invitado / Participante"]
             AceptarInv["Aceptar Invitación"] --> ProponerVotar["Proponer Fechas/Lugares<br/>Votación Aprobación (Toggle Reactivo)"]
-            ProponerVotar --> Abandono["Salida H3: Abandonar Plan"]
+            ProponerVotar --> RetiroCheck{"¿Retirarse del Plan?<br/>(Verificación de Deuda)"}
+            RetiroCheck -->|"Con deuda en gastos"| BloqueoRetiro["Bloqueo H5: Freno por deuda<br/>(Alerta y enlace a liquidar)"]
+            RetiroCheck -->|"Sin deuda pendiente"| RetiroExito["Anulación de votos del usuario,<br/>recálculo de ganadoras y salida"]
         end
 
         subgraph S_Organizador["Perspectiva: Organizador"]
@@ -207,12 +210,18 @@ flowchart TD
     subgraph G_Post["4. Post-Evento & Liquidación (/planes/{id})"]
         EstadoConfirmado["Estado: CONFIRMADO (Sala Congelada)"]
         Gastos["Módulo de Gastos y Saldos Netos<br/>(División 1/N o personalizada)"]
-        Pagos["Liquidación de Deudas<br/>(Pendiente -> Confirmado/Rechazado)"]
+        Pagos["Liquidación de Deudas Bilaterales<br/>(Pendiente -> Confirmado/Rechazado)"]
         EstadoConfirmado --> Gastos --> Pagos
     end
 
     subgraph G_Auditoria["5. Trazabilidad Transversal (/historial)"]
-        Bitacora["Bitácora Inmutable de 4 Dimensiones<br/>(Qué, Quién, Cuándo, Resultado) + Chips"]
+        Bitacora["Bitácora Inmutable de 4 Dimensiones<br/>(Qué, Quién, Cuándo, Resultado) + 4 Categorías"]
+    end
+
+    subgraph G_Telemetria["6. Telemetría y Observabilidad (/analitica)"]
+        DevToolbar["Dev Floating Toolbar (local/testing)<br/>Fuera de barra de usuario"]
+        AnaliticaPanel["Dashboard de Analítica de Interacción<br/>(6 Embudos, Drop-off, Errores de freno y Hora BOL)"]
+        DevToolbar --> AnaliticaPanel
     end
 
     Login --> Dash
@@ -220,7 +229,8 @@ flowchart TD
     Dash -->|"Acceso a detalle del plan"| EstadoPendiente
     ConfirmarAccion --> EstadoConfirmado
 
-    ModalCrear & ProponerVotar & DesempateModal & ConfirmarAccion & Pagos -.-> Bitacora
+    ModalCrear & ProponerVotar & DesempateModal & ConfirmarAccion & Pagos & RetiroExito -.-> Bitacora
+    ModalCrear & ProponerVotar & DesempateModal & ConfirmarAccion & Pagos & RetiroExito & BloqueoRetiro -.-> G_Telemetria
 ```
 
 ### Detalle de los Flujos de la Aplicación
@@ -228,11 +238,14 @@ flowchart TD
 1. **Flujo 1 (Acceso y Control de Sesión):** Puerta de entrada (`/ingresar`, `/registro`, `/recuperar`). Rate-limiting (`throttle:5,1`), protección contra enumeración de credenciales, autenticación con cuentas de prueba sembradas y regeneración de token CSRF al cerrar sesión.
 2. **Flujo 2 (Dashboard y Organización de Planes - `/mis-planes`):** Centro de navegación posautenticación. Aplica Arquitectura de la Información con dos pestañas semánticas por propósito/rol (_«Mis planes creados»_ vs _«Planes donde participo»_), clasificación cronológica LATCH (_Hoy_, _Próximos_, _Vencidos_), y filtros rápidos acotados ($\le 4$ opciones) conforme a la Ley de Hick.
 3. **Flujo 3 (Creación y Ciclo de Vida del Plan):** Diálogo modal nativo `<dialog>` de creación ágil con captura automática del organizador desde la sesión (`auth()->user()->name`), validación preventiva de fechas pasadas (`after_or_equal:today`) y transición segura de la máquina de estados (`pendiente` &rarr; `confirmado` &rarr; `cancelado` inmutable).
-4. **Flujo 4 (Sala Colaborativa, Deliberación y Cierre - `/planes/{plan}`):** Espacio interactivo unificado que bifurca la experiencia según el rol gobernado por políticas (`PlanPolicy`):
-    - **Carril Participante:** Aceptación de invitación, propuesta de opciones (fechas/lugares), votación reactiva por aprobación (Approval Voting) con alternancia de votos y salida de emergencia voluntaria (Nielsen H3).
-    - **Carril Organizador:** Envío de invitaciones por correo, supervisión de quórum, resolución obligatoria de empates con motivo justificado ($\ge 5$ caracteres) y confirmación oficial que congela la sala (`403` a votos y propuestas posteriores).
-5. **Flujo 5 (Gastos, Liquidación y Conciliación Inteligente):** Proceso post-evento activado exclusivamente en planes confirmados. Registro de gastos grupales (partes iguales $Monto/N$ o cuotas personalizadas), cálculo automatizado de la matriz de saldos netos cruzados, configuración de datos de cobro por participante (Alias, CBU, QR) y ciclo de liquidación de deudas con comprobante bancario adjunto, validación inteligente (IA Gemini Vision o Fake) y estados controlados (`pendiente` &rarr; `verificado` / `discrepante` &rarr; `confirmado` o `rechazado` con motivo obligatorio).
-6. **Servicio Transversal (Auditoría y Trazabilidad - `/historial`):** Bitácora inmutable accesible desde la navegación global. Registra en 4 dimensiones (Qué, Quién, Cuándo, Resultado) todas las transiciones de estado, propuestas, votos, desempates y liquidaciones, con selector temático de 4 chips.
+4. **Flujo 4 (Sala Colaborativa, Deliberación y Retiro - `/planes/{plan}`):** Espacio interactivo unificado que bifurca la experiencia según el rol gobernado por políticas (`PlanPolicy`):
+    - **Carril Participante:** Aceptación de invitación, propuesta de opciones (fechas/lugares), votación reactiva por aprobación (Approval Voting), y proceso formal de retiro:
+        - _Verificación de Deuda:_ Si el participante tiene saldos deudores en gastos, el sistema bloquea el retiro desplegando advertencia informativa y enlace a liquidar (Nielsen H5 y H6).
+        - _Consecuencia de Retiro:_ Si no adeuda montos, confirma la salida, se anulan automáticamente todos sus votos de fechas/lugares, se recalculan las opciones líderes en tiempo real y se desvincula de la lista.
+    - **Carril Organizador:** Envío de invitaciones por correo, supervisión de quórum, resolución obligatoria de empates con motivo justificado ($\ge 5$ caracteres) y confirmación oficial que congela la sala (`403` a votos y propuestas posteriores). El organizador no puede retirarse del plan (debe cancelarlo o eliminarlo).
+5. **Flujo 5 (Gastos, Liquidación y Saldos Netos):** Proceso post-evento activado exclusivamente en planes confirmados. Registro de gastos grupales (partes iguales $Monto/N$ o cuotas personalizadas), cálculo automatizado de la matriz de saldos netos cruzados y ciclo de liquidación de deudas con comprobante bancario adjunto y estados controlados (`pendiente` emitido por el deudor &rarr; `confirmado` o `rechazado` con motivo obligatorio por el acreedor, visible para ambas partes en su historial).
+6. **Servicio Transversal (Auditoría y Trazabilidad - `/historial`):** Bitácora inmutable accesible desde la navegación global. Registra en 4 dimensiones (Qué, Quién, Cuándo, Resultado) todas las transiciones de estado, propuestas, votos, desempates, liquidaciones y retiros, con selector temático de 4 categorías.
+7. **Servicio de Observabilidad (Analítica de Interacción - `/analitica`):** Plataforma interna de diagnóstico ergonómico disponible en entorno local y de pruebas. Visualiza en tiempo real 6 embudos de conversión, tasas de abandono (_drop-off_) y motivos frecuentes de error de validación/permiso. Se accede de forma discreta mediante una píldora flotante de desarrollo en la esquina inferior (`Dev Floating Toolbar`), manteniendo la navegación del usuario final libre de sobrecarga cognitiva.
 
 ---
 

@@ -88,6 +88,16 @@ La aplicación implementa un escaneo de comprobantes bancarios desacoplado media
     pnpm run fixtures:comprobantes
     ```
 
+### 6. Panel de Analítica de Interacción (Herramienta de Diagnóstico en Desarrollo)
+
+Para evaluar y verificar dónde se traba la gente (embudos de conversión, puntos de fricción, errores de validación/permiso y búsquedas vacías), la aplicación incluye un motor interno de telemetría:
+
+- **Acceso Exclusivo de Desarrollo (`local` / `testing`):**
+    - **URL Directa:** [http://localhost:9300/analitica](http://localhost:9300/analitica) (bloqueado con `403 Forbidden` en producción).
+    - **Píldora Flotante (`Dev Floating Toolbar`):** Mientras el entorno esté en modo desarrollo, se despliega una píldora discreta en la esquina inferior derecha de la pantalla: `[📊 Telemetría Dev · /analitica]`, permitiendo acceder al panel en 1 clic desde cualquier vista sin alterar la barra de navegación del usuario común.
+- **Verificación Automatizada:**
+    - Los tests E2E de Playwright inspeccionan los contadores y embudos de este panel de forma determinista y sin dependencias de internet.
+
 ---
 
 ## 🛠️ Perfil 2: Desarrollador / Colaborador Activo (Construir e Implementar)
@@ -129,6 +139,7 @@ El repositorio incluye habilidades versionadas para que desarrolladores y agente
 - **`heuristic-evaluation`:** Protocolo para las 10 heurísticas de Nielsen (H1–H10) con escala de severidad 0-4.
 - **`e2e-testing`:** Pruebas Playwright orientadas a tareas humanas con localizadores semánticos (`getByRole`, `getByLabel`).
 - **`refactoring`:** Transformaciones Fowler seguras y preservación estricta de contratos.
+- **`design-system-audit`:** Verificación contra `resources/DESIGN.md` para prevenir estilos inline, emojis o clases arbitrarias.
 
 ---
 
