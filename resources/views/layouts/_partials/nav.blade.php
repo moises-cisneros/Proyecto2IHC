@@ -11,12 +11,6 @@
             <x-nav-link :href="route('historial.index')" :activo="request()->routeIs('historial.*')" icono="historial" aria-label="Ir al Historial de Actividad">
                 Historial
             </x-nav-link>
-
-            @if (app()->environment('local', 'testing'))
-                <x-nav-link :href="route('analitica.index')" :activo="request()->routeIs('analitica.*')" icono="analitica" aria-label="Ir a Analítica de Interacción">
-                    Analítica
-                </x-nav-link>
-            @endif
         </div>
     </div>
 

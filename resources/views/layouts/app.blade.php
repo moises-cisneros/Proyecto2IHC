@@ -28,6 +28,9 @@
 
     </main>
 
+    {{-- Barra de herramientas de desarrollo flotante (solo en local y testing) --}}
+    @include('layouts._partials.dev_toolbar')
+
     {{-- Modal nativo accesible para confirmaciones (<dialog>) --}}
     <x-dialog-confirm />
 
