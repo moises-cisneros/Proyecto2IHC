@@ -68,7 +68,7 @@ class GastosController extends Controller
         $plan->actividades()->create([
             'user_id' => auth()->id(),
             'accion' => 'gasto',
-            'descripcion' => auth()->user()->name." registró el gasto '{$gasto->concepto}' por \${$gasto->monto_total}.",
+            'descripcion' => auth()->user()->name." registró el gasto '{$gasto->concepto}' por Bs {$gasto->monto_total}.",
             'estado_resultante' => $plan->estado,
         ]);
 
@@ -119,6 +119,7 @@ class GastosController extends Controller
         // Trazabilidad
         $plan->actividades()->create([
             'user_id' => auth()->id(),
+            'destinatario_id' => $request->receptor_id,
             'accion' => 'pago',
             'descripcion' => auth()->user()->name." registró un pago de Bs {$pago->monto} a {$nombreReceptor} (pendiente de confirmación).",
             'estado_resultante' => $plan->estado,
@@ -153,8 +154,9 @@ class GastosController extends Controller
         // Trazabilidad
         $pago->plan->actividades()->create([
             'user_id' => auth()->id(),
+            'destinatario_id' => $pago->deudor_id,
             'accion' => 'pago_confirmado',
-            'descripcion' => auth()->user()->name." confirmó el pago de \${$pago->monto} recibido de {$nombreDeudor}.",
+            'descripcion' => auth()->user()->name." confirmó el pago de Bs {$pago->monto} recibido de {$nombreDeudor}.",
             'estado_resultante' => $pago->plan->estado,
         ]);
 
@@ -184,8 +186,9 @@ class GastosController extends Controller
         // Trazabilidad
         $pago->plan->actividades()->create([
             'user_id' => auth()->id(),
+            'destinatario_id' => $pago->deudor_id,
             'accion' => 'pago_rechazado',
-            'descripcion' => auth()->user()->name." rechazó el pago de \${$pago->monto} de {$nombreDeudor}. Motivo: {$request->motivo_rechazo}",
+            'descripcion' => auth()->user()->name." rechazó el pago de Bs {$pago->monto} de {$nombreDeudor}. Motivo: {$request->motivo_rechazo}",
             'estado_resultante' => $pago->plan->estado,
         ]);
 

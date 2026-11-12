@@ -86,7 +86,7 @@ class StoreGastoRequest extends FormRequest
                 if (abs($sumaDivisiones - $montoTotal) > 0.01) {
                     $validator->errors()->add(
                         'divisiones',
-                        "La suma de los montos asignados (\${$sumaDivisiones}) debe coincidir exactamente con el monto total (\${$montoTotal})."
+                        "La suma de los montos asignados (Bs {$sumaDivisiones}) debe coincidir exactamente con el monto total (Bs {$montoTotal})."
                     );
                 }
             }
