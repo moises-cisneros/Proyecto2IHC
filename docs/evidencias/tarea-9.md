@@ -40,7 +40,7 @@ Tarea 9 (Clase 21): Analítica de interacción en toda la app + Retirarse de un 
 | **#101**  | Backend (Retiro)        | [PR #111](https://github.com/moises-cisneros/Proyecto2IHC/pull/111) | Métodos de dominio `Plan::usuarioTieneDeuda()`, `Plan::retirarParticipante()` con anulación atómica de votos y trazabilidad en historial de actividades.                          |
 | **#102**  | Controlador (Retiro)    | [PR #112](https://github.com/moises-cisneros/Proyecto2IHC/pull/112) | Endpoint `POST /planes/{plan}/retirarse`, validación con `RetirarsePlanRequest` (estado pendiente), `PlanPolicy::retirarse` y emisión de eventos de freno/éxito.                  |
 | **#103**  | Interfaz (Retiro)       | [PR #113](https://github.com/moises-cisneros/Proyecto2IHC/pull/113) | Botón `.boton-retirarse` accesible en cabecera del plan, modal `<dialog id="modal-retirarse">` con desambiguación léxica y banner de freno de emergencia por deuda.               |
-| **#104**  | Testing / Docs          | PR #114                                                             | Suite Playwright `e2e/tarea-9-retirarse-plan.spec.ts`, reporte de evidencias consolidado y auditoría de diseño sin atribución de IA.                                              |
+| **#104**  | Testing / Docs          | [PR #114](https://github.com/moises-cisneros/Proyecto2IHC/pull/114) | Suite Playwright `e2e/tarea-9-retirarse-plan.spec.ts`, reporte de evidencias consolidado y auditoría de diseño sin atribución de IA.                                              |
 
 ---
 
@@ -94,14 +94,3 @@ Visualización integral del panel `/analitica` reflejando los 6 macroembudos de 
 ### 2. Playwright E2E
 
 - `e2e/tarea-9-retirarse-plan.spec.ts` (100% de aserciones pasando secuencialmente en 42.7 segundos bajo `workers: 1`).
-
----
-
-## 🛡️ Auditoría de Diseño y Cumplimiento de Políticas
-
-- **Cero Atribución de IA:** Verificado con `scripts/verify-subissue.mjs`, garantizando total ausencia de Co-Authored-By o menciones de IA en commits, PRs y código.
-- **Sistema de Diseño (`design-system-audit`):**
-    - Cero emojis crudos en plantillas Blade (`rg "[\x{1F300}-\x{1F9FF}]"` limpio).
-    - Cumplimiento de Ley de Fitts con áreas táctiles $\ge 44\times 44$ px en todos los botones de acción.
-    - Separación antagónica $\ge 12$ px (`gap-3`) en los diálogos modales `<dialog>`.
-    - Reutilización estricta de la paleta semántica de `resources/DESIGN.md` (`brand-bar`, `#c0392b`, `#60605f`, `#ffffff`).

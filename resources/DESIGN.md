@@ -148,9 +148,23 @@
 ### A. Dev Floating Toolbar (`dev_toolbar.blade.php`)
 
 - Píldora discreta fija en esquina inferior derecha (`fixed bottom-4 right-4 z-50`): `[📊 Telemetría Dev · /analitica]`.
-- Exclusiva para entornos `local` y `testing`. No contamina el menú de navegación del usuario común.
+- Exclusiva para entornos `local` y `testing`. No contamina el menú de navegación del usuario común (Nielsen H8).
 
-### B. Tarjetas de Embudo (`.tarjeta-embudo`)
+### B. Tarjetas de Embudo y Métricas Horizontales (`.tarjeta-embudo`)
 
-- Fondo `#ffffff`, borde `#e3e3df`, radio `12px`, padding `20px`.
-- Contadores destacados (`text-2xl font-bold`), barras de progreso horizontales con token `#ffe683` (`brand-bar`), porcentaje de conversión y tasa de abandono (_drop-off_).
+- **Estructura y Paleta Oficial:**
+    - **Tarjeta base:** Fondo blanco `surface` (`#ffffff`), borde `#e3e3df`, radio `12px` y padding `20px`.
+    - **Chip identificador:** Fondo `#fff4d6` (`pending-bg`), texto `#8a6100` (`pending`), radio `9999px`.
+- **Métricas Horizontales por Paso:**
+    - Contadores destacados (`text-[26px] font-extrabold #1c1c1a`, `line-height: 1`).
+    - Nombre técnico del evento en monospace inferior (`text-xs text-[#6f6f6a] font-mono`).
+- **Caja de Finalización (`.caja-porcentaje-terminan`):**
+    - Contenedor rectangular redondeado (`rounded-xl`), fondo `#edf7ef` (`success-bg`), borde `#bbf7d0` y padding `8px 14px`.
+    - Porcentaje de éxito en `22px font-extrabold #25663a` (`success`) con la etiqueta `terminan` (erradicando la jerga técnica negativa de _drop-off_ en favor de métricas constructivas de éxito).
+- **Barra de Avance Brand-Bar:**
+    - Contenedor redondeado (`rounded-full`, altura `8px`, fondo `#f6f6f4`, borde `#e3e3df`) con relleno de token oficial `#ffe683` (`brand-bar`) mapeando la tasa de $0\%$ a $100\%$.
+
+### C. Listado de Eventos Recientes (`Últimos 25 Eventos Registrados`)
+
+- Tabla estructurada con fondo `#ffffff`, bordes `#e3e3df`, cabecera `#fbfbf9` y badges de evento en `#fff4d6` con texto `#8a6100`.
+- Marca temporal formateada en hora oficial de Bolivia (`UTC-4`).
