@@ -6,6 +6,7 @@ use App\Contracts\ComprobanteScannerInterface;
 use App\Http\Requests\RechazarPagoRequest;
 use App\Http\Requests\StoreGastoRequest;
 use App\Http\Requests\StorePagoRequest;
+use App\Models\Evento;
 use App\Models\Gasto;
 use App\Models\GastoDivision;
 use App\Models\Pago;
@@ -72,6 +73,13 @@ class GastosController extends Controller
             'estado_resultante' => $plan->estado,
         ]);
 
+        Evento::registrar('gasto_registrado', [
+            'plan_id' => $plan->id,
+            'gasto_id' => $gasto->id,
+            'monto' => $montoTotal,
+            'tipo_division' => $request->tipo_division,
+        ]);
+
         return redirect()->route('planes.detalle', ['plan' => $plan, 'tab' => 'gastos'])
             ->with('exito', '¡Gasto registrado con éxito!');
     }
@@ -134,6 +142,13 @@ class GastosController extends Controller
             'estado_resultante' => $plan->estado,
         ]);
 
+        Evento::registrar('pago_iniciado', [
+            'plan_id' => $plan->id,
+            'pago_id' => $pago->id,
+            'receptor_id' => $request->receptor_id,
+            'monto' => $montoFloat,
+        ]);
+
         $mensajeExito = $pago->tieneComprobante()
             ? 'Pago y comprobante registrados correctamente. Se aplicará a los saldos una vez que el receptor lo confirme.'
             : 'Pago registrado. Se aplicará a los saldos una vez que el receptor lo confirme.';
@@ -169,6 +184,12 @@ class GastosController extends Controller
             'estado_resultante' => $pago->plan->estado,
         ]);
 
+        Evento::registrar('pago_confirmado', [
+            'plan_id' => $pago->plan_id,
+            'pago_id' => $pago->id,
+            'monto' => $pago->monto,
+        ]);
+
         return redirect()->route('planes.detalle', ['plan' => $pago->plan_id, 'tab' => 'gastos'])
             ->with('exito', '¡Pago confirmado! Los saldos netos han sido actualizados.');
     }
@@ -199,6 +220,13 @@ class GastosController extends Controller
             'accion' => 'pago_rechazado',
             'descripcion' => auth()->user()->name." rechazó el pago de Bs {$pago->monto} de {$nombreDeudor}. Motivo: {$request->motivo_rechazo}",
             'estado_resultante' => $pago->plan->estado,
+        ]);
+
+        Evento::registrar('pago_rechazado', [
+            'plan_id' => $pago->plan_id,
+            'pago_id' => $pago->id,
+            'monto' => $pago->monto,
+            'motivo' => $request->motivo_rechazo,
         ]);
 
         return redirect()->route('planes.detalle', ['plan' => $pago->plan_id, 'tab' => 'gastos'])

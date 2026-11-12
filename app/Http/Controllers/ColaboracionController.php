@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Evento;
 use App\Models\Invitacion;
 use App\Models\Opcion;
 use App\Models\Plan;
@@ -46,6 +47,11 @@ class ColaboracionController extends Controller
         $pagos = $plan->pagos()->with(['deudor', 'receptor'])->latest()->get();
         $saldos = $plan->calcularSaldosNetos();
 
+        Evento::registrar('votacion_iniciada', [
+            'plan_id' => $plan->id,
+            'tab' => $pestanaActiva,
+        ]);
+
         return view('planes.detalle', compact(
             'plan',
             'fechas',
@@ -88,6 +94,11 @@ class ColaboracionController extends Controller
             'estado_resultante' => $plan->estado,
         ]);
 
+        Evento::registrar('invitacion_enviada', [
+            'plan_id' => $plan->id,
+            'email' => $request->email,
+        ]);
+
         return back()->with('exito', 'Invitación enviada correctamente.');
     }
 
@@ -120,6 +131,11 @@ class ColaboracionController extends Controller
             'estado_resultante' => $plan->estado,
         ]);
 
+        Evento::registrar('invitacion_aceptada', [
+            'plan_id' => $plan->id,
+            'user_id' => $usuario->id,
+        ]);
+
         return redirect()->route('planes.detalle', $plan)
             ->with('exito', '¡Invitación aceptada! Ya puedes colaborar y votar en este plan.');
     }
@@ -150,6 +166,11 @@ class ColaboracionController extends Controller
             'accion' => 'propuesta',
             'descripcion' => auth()->user()->name." propuso una nueva opción de {$request->tipo}: {$request->valor}",
             'estado_resultante' => $plan->estado,
+        ]);
+
+        Evento::registrar('propuesta_creada', [
+            'plan_id' => $plan->id,
+            'tipo' => $request->tipo,
         ]);
 
         return back()->with('exito', 'Opción propuesta correctamente.');
@@ -188,6 +209,12 @@ class ColaboracionController extends Controller
                 'accion' => 'voto',
                 'descripcion' => auth()->user()->name." votó por la opción {$opcion->valor}",
                 'estado_resultante' => $opcion->plan->estado,
+            ]);
+
+            Evento::registrar('voto_emitido', [
+                'plan_id' => $opcion->plan_id,
+                'opcion_id' => $opcion->id,
+                'tipo' => $opcion->tipo,
             ]);
         }
 

@@ -32,12 +32,13 @@ class EventosController extends Controller
     public function analitica(Request $request): View
     {
         abort_unless(
-            app()->environment('local', 'testing') || (auth()->check() && (auth()->user()->is_admin ?? false)),
+            app()->environment('local', 'testing'),
             403,
             'El panel de analítica sólo está disponible en entorno de desarrollo.'
         );
 
-        $metricas = Evento::metricasEmbudo();
+        $metricas = Evento::metricasTodosLosEmbudos();
+        $metricas = array_merge($metricas, $metricas['creacion']);
         $ultimosEventos = Evento::latest()->take(25)->get();
 
         return view('analitica.index', compact('metricas', 'ultimosEventos'));
