@@ -57,6 +57,9 @@ php artisan migrate --force
 echo "🌱  Cargando usuarios y datos de prueba (seeders)..."
 php artisan db:seed --force
 
+# ── 4.1 Enlace simbólico de storage ──────────────────────────
+php artisan storage:link --force 2>/dev/null || true
+
 # ── 5. Limpiar caché de configuración ────────────────────────
 php artisan config:clear
 php artisan cache:clear
