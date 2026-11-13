@@ -472,9 +472,12 @@
         </div>
 
         <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 8px;">
+            <label style="display: block; font-size: 14px; font-weight: 600; color: #1c1c1a; margin-bottom: 4px;">
                 Participantes incluidos
             </label>
+            <p style="margin: 0 0 8px 0; font-size: 13px; color: #6f6f6a;">
+                Selecciona explícitamente a las personas que asumirán este gasto (opt-in consciente).
+            </p>
             <div style="display: flex; flex-direction: column; gap: 8px; max-height: 180px; overflow-y: auto; padding: 10px; border: 1px solid #e3e3df; border-radius: 10px; background: #fafaf8;">
                 @foreach ($participantesPlan as $p)
                     <div style="display: flex; justify-content: space-between; align-items: center; gap: 8px;">
@@ -482,7 +485,6 @@
                             <input type="checkbox"
                                    name="participantes[]"
                                    value="{{ $p->id }}"
-                                   checked
                                    class="check-participante"
                                    onchange="recalcularDivision()"
                                    style="width: 18px; height: 18px;">
@@ -500,6 +502,9 @@
                         </div>
                     </div>
                 @endforeach
+            </div>
+            <div id="indicador-participantes-seleccionados" style="margin-top: 6px; font-size: 12px; color: #6f6f6a;">
+                Participantes seleccionados: <strong id="contador-seleccionados">0</strong> de {{ count($participantesPlan) }}
             </div>
             <div id="aviso-suma-personalizada" style="display: none; margin-top: 8px; font-size: 13px; font-weight: 600; padding: 8px 12px; border-radius: 8px;"></div>
         </div>
@@ -973,6 +978,12 @@
     }
 
     function recalcularDivision() {
+        var checks = document.querySelectorAll('.check-participante:checked');
+        var contador = document.getElementById('contador-seleccionados');
+        if (contador) {
+            contador.textContent = checks.length;
+        }
+
         var modo = document.getElementById('select-tipo-division')?.value;
         if (modo === 'personalizada') {
             actualizarSumaPersonalizada();
