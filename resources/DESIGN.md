@@ -127,6 +127,18 @@ Escala de espaciado consistente para padding, gap y margin:
 | `--radius-circle` | `50%`  | Avatares y puntos indicadores                               |
 | `--touch-min`     | `44px` | Área táctil mínima Fitts (todos los controles interactivos) |
 
+### F. Dimensiones de Íconos Vectoriales
+
+Tokens declarados en `@theme static` de `tokens.css` para normalizar las escalas SVG:
+
+| Token        | Valor  | Clase Asociada | Prop Componente | Contexto de Uso                                               |
+| :----------- | :----- | :------------- | :-------------- | :------------------------------------------------------------ |
+| `--icono-sm` | `16px` | `.icono-sm`    | `tamano="sm"`   | Íconos en navegación (`.nav-item-icono`), badges y microcopia |
+| `--icono-md` | `20px` | `.icono-md`    | `tamano="md"`   | Tamaño estándar por defecto (`.icono-svg`), títulos y alertas |
+| `--icono-lg` | `24px` | `.icono-lg`    | `tamano="lg"`   | Íconos destacados, banners de estado y cabeceras de sala      |
+
+> En botones (`.boton`, `.boton-claro`, `.boton-rojo`, `.boton-simetrico`), los íconos se escalan automáticamente a `18px` para guardar balance con la tipografía.
+
 ### G. Elevación y Capas
 
 | Token                                    | Valor                           | Uso                      |
@@ -176,7 +188,9 @@ Escala de espaciado consistente para padding, gap y margin:
 ### B. Componente de Íconos Vectoriales (`<x-icono nombre="..." />`)
 
 - Prohibido el uso de emojis crudos en vistas. Usar trazados Heroicons/Lucide con `stroke="currentColor"`.
-- Tamaños: Compacto `16×16px`, Estándar `20×20px`, Destacado `24×24px`.
+- Tamaños normados: Compacto `16×16px` (`tamano="sm"` / `.icono-sm`), Estándar `20×20px` (`tamano="md"` / `.icono-md` / por defecto), Destacado `24×24px` (`tamano="lg"` / `.icono-lg`).
+- Proporción en botones: Todos los botones (`.boton`, `.boton-claro`, `.boton-rojo`, `.boton-simetrico`) acoplan sus íconos a `18×18px` de forma automática.
+- En SVG nativo, el componente `<x-icono>` emite atributos intrínsecos `width` y `height` acordes a la escala para garantizar contención geométrica estricta frente a flexbox y prevenir desbordes.
 - Accesibilidad: Siempre con texto visible o `aria-label` descriptivo.
 
 ---

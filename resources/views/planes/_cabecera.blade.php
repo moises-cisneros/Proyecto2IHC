@@ -70,8 +70,9 @@
                 <div
                     style="font-weight: var(--font-weight-bold); color: var(--color-foreground); font-size: var(--font-size-md);">
                     Plan cancelado</div>
-                <div style="font-size: var(--font-size-sm);">Este plan ha sido cancelado. La sala se encuentra en modo
-                    de solo lectura (no se permiten ediciones, invitaciones, nuevas propuestas ni votos).</div>
+                <div style="font-size: var(--font-size-sm);">Este plan ha sido cancelado. La sala se encuentra en
+                    <span>modo de solo lectura</span> (no se permiten ediciones, invitaciones, nuevas propuestas ni
+                    votos).</div>
             </div>
         </div>
     @endif

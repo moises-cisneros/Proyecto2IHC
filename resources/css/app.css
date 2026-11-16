@@ -68,6 +68,32 @@ body {
     display: inline-block;
     vertical-align: middle;
     flex-shrink: 0;
+    width: var(--icono-md, 20px);
+    height: var(--icono-md, 20px);
+}
+
+.icono-sm {
+    width: var(--icono-sm, 16px);
+    height: var(--icono-sm, 16px);
+}
+
+.icono-md {
+    width: var(--icono-md, 20px);
+    height: var(--icono-md, 20px);
+}
+
+.icono-lg {
+    width: var(--icono-lg, 24px);
+    height: var(--icono-lg, 24px);
+}
+
+.boton .icono-svg,
+.boton-claro .icono-svg,
+.boton-rojo .icono-svg,
+.boton-editar .icono-svg,
+.boton-simetrico .icono-svg {
+    width: 18px;
+    height: 18px;
 }
 
 /* ═══════════════════════════════════════════════════════════════
