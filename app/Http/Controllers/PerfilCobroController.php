@@ -22,7 +22,12 @@ class PerfilCobroController extends Controller
             'cbu_pago' => $request->input('cbu_pago'),
         ];
 
-        if ($request->hasFile('qr_pago')) {
+        if ($request->boolean('eliminar_qr')) {
+            if ($usuario->qr_pago_path && Storage::disk('public')->exists($usuario->qr_pago_path)) {
+                Storage::disk('public')->delete($usuario->qr_pago_path);
+            }
+            $datos['qr_pago_path'] = null;
+        } elseif ($request->hasFile('qr_pago')) {
             if ($usuario->qr_pago_path && Storage::disk('public')->exists($usuario->qr_pago_path)) {
                 Storage::disk('public')->delete($usuario->qr_pago_path);
             }

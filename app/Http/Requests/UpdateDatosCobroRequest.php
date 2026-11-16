@@ -26,6 +26,7 @@ class UpdateDatosCobroRequest extends FormRequest
             'alias_pago' => ['nullable', 'string', 'max:100'],
             'cbu_pago' => ['nullable', 'string', 'max:50'],
             'qr_pago' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'eliminar_qr' => ['nullable', 'boolean'],
         ];
     }
 

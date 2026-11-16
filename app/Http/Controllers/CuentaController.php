@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Evento;
+use App\Models\User;
 use App\Services\UserDataExportService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class CuentaController extends Controller
@@ -23,12 +25,69 @@ class CuentaController extends Controller
         $planesOrganizados = $usuario->planes()->latest()->get();
         $planesParticipados = $usuario->planesParticipados()->latest()->get();
 
+        $resumenActividad = [
+            'activos' => $planesOrganizados->whereIn('estado', ['pendiente', 'propuesta', 'votando'])->count(),
+            'completados' => $planesOrganizados->where('estado', 'confirmado')->count(),
+            'participaciones' => $planesParticipados->count(),
+        ];
+
         return view('perfil.cuenta', compact(
             'usuario',
             'bloqueosCuenta',
-            'planesOrganizados',
-            'planesParticipados'
+            'resumenActividad'
         ));
+    }
+
+    /**
+     * Actualiza los datos de identificación personal del usuario (nombre y correo).
+     */
+    public function actualizarPerfil(Request $request): RedirectResponse
+    {
+        /** @var User $usuario */
+        $usuario = auth()->user();
+
+        $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users,email,'.$usuario->id],
+        ], [
+            'name.required' => 'El nombre es obligatorio.',
+            'name.max' => 'El nombre no debe superar los 255 caracteres.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'Ingresa un correo electrónico válido.',
+            'email.unique' => 'Este correo electrónico ya está registrado por otro usuario.',
+        ]);
+
+        $usuario->update([
+            'name' => $request->input('name'),
+            'email' => $request->input('email'),
+        ]);
+
+        return back()->with('exito', 'Tus datos personales se han actualizado correctamente.');
+    }
+
+    /**
+     * Actualiza la contraseña del usuario tras verificar su credencial actual.
+     */
+    public function actualizarContrasena(Request $request): RedirectResponse
+    {
+        $request->validateWithBag('cambioContrasena', [
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ], [
+            'current_password.required' => 'Debes ingresar tu contraseña actual.',
+            'current_password.current_password' => 'La contraseña actual no es correcta.',
+            'password.required' => 'Debes ingresar la nueva contraseña.',
+            'password.min' => 'La nueva contraseña debe tener al menos 8 caracteres.',
+            'password.confirmed' => 'La confirmación de la contraseña no coincide.',
+        ]);
+
+        /** @var User $usuario */
+        $usuario = auth()->user();
+        $usuario->update([
+            'password' => Hash::make($request->input('password')),
+        ]);
+
+        return back()->with('exito', 'Tu contraseña ha sido actualizada exitosamente.');
     }
 
     /**

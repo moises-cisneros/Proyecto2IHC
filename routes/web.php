@@ -53,6 +53,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/pagos/{pago}/rechazar', [GastosController::class, 'rechazarPago'])->name('pagos.rechazar');
 
     Route::get('/perfil/datos', [CuentaController::class, 'datos'])->name('perfil.datos');
+    Route::put('/perfil/datos', [CuentaController::class, 'actualizarPerfil'])->name('perfil.actualizar');
+    Route::put('/perfil/contrasena', [CuentaController::class, 'actualizarContrasena'])->name('perfil.contrasena.actualizar');
     Route::get('/perfil/datos/exportar', [CuentaController::class, 'exportar'])->name('perfil.datos.exportar');
     Route::post('/perfil/eliminar-cuenta', [CuentaController::class, 'eliminarCuenta'])->name('perfil.eliminar-cuenta');
     Route::put('/perfil/datos-cobro', [PerfilCobroController::class, 'update'])->name('perfil.cobro.actualizar');
