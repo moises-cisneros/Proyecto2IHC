@@ -66,7 +66,10 @@ test.describe('Clase 22 — Patrón Oscuro: Preselección por Defecto en Gastos'
         // Capturar evidencia DESPUÉS con casillas desmarcadas
         await pageLucas.waitForTimeout(600);
         await modalGasto.screenshot({ path: 'docs/evidencias/clase-22/02-despues-modal-desmarcado.png' });
-        await pageLucas.screenshot({ path: 'docs/evidencias/clase-22/02-despues-pantalla-completa.png', fullPage: false });
+        await pageLucas.screenshot({
+            path: 'docs/evidencias/clase-22/02-despues-pantalla-completa.png',
+            fullPage: false,
+        });
 
         // Demostrar selección consciente deliberada de un solo participante
         await checks.nth(0).check();

@@ -4,31 +4,29 @@
 
 @section('contenido')
 
-<header class="acceso-encabezado">
-    <span class="acceso-logo">✓</span>
-    <h1>Recuperar contraseña</h1>
-    <p>Te enviaremos un enlace a tu correo para crear una nueva.</p>
-</header>
+    <header class="acceso-encabezado">
+        <span class="acceso-logo">✓</span>
+        <h1>Recuperar contraseña</h1>
+        <p>Te enviaremos un enlace a tu correo para crear una nueva.</p>
+    </header>
 
-<form method="POST" action="{{ route('enviar.correo') }}" class="acceso-form" novalidate>
-    @csrf
+    <form method="POST" action="{{ route('enviar.correo') }}" class="acceso-form" novalidate>
+        @csrf
 
-    <div class="campo">
-        <label for="correo">Correo electrónico</label>
-        <input type="email" id="correo" name="correo"
-               value="{{ old('correo') }}"
-               placeholder="tucorreo@ejemplo.com"
-               class="{{ $errors->has('correo') ? 'invalido' : '' }}">
-        @error('correo')
-            <span class="campo-error">{{ $message }}</span>
-        @enderror
-    </div>
+        <div class="campo">
+            <label for="correo">Correo electrónico</label>
+            <input type="email" id="correo" name="correo" value="{{ old('correo') }}" placeholder="tucorreo@ejemplo.com"
+                class="{{ $errors->has('correo') ? 'invalido' : '' }}">
+            @error('correo')
+                <span class="campo-error">{{ $message }}</span>
+            @enderror
+        </div>
 
-    <button type="submit" class="boton-acceso">Enviar enlace</button>
-</form>
+        <button type="submit" class="boton-acceso">Enviar enlace</button>
+    </form>
 
-<footer class="acceso-pie">
-    <a href="{{ route('login') }}">← Volver a ingresar</a>
-</footer>
+    <footer class="acceso-pie">
+        <a href="{{ route('login') }}">← Volver a ingresar</a>
+    </footer>
 
 @endsection

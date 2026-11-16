@@ -68,7 +68,7 @@ class ToastAlertaTest extends TestCase
         $response->assertOk();
         $response->assertSee('id="toast-btn-cerrar"', false);
         $response->assertSee('aria-label="Cerrar notificación"', false);
-        $response->assertSee('fixed top-5 right-5 z-50', false);
+        $response->assertSee('class="toast-contenedor"', false);
         $response->assertSee('Actualización completada');
     }
 }

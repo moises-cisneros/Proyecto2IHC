@@ -92,11 +92,11 @@ class GastosModalErgonomiaTest extends TestCase
         $this->assertDoesNotMatchRegularExpression('#[\x{1F300}-\x{1F9FF}]#u', $contenido);
 
         // Áreas táctiles de Fitts (>= 44px) en botones del modal
-        $this->assertStringContainsString('min-height: 44px', $contenido);
-        $this->assertStringContainsString('min-width: 44px', $contenido);
+        $this->assertStringContainsString('min-height: var(--touch-min)', $contenido);
+        $this->assertStringContainsString('min-width: var(--touch-min)', $contenido);
 
         // Separación antagónica de botones (gap >= 12px)
-        $this->assertStringContainsString('gap: 12px', $contenido);
+        $this->assertStringContainsString('gap: var(--space-3)', $contenido);
     }
 
     /**

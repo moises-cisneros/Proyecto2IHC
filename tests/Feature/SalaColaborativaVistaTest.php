@@ -160,9 +160,9 @@ class SalaColaborativaVistaTest extends TestCase
 
         $response->assertStatus(200);
         // Dimensión táctil mínima según Ley de Fitts y WCAG (44px)
-        $response->assertSee('min-height: 44px');
+        $response->assertSee('min-height: var(--touch-min)', false);
         // Separación antagónica mínima de 12px entre botones de acción y cancelación
-        $response->assertSee('gap: 12px');
+        $response->assertSee('gap: var(--space-3)', false);
     }
 
     /**

@@ -13,11 +13,11 @@
 
     {{-- Pestañas de Navegación por Propósito y Rol (Arquitectura de Información - Nivel 1) --}}
     <div class="pestanas-roles" role="tablist" aria-label="Secciones de planes por rol"
-        style="display: flex; gap: 12px; margin-bottom: 20px;">
+        style="display: flex; gap: var(--space-3); margin-bottom: var(--space-5);">
         <a href="{{ route('planes.listar', array_merge(request()->except('seccion'), ['seccion' => 'creados'])) }}"
             role="tab" aria-selected="{{ $seccion === 'creados' ? 'true' : 'false' }}"
             class="boton {{ $seccion === 'creados' ? '' : 'boton-claro' }}"
-            style="min-height: 44px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; padding: 10px 20px; border-radius: 50px;"
+            style="min-height: var(--touch-min); display: inline-flex; align-items: center; gap: var(--space-2); font-weight: var(--font-weight-semibold); text-decoration: none; padding: var(--space-2) var(--space-5); border-radius: var(--radius-pill);"
             aria-label="Ver mis planes creados como organizador">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -32,7 +32,7 @@
         <a href="{{ route('planes.listar', array_merge(request()->except('seccion'), ['seccion' => 'invitaciones'])) }}"
             role="tab" aria-selected="{{ $seccion === 'invitaciones' ? 'true' : 'false' }}"
             class="boton {{ $seccion === 'invitaciones' ? '' : 'boton-claro' }}"
-            style="min-height: 44px; display: inline-flex; align-items: center; gap: 8px; font-weight: 600; text-decoration: none; padding: 10px 20px; border-radius: 50px;"
+            style="min-height: var(--touch-min); display: inline-flex; align-items: center; gap: var(--space-2); font-weight: var(--font-weight-semibold); text-decoration: none; padding: var(--space-2) var(--space-5); border-radius: var(--radius-pill);"
             aria-label="Ver planes donde participo como invitado">
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                 stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -98,8 +98,8 @@
     @if ($planes->isEmpty())
         {{-- Estado vacío general de la sección --}}
         <div
-            style="background: #ffffff; border: 1px solid #e3e3df; border-radius: 12px; padding: 40px 20px; text-align: center; margin-top: 24px;">
-            <p style="font-size: 16px; color: #6f6f6a; margin: 0 0 16px 0;">
+            style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-10) var(--space-5); text-align: center; margin-top: var(--space-6);">
+            <p style="font-size: var(--font-size-base); color: var(--color-muted); margin: 0 0 var(--space-4) 0;">
                 @if ($buscar || $estado || $fecha)
                     Ningún plan coincide con los filtros aplicados en esta sección.
                 @elseif ($seccion === 'invitaciones')
@@ -118,23 +118,24 @@
         {{-- Bloques Cronológicos por Urgencia (Arquitectura de Información - Nivel 2) --}}
 
         {{-- 1. HOY --}}
-        <section class="seccion-cronologica" aria-labelledby="bloque-hoy" style="margin-top: 24px;">
+        <section class="seccion-cronologica" aria-labelledby="bloque-hoy" style="margin-top: var(--space-6);">
             <div
-                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #e3e3df;">
+                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3); padding-bottom: var(--space-1); border-bottom: 2px solid var(--color-border);">
                 <h2 id="bloque-hoy"
-                    style="font-size: 16px; font-weight: 700; margin: 0; display: inline-flex; align-items: center; gap: 8px;">
+                    style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); margin: 0; display: inline-flex; align-items: center; gap: var(--space-2);">
                     <span>Hoy</span>
                     <span class="badge"
-                        style="background: #ffe683; color: #1c1c1a; padding: 2px 10px; border-radius: 50px; font-size: 12px; font-weight: 700;">
+                        style="background: var(--color-brand); color: var(--color-foreground); padding: var(--space-1) var(--space-2); border-radius: var(--radius-pill); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold);">
                         {{ $totalHoy }}
                     </span>
                 </h2>
-                <span style="font-size: 13px; color: #6f6f6a;">Planes con fecha límite programada para hoy</span>
+                <span style="font-size: var(--font-size-sm); color: var(--color-muted);">Planes con fecha límite programada
+                    para hoy</span>
             </div>
 
             @if ($hoy->isEmpty())
                 <div
-                    style="background: #ffffff; border: 1px dashed #d1d1cd; border-radius: 8px; padding: 12px 16px; text-align: center; color: #6f6f6a; font-size: 14px; margin-bottom: 20px;">
+                    style="background: var(--color-surface); border: 1px dashed var(--color-border-input); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); text-align: center; color: var(--color-muted); font-size: var(--font-size-md); margin-bottom: var(--space-5);">
                     No tienes planes para hoy en esta sección.
                 </div>
             @else
@@ -143,23 +144,23 @@
         </section>
 
         {{-- 2. PRÓXIMOS --}}
-        <section class="seccion-cronologica" aria-labelledby="bloque-proximos" style="margin-top: 24px;">
+        <section class="seccion-cronologica" aria-labelledby="bloque-proximos" style="margin-top: var(--space-6);">
             <div
-                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #e3e3df;">
+                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3); padding-bottom: var(--space-1); border-bottom: 2px solid var(--color-border);">
                 <h2 id="bloque-proximos"
-                    style="font-size: 16px; font-weight: 700; margin: 0; display: inline-flex; align-items: center; gap: 8px;">
+                    style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); margin: 0; display: inline-flex; align-items: center; gap: var(--space-2);">
                     <span>Próximos</span>
                     <span class="badge"
-                        style="background: #e3e3df; color: #1c1c1a; padding: 2px 10px; border-radius: 50px; font-size: 12px; font-weight: 700;">
+                        style="background: var(--color-border); color: var(--color-foreground); padding: var(--space-1) var(--space-2); border-radius: var(--radius-pill); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold);">
                         {{ $totalProximos }}
                     </span>
                 </h2>
-                <span style="font-size: 13px; color: #6f6f6a;">Planes futuros en curso</span>
+                <span style="font-size: var(--font-size-sm); color: var(--color-muted);">Planes futuros en curso</span>
             </div>
 
             @if ($proximos->isEmpty())
                 <div
-                    style="background: #ffffff; border: 1px dashed #d1d1cd; border-radius: 8px; padding: 12px 16px; text-align: center; color: #6f6f6a; font-size: 14px; margin-bottom: 20px;">
+                    style="background: var(--color-surface); border: 1px dashed var(--color-border-input); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); text-align: center; color: var(--color-muted); font-size: var(--font-size-md); margin-bottom: var(--space-5);">
                     No tienes planes futuros programados en esta sección.
                 </div>
             @else
@@ -168,23 +169,24 @@
         </section>
 
         {{-- 3. VENCIDOS --}}
-        <section class="seccion-cronologica" aria-labelledby="bloque-vencidos" style="margin-top: 24px;">
+        <section class="seccion-cronologica" aria-labelledby="bloque-vencidos" style="margin-top: var(--space-6);">
             <div
-                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #e3e3df;">
+                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3); padding-bottom: var(--space-1); border-bottom: 2px solid var(--color-border);">
                 <h2 id="bloque-vencidos"
-                    style="font-size: 16px; font-weight: 700; margin: 0; display: inline-flex; align-items: center; gap: 8px;">
+                    style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); margin: 0; display: inline-flex; align-items: center; gap: var(--space-2);">
                     <span>Vencidos</span>
                     <span class="badge"
-                        style="background: #ffd2d2; color: #9c0000; padding: 2px 10px; border-radius: 50px; font-size: 12px; font-weight: 700;">
+                        style="background: var(--color-destructive-border); color: var(--color-destructive); padding: var(--space-1) var(--space-2); border-radius: var(--radius-pill); font-size: var(--font-size-xs); font-weight: var(--font-weight-bold);">
                         {{ $totalVencidos }}
                     </span>
                 </h2>
-                <span style="font-size: 13px; color: #6f6f6a;">Planes cuya fecha límite ya expiró</span>
+                <span style="font-size: var(--font-size-sm); color: var(--color-muted);">Planes cuya fecha límite ya
+                    expiró</span>
             </div>
 
             @if ($vencidos->isEmpty())
                 <div
-                    style="background: #ffffff; border: 1px dashed #d1d1cd; border-radius: 8px; padding: 12px 16px; text-align: center; color: #6f6f6a; font-size: 14px; margin-bottom: 20px;">
+                    style="background: var(--color-surface); border: 1px dashed var(--color-border-input); border-radius: var(--radius-sm); padding: var(--space-3) var(--space-4); text-align: center; color: var(--color-muted); font-size: var(--font-size-md); margin-bottom: var(--space-5);">
                     No tienes planes vencidos en esta sección.
                 </div>
             @else

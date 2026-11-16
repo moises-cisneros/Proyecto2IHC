@@ -75,7 +75,8 @@ class HistorialVistaTest extends TestCase
         $response->assertSee('Se confirmó la logística del viaje.');
 
         // Dimensión 2: Cuándo ocurrió
-        $response->assertSee('hace 10 minutos');
+        $actividad = PlanActivity::first();
+        $response->assertSee($actividad->created_at->diffForHumans());
 
         // Dimensión 3: Cuál fue el resultado
         $response->assertSee('Confirmado');

@@ -1,6 +1,6 @@
 {{-- Barra de navegación --}}
 <nav class="barra" aria-label="Navegación principal">
-    <div style="display: flex; align-items: center; gap: 24px;">
+    <div style="display: flex; align-items: center; gap: var(--space-6);">
         <a href="{{ route('planes.listar') }}" class="marca" aria-label="Planazo - Inicio">Planazo</a>
 
         <div class="nav-menu" role="menubar" aria-label="Secciones de la aplicación">

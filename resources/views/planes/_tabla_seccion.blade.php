@@ -15,7 +15,7 @@
                     {{-- Nombre y organizador con touch target Fitts >=44px y elipsis estricta --}}
                     <td style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
                         <a href="{{ route('planes.detalle', $plan) }}" class="enlace-plan"
-                            style="min-height: 44px; display: inline-flex; align-items: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                            style="min-height: var(--touch-min); display: inline-flex; align-items: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
                             title="{{ $plan->nombre }}">
                             {{ $plan->nombre }}
                         </a>
@@ -42,13 +42,13 @@
                         </span>
                     </td>
 
-                    {{-- Columna de acciones ergonómica (Fitts >=44px, gap: 8px, fila horizontal estricta) --}}
+                    {{-- Columna de acciones ergonómica (Fitts >=44px, gap: var(--space-2), fila horizontal estricta) --}}
                     <td class="acciones">
                         <div class="acciones-grupo">
                             {{-- 0. Botón ergonómico de acceso a la sala (Fitts >= 44x44px sin desbordamiento) --}}
                             @can('cambiarEstado', $plan)
                                 <a href="{{ route('planes.detalle', $plan) }}" class="boton boton-claro"
-                                    style="min-height: 44px; min-width: 44px; width: 44px; height: 44px; padding: 0; border-radius: 50px; display: inline-flex; align-items: center; justify-content: center;"
+                                    style="min-height: var(--touch-min); min-width: var(--touch-min); width: var(--touch-min); height: var(--touch-min); padding: 0; border-radius: var(--radius-pill); display: inline-flex; align-items: center; justify-content: center;"
                                     title="Entrar a la sala de votación"
                                     aria-label="Entrar a la sala de votación del plan {{ $plan->nombre }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
@@ -150,13 +150,13 @@
                                         style="margin: 0; display: inline-block;">
                                         @csrf
                                         <button type="submit" class="boton"
-                                            style="min-height: 44px; padding: 8px 18px; font-size: 13px; border-radius: 50px; white-space: nowrap;">
+                                            style="min-height: var(--touch-min); padding: var(--space-2) var(--space-4); font-size: var(--font-size-sm); border-radius: var(--radius-pill); white-space: nowrap;">
                                             Aceptar invitación
                                         </button>
                                     </form>
                                 @else
                                     <a href="{{ route('planes.detalle', $plan) }}" class="boton boton-claro"
-                                        style="min-height: 44px; display: inline-flex; align-items: center; padding: 8px 18px; font-size: 13px; border-radius: 50px; white-space: nowrap;">
+                                        style="min-height: var(--touch-min); display: inline-flex; align-items: center; padding: var(--space-2) var(--space-4); font-size: var(--font-size-sm); border-radius: var(--radius-pill); white-space: nowrap;">
                                         Ver sala
                                     </a>
                                 @endcan
