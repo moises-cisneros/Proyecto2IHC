@@ -6,9 +6,9 @@
     'cancelText' => 'Cancelar',
 ])
 
-<dialog id="{{ $id }}" class="dialogo-modal" aria-labelledby="{{ $id }}-titulo"
+<dialog id="{{ $id }}" aria-labelledby="{{ $id }}-titulo"
     aria-describedby="{{ $id }}-mensaje">
-    <div class="dialogo-caja">
+    <div>
         <h2 id="{{ $id }}-titulo" class="dialogo-titulo">{{ $title }}</h2>
         <p id="{{ $id }}-mensaje" class="dialogo-mensaje">{{ $message }}</p>
 

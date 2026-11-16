@@ -26,13 +26,13 @@ class SalidaHonestaVistaTest extends TestCase
         $response->assertSee('Carlos Usuario');
         $response->assertSee('carlos@planazo.com');
 
-        // Sección de portabilidad (DESIGN.md §7.C)
-        $response->assertSee('tarjeta-exportacion-datos', false);
+        // Sección de portabilidad
+        $response->assertSee('tarjeta-acciones', false);
         $response->assertSee('Descargar mis datos', false);
         $response->assertSee(route('perfil.datos.exportar', ['formato' => 'json']), false);
         $response->assertSee(route('perfil.datos.exportar', ['formato' => 'csv']), false);
 
-        // Modal nativo de salida simétrica (DESIGN.md §7.B)
+        // Modal nativo de salida simétrica
         $response->assertSee('id="modal-eliminar-cuenta"', false);
         $response->assertSee('Conservar cuenta');
         $response->assertSee('Sí, eliminar mi cuenta');
@@ -50,10 +50,12 @@ class SalidaHonestaVistaTest extends TestCase
         $response = $this->actingAs($user)->get('/perfil/datos');
 
         $response->assertStatus(200);
-        $response->assertSee('caja-salida-honesta', false);
-        $response->assertSee('Eliminación de cuenta temporalmente restringida');
-        $response->assertSee('¿Por qué no puedes dar de baja tu cuenta');
-        $response->assertSee('¿Qué debes hacer para resolverlo?');
+        $response->assertSee('id="modal-bloqueos-cuenta"', false);
+        $response->assertSee('No puedes dar de baja tu cuenta todavía');
+        $response->assertSee('Tienes acciones pendientes que requieren tu atención');
+        $response->assertDontSee('¿Por qué no puedes dar de baja tu cuenta');
+        $response->assertDontSee('¿Qué debes hacer para resolverlo?');
+        $response->assertDontSee('id="modal-eliminar-cuenta"', false);
         $response->assertSee('Plan Bloqueante 1');
         $response->assertSee(route('planes.detalle', $plan->id), false);
     }

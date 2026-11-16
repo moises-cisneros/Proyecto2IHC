@@ -1,4 +1,7 @@
-<div class="seccion-gastos-liquidacion" style="margin-top: var(--space-2);">
+<div class="gastos-seccion">
+
+    {{-- Fitts: touch targets (min-height: var(--touch-min), min-width: var(--touch-min)) and antagonistic
+         action spacing (gap: var(--space-3)) are enforced by the gastos-* classes in the stylesheet fragment. --}}
 
     {{-- Banner de métricas generales y balance personal --}}
     @php
@@ -8,6 +11,8 @@
         $misDeudas = collect($saldos['deudas'])->where('deudor_id', $miId)->values();
         $misCobros = collect($saldos['deudas'])->where('acreedor_id', $miId)->values();
         $totalNeto = $miBalance['neto'] ?? 0.0;
+        $tonoBalance =
+            $totalNeto > 0 ? 'gastos-tono-exito' : ($totalNeto < 0 ? 'gastos-tono-peligro' : 'gastos-tono-neutro');
         $participantesPlan = collect([$plan->user])
             ->merge($plan->participantes)
             ->unique('id')
@@ -27,37 +32,29 @@
         });
     @endphp
 
-    <div
-        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+    <div class="gastos-resumen">
         {{-- Tarjeta 1: Total gastado en el grupo --}}
-        <div
-            style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4) var(--space-5); box-shadow: var(--shadow-sm);">
-            <div
-                style="font-size: var(--font-size-sm); color: var(--color-muted); font-weight: var(--font-weight-semibold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-1);">
+        <div class="gastos-resumen-tarjeta">
+            <div class="gastos-resumen-etiqueta">
                 Total Gastado en el Plan
             </div>
-            <div
-                style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: var(--color-foreground);">
+            <div class="gastos-resumen-valor">
                 Bs {{ number_format($saldos['total_gastado'], 2) }}
             </div>
-            <div style="font-size: var(--font-size-sm); color: var(--color-muted); margin-top: var(--space-1);">
+            <div class="gastos-resumen-nota">
                 {{ $gastos->count() }} {{ $gastos->count() === 1 ? 'gasto registrado' : 'gastos registrados' }}
             </div>
         </div>
 
         {{-- Tarjeta 2: Tu posición neta --}}
-        <div
-            style="background: {{ $totalNeto > 0 ? 'var(--color-success-bg)' : ($totalNeto < 0 ? 'var(--color-destructive-bg)' : 'var(--color-surface-soft)') }}; border: 1px solid {{ $totalNeto > 0 ? 'var(--color-success-border)' : ($totalNeto < 0 ? 'var(--color-destructive-border)' : 'var(--color-border)') }}; border-radius: var(--radius-lg); padding: var(--space-4) var(--space-5); box-shadow: var(--shadow-sm);">
-            <div
-                style="font-size: var(--font-size-sm); color: {{ $totalNeto > 0 ? 'var(--color-success)' : ($totalNeto < 0 ? 'var(--color-destructive)' : 'var(--color-muted)') }}; font-weight: var(--font-weight-semibold); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: var(--space-1);">
+        <div class="gastos-resumen-tarjeta {{ $tonoBalance }}">
+            <div class="gastos-resumen-etiqueta">
                 Tu Balance Neto
             </div>
-            <div
-                style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); color: {{ $totalNeto > 0 ? 'var(--color-success)' : ($totalNeto < 0 ? 'var(--color-destructive)' : 'var(--color-foreground)') }};">
+            <div class="gastos-resumen-valor">
                 {{ $totalNeto > 0 ? '+Bs ' : ($totalNeto < 0 ? '-Bs ' : 'Bs ') }}{{ number_format(abs($totalNeto), 2) }}
             </div>
-            <div
-                style="font-size: var(--font-size-sm); color: {{ $totalNeto > 0 ? 'var(--color-success)' : ($totalNeto < 0 ? 'var(--color-destructive)' : 'var(--color-muted)') }}; margin-top: var(--space-1);">
+            <div class="gastos-resumen-nota">
                 @if ($totalNeto > 0)
                     Te deben dinero en el consolidado del plan
                 @elseif ($totalNeto < 0)
@@ -69,74 +66,61 @@
         </div>
 
         {{-- Tarjeta 3: Acciones rápidas --}}
-        <div
-            style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4) var(--space-5); display: flex; flex-direction: column; justify-content: center; gap: var(--space-2); box-shadow: var(--shadow-sm);">
+        <div class="gastos-resumen-tarjeta gastos-resumen-tarjeta--acciones">
             @can('create', [\App\Models\Gasto::class, $plan])
-                <button type="button" class="boton"
-                    style="min-height: var(--touch-min); width: 100%; border-radius: var(--radius-pill); font-weight: var(--font-weight-semibold); display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);"
+                <button type="button" class="boton gastos-boton gastos-boton--bloque"
                     onclick="document.getElementById('modal-crear-gasto').showModal()" aria-label="Registrar nuevo gasto">
                     + Registrar Gasto
                 </button>
             @endcan
 
             @can('create', [\App\Models\Pago::class, $plan])
-                <button type="button" class="boton boton-claro"
-                    style="min-height: var(--touch-min); width: 100%; border-radius: var(--radius-pill); font-weight: var(--font-weight-semibold); display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);"
+                <button type="button" class="boton boton-claro gastos-boton gastos-boton--bloque"
                     onclick="abrirModalPagoDirecto('', '')" aria-label="Registrar pago a un compañero">
-                    <x-icono nombre="pago"
-                        style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: var(--space-1);" />
+                    <x-icono nombre="pago" class="gastos-icono-base" />
                     Registrar Pago
                 </button>
             @endcan
 
-            <button type="button" class="boton boton-claro"
-                style="min-height: var(--touch-min); width: 100%; border-radius: var(--radius-pill); font-weight: var(--font-weight-semibold); display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);"
+            <button type="button" class="boton boton-claro gastos-boton gastos-boton--bloque"
                 onclick="document.getElementById('modal-configurar-cobro').showModal()"
                 aria-label="Configurar mis datos de cobro y QR">
-                <x-icono nombre="editar"
-                    style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: var(--space-1);" />
+                <x-icono nombre="editar" class="gastos-icono-sm-previo" />
                 Mis Datos de Cobro
             </button>
         </div>
     </div>
 
     {{-- Matriz Clara de Deudas (Hick & Fitts): Debes vs Te deben --}}
-    <div
-        style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: var(--space-5); margin-bottom: var(--space-6);">
+    <div class="gastos-matriz">
         {{-- Columna 1: Cuentas por Pagar (Debes) --}}
-        <div
-            style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
-            <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3);">
-                <x-icono nombre="pago" style="width: 20px; height: 20px; color: var(--color-destructive);" />
-                <h3
-                    style="margin: 0; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-foreground);">
+        <div class="gastos-panel">
+            <div class="gastos-columna-cabecera">
+                <x-icono nombre="pago" class="gastos-icono-peligro" />
+                <h3 class="gastos-titulo">
                     Debes a tus compañeros</h3>
             </div>
 
             @if ($misDeudas->isEmpty())
-                <div
-                    style="padding: var(--space-4); background: var(--color-surface-soft); border-radius: var(--radius-md); text-align: center; color: var(--color-muted); font-size: var(--font-size-md); display: flex; align-items: center; justify-content: center; gap: var(--space-2);">
-                    <x-icono nombre="check" style="width: 16px; height: 16px; color: var(--color-success);" />
+                <div class="gastos-vacio gastos-vacio--con-icono">
+                    <x-icono nombre="check" class="gastos-icono-sm gastos-icono-exito" />
                     <span>No tienes deudas pendientes con ningún participante.</span>
                 </div>
             @else
-                <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                <div class="gastos-lista">
                     @foreach ($misDeudas as $deuda)
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) var(--space-3); background: var(--color-destructive-bg); border: 1px solid var(--color-destructive-border); border-radius: var(--radius-md);">
+                        <div class="gastos-deuda gastos-tono-peligro">
                             <div>
-                                <div
-                                    style="font-weight: var(--font-weight-bold); color: var(--color-destructive); font-size: var(--font-size-base);">
+                                <div class="gastos-deuda-monto">
                                     Bs {{ number_format($deuda['monto'], 2) }}
                                 </div>
-                                <div style="font-size: var(--font-size-sm); color: var(--color-muted);">
+                                <div class="gastos-deuda-detalle">
                                     Acreedor: <span
-                                        style="font-weight: var(--font-weight-semibold);">{{ $deuda['acreedor']->name ?? 'Compañero' }}</span>
+                                        class="gastos-enfasis">{{ $deuda['acreedor']->name ?? 'Compañero' }}</span>
                                 </div>
                             </div>
                             @can('create', [\App\Models\Pago::class, $plan])
-                                <button type="button" class="boton"
-                                    style="min-height: var(--touch-min); min-width: var(--touch-min); padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold);"
+                                <button type="button" class="boton gastos-boton gastos-boton--compacto"
                                     onclick="abrirModalPagoDirecto('{{ $deuda['acreedor_id'] }}', '{{ $deuda['monto'] }}')"
                                     aria-label="Pagar Bs {{ number_format($deuda['monto'], 2) }} a {{ $deuda['acreedor']->name }}">
                                     Pagar deuda
@@ -149,37 +133,31 @@
         </div>
 
         {{-- Columna 2: Cuentas por Cobrar (Te deben) --}}
-        <div
-            style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
-            <div style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3);">
-                <x-icono nombre="dinero" style="width: 20px; height: 20px; color: var(--color-success);" />
-                <h3
-                    style="margin: 0; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-foreground);">
+        <div class="gastos-panel">
+            <div class="gastos-columna-cabecera">
+                <x-icono nombre="dinero" class="gastos-icono-exito" />
+                <h3 class="gastos-titulo">
                     Te deben tus compañeros</h3>
             </div>
 
             @if ($misCobros->isEmpty())
-                <div
-                    style="padding: var(--space-4); background: var(--color-surface-soft); border-radius: var(--radius-md); text-align: center; color: var(--color-muted); font-size: var(--font-size-md);">
+                <div class="gastos-vacio">
                     Ningún participante tiene deudas directas contigo actualmente.
                 </div>
             @else
-                <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                <div class="gastos-lista">
                     @foreach ($misCobros as $cobro)
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) var(--space-3); background: var(--color-success-bg); border: 1px solid var(--color-success-border); border-radius: var(--radius-md);">
+                        <div class="gastos-deuda gastos-tono-exito">
                             <div>
-                                <div
-                                    style="font-weight: var(--font-weight-bold); color: var(--color-success); font-size: var(--font-size-base);">
+                                <div class="gastos-deuda-monto">
                                     Bs {{ number_format($cobro['monto'], 2) }}
                                 </div>
-                                <div style="font-size: var(--font-size-sm); color: var(--color-muted);">
+                                <div class="gastos-deuda-detalle">
                                     Deudor: <span
-                                        style="font-weight: var(--font-weight-semibold);">{{ $cobro['deudor']->name ?? 'Compañero' }}</span>
+                                        class="gastos-enfasis">{{ $cobro['deudor']->name ?? 'Compañero' }}</span>
                                 </div>
                             </div>
-                            <span
-                                style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-success); background: var(--color-surface); border: 1px solid var(--color-success-border); padding: var(--space-1) var(--space-2); border-radius: var(--radius-pill);">
+                            <span class="gastos-etiqueta-pendiente">
                                 Pendiente de pago
                             </span>
                         </div>
@@ -190,119 +168,101 @@
     </div>
 
     {{-- Sección de Pagos y Liquidaciones Pendientes (CA-03 y CA-04) --}}
-    <div
-        style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5); margin-bottom: var(--space-6);">
-        <div
-            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-2);">
+    <div class="gastos-panel gastos-panel--separado">
+        <div class="gastos-panel-cabecera">
             <div>
-                <h3
-                    style="margin: 0 0 var(--space-1) 0; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-foreground);">
+                <h3 class="gastos-titulo gastos-titulo--seccion">
                     Pagos y Liquidaciones</h3>
-                <p style="margin: 0; font-size: var(--font-size-sm); color: var(--color-muted);">
+                <p class="gastos-descripcion">
                     Los pagos registrados quedan en estado pendiente hasta la confirmación explícita del receptor.
                 </p>
             </div>
         </div>
 
         @if ($pagos->isEmpty())
-            <div
-                style="padding: var(--space-5); text-align: center; color: var(--color-muted); background: var(--color-surface-soft); border: 1px dashed var(--color-border-input); border-radius: var(--radius-md); font-size: var(--font-size-md);">
+            <div class="gastos-vacio gastos-vacio--pagos">
                 No se han registrado transferencias ni pagos entre participantes todavía.
             </div>
         @else
-            <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+            <div class="gastos-lista">
                 @foreach ($pagos as $pago)
                     @php
                         $soyReceptor = (int) auth()->id() === (int) $pago->receptor_id;
                         $soyDeudor = (int) auth()->id() === (int) $pago->deudor_id;
+                        $tonoPago =
+                            $pago->estado === 'confirmado'
+                                ? 'gastos-tono-exito'
+                                : ($pago->estado === 'rechazado'
+                                    ? 'gastos-tono-peligro'
+                                    : 'gastos-tono-alerta');
                     @endphp
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) var(--space-4); border: 1px solid {{ $pago->estado === 'confirmado' ? 'var(--color-success-border)' : ($pago->estado === 'rechazado' ? 'var(--color-destructive-border)' : 'var(--color-warning-border)') }}; background: {{ $pago->estado === 'confirmado' ? 'var(--color-success-bg)' : ($pago->estado === 'rechazado' ? 'var(--color-destructive-bg)' : 'var(--color-warning-bg)') }}; border-radius: var(--radius-lg); flex-wrap: wrap; gap: var(--space-3);">
+                    <div class="gastos-pago {{ $tonoPago }}">
                         <div>
-                            <div
-                                style="display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-1);">
-                                <span
-                                    style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-foreground);">
+                            <div class="gastos-pago-resumen">
+                                <span class="gastos-pago-monto">
                                     Bs {{ number_format($pago->monto, 2) }}
                                 </span>
-                                <span class="badge-estado-pago"
-                                    style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); padding: var(--space-1) var(--space-2); border-radius: var(--radius-pill); text-transform: uppercase;
-                                      background: {{ $pago->estado === 'confirmado' ? 'var(--color-success-bg)' : ($pago->estado === 'rechazado' ? 'var(--color-destructive-bg)' : 'var(--color-warning-bg)') }};
-                                      color: {{ $pago->estado === 'confirmado' ? 'var(--color-success)' : ($pago->estado === 'rechazado' ? 'var(--color-destructive)' : 'var(--color-warning)') }};">
+                                <span class="badge-estado-pago gastos-pago-estado">
                                     {{ $pago->estado }}
                                 </span>
                             </div>
-                            <div style="font-size: var(--font-size-sm); color: var(--color-primary-hover);">
-                                De <span
-                                    style="font-weight: var(--font-weight-semibold);">{{ $pago->deudor->name ?? 'Usuario' }}</span>
-                                para <span
-                                    style="font-weight: var(--font-weight-semibold);">{{ $pago->receptor->name ?? 'Usuario' }}</span>
+                            <div class="gastos-pago-partes">
+                                De <span class="gastos-enfasis">{{ $pago->deudor->name ?? 'Usuario' }}</span>
+                                para <span class="gastos-enfasis">{{ $pago->receptor->name ?? 'Usuario' }}</span>
                                 · {{ $pago->created_at->format('d/m/Y H:i') }}
                             </div>
                             @if ($pago->tieneComprobante())
-                                <div
-                                    style="margin-top: var(--space-2); display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
-                                    <button type="button" class="boton boton-claro btn-ver-comprobante"
-                                        style="min-height: 32px; padding: var(--space-1) var(--space-2); font-size: var(--font-size-xs); border-radius: var(--radius-sm); display: inline-flex; align-items: center; gap: var(--space-1);"
+                                <div class="gastos-pago-comprobante">
+                                    <button type="button" class="boton boton-claro boton-xs gastos-boton--ver"
                                         onclick="document.getElementById('modal-comprobante-{{ $pago->id }}').showModal()"
                                         aria-label="Ver comprobante adjunto del pago {{ $pago->id }}">
-                                        <x-icono nombre="pago" style="width: 14px; height: 14px;" />
+                                        <x-icono nombre="pago" class="gastos-icono-mini" />
                                         <span>Ver Comprobante</span>
                                     </button>
 
                                     @if ($pago->esEscaneoVerificado())
-                                        <span class="badge-escaneo verificado"
-                                            style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: var(--color-success); background: var(--color-success-bg); border: 1px solid var(--color-success-border); padding: var(--space-1) var(--space-2); border-radius: var(--radius-pill); display: inline-flex; align-items: center; gap: var(--space-1);">
-                                            <x-icono nombre="check" style="width: 12px; height: 12px;" />
+                                        <span class="badge-escaneo verificado gastos-escaneo gastos-tono-exito">
+                                            <x-icono nombre="check" class="gastos-icono-micro" />
                                             {{-- prettier-ignore --}}
                                             <span>Monto Verificado: Bs {{ number_format($pago->monto_detectado, 2) }}{{ $pago->banco_detectado ? ' (' . $pago->banco_detectado . ')' : '' }}</span>
                                         </span>
                                     @elseif ($pago->esEscaneoDiscrepante())
-                                        <span class="badge-escaneo discrepante"
-                                            style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: var(--color-destructive); background: var(--color-destructive-bg); border: 1px solid var(--color-destructive-border); padding: var(--space-1) var(--space-2); border-radius: var(--radius-pill); display: inline-flex; align-items: center; gap: var(--space-1);">
-                                            <x-icono nombre="bloqueado" style="width: 12px; height: 12px;" />
+                                        <span class="badge-escaneo discrepante gastos-escaneo gastos-tono-peligro">
+                                            <x-icono nombre="bloqueado" class="gastos-icono-micro" />
                                             {{-- prettier-ignore --}}
                                             <span>Alerta: Comprobante indica Bs {{ number_format($pago->monto_detectado, 2) }}</span>
                                         </span>
                                     @elseif ($pago->esEscaneoInvalido())
-                                        <span class="badge-escaneo invalido"
-                                            style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-warning); background: var(--color-warning-bg); border: 1px solid var(--color-warning-border); padding: var(--space-1) var(--space-2); border-radius: var(--radius-pill);">
+                                        <span
+                                            class="badge-escaneo invalido gastos-escaneo gastos-escaneo--tenue gastos-tono-alerta">
                                             Documento no concluyente
                                         </span>
                                     @endif
                                 </div>
 
                                 {{-- Modal para ampliar y revisar el comprobante --}}
-                                <dialog id="modal-comprobante-{{ $pago->id }}"
-                                    style="border: none; border-radius: var(--radius-xl); padding: var(--space-6); width: 100%; max-width: 500px; box-shadow: var(--shadow-sm);">
-                                    <div
-                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-3);">
-                                        <h3
-                                            style="margin: 0; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-foreground);">
+                                <dialog id="modal-comprobante-{{ $pago->id }}" class="dialogo-md">
+                                    <div class="gastos-dialogo-cabecera">
+                                        <h3 class="gastos-titulo">
                                             Comprobante de Pago</h3>
                                         <button type="button"
                                             onclick="document.getElementById('modal-comprobante-{{ $pago->id }}').close()"
-                                            style="border: none; background: transparent; font-size: var(--font-size-xl); cursor: pointer; color: var(--color-muted);"
-                                            aria-label="Cerrar modal">&times;</button>
+                                            class="gastos-dialogo-cerrar" aria-label="Cerrar modal">&times;</button>
                                     </div>
 
                                     @if ($pago->monto_detectado && abs((float) $pago->monto_detectado - (float) $pago->monto) < 0.01)
-                                        <div class="badge-ia-verificado"
-                                            style="background: var(--color-success-bg); color: var(--color-success); border: 1px solid var(--color-success-border); padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-weight: var(--font-weight-semibold); font-size: var(--font-size-sm); display: flex; align-items: center; gap: var(--space-2); margin-bottom: var(--space-3);">
-                                            <x-icono nombre="check"
-                                                style="width: 16px; height: 16px; color: var(--color-success);" />
+                                        <div class="badge-ia-verificado gastos-aviso-ia">
+                                            <x-icono nombre="check" class="gastos-icono-sm gastos-icono-exito" />
                                             {{-- prettier-ignore --}}
                                             <span>Comprobante verificado por IA: Monto coincide (Bs {{ number_format($pago->monto, 2) }})</span>
                                         </div>
                                     @endif
 
-                                    <div style="text-align: center; margin-bottom: var(--space-4);">
+                                    <div class="gastos-comprobante-vista">
                                         <img src="{{ asset('storage/' . $pago->comprobante_path) }}"
-                                            alt="Comprobante de pago"
-                                            style="max-width: 100%; max-height: 350px; border-radius: var(--radius-md); border: 1px solid var(--color-border);">
+                                            alt="Comprobante de pago" class="gastos-comprobante-img">
                                     </div>
-                                    <div
-                                        style="background: var(--color-surface-soft); padding: var(--space-3); border-radius: var(--radius-sm); font-size: var(--font-size-sm); color: var(--color-muted);">
+                                    <div class="gastos-comprobante-datos">
                                         <div><strong>Monto registrado:</strong> Bs {{ number_format($pago->monto, 2) }}
                                         </div>
                                         @if ($pago->monto_detectado)
@@ -313,20 +273,18 @@
                                             <div><strong>Banco emisor:</strong> {{ $pago->banco_detectado }}</div>
                                         @endif
                                     </div>
-                                    <div
-                                        style="margin-top: var(--space-4); display: flex; justify-content: flex-end; align-items: center; gap: var(--space-3);">
-                                        <button type="button" class="boton boton-claro"
-                                            style="border-radius: var(--radius-pill); min-height: var(--touch-min); min-width: var(--touch-min); padding: var(--space-2) var(--space-4);"
+                                    <div class="gastos-acciones gastos-acciones--arriba-4">
+                                        <button type="button" class="boton boton-claro gastos-boton"
                                             onclick="document.getElementById('modal-comprobante-{{ $pago->id }}').close()">Cerrar</button>
                                         @if ($pago->estado === 'pendiente')
                                             @can('confirmar', $pago)
                                                 <form method="POST" action="{{ route('pagos.confirmar', $pago) }}"
-                                                    style="margin: 0;">
+                                                    class="form-reset">
                                                     @csrf
-                                                    <button type="submit" class="boton"
-                                                        style="min-height: var(--touch-min); min-width: var(--touch-min); padding: var(--space-2) var(--space-5); border-radius: var(--radius-pill); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); background: var(--color-success); color: var(--color-surface); display: inline-flex; align-items: center; gap: var(--space-1);"
+                                                    <button type="submit"
+                                                        class="boton gastos-boton gastos-boton--compacto gastos-boton--ancho gastos-boton--exito gastos-boton--con-icono"
                                                         aria-label="Confirmar pago verificado de Bs {{ number_format($pago->monto, 2) }}">
-                                                        <x-icono nombre="check" style="width: 14px; height: 14px;" />
+                                                        <x-icono nombre="check" class="gastos-icono-mini" />
                                                         <span>Confirmar pago en 1 clic</span>
                                                     </button>
                                                 </form>
@@ -336,46 +294,43 @@
                                 </dialog>
                             @endif
                             @if ($pago->motivo_rechazo)
-                                <div
-                                    style="margin-top: var(--space-1); font-size: var(--font-size-sm); color: var(--color-destructive); background: var(--color-surface); padding: var(--space-1) var(--space-3); border-radius: var(--radius-sm); border: 1px solid var(--color-destructive-border);">
-                                    <span style="font-weight: var(--font-weight-semibold);">Motivo de rechazo:</span>
+                                <div class="gastos-motivo-rechazo">
+                                    <span class="gastos-enfasis">Motivo de rechazo:</span>
                                     &laquo;{{ $pago->motivo_rechazo }}&raquo;
                                 </div>
                             @endif
                         </div>
 
                         {{-- Botones de acción del receptor protegidos con Policy (Fitts >= 44px) --}}
-                        <div style="display: flex; align-items: center; gap: var(--space-2);">
+                        <div class="gastos-pago-acciones">
                             @if ($pago->estado === 'pendiente')
                                 @can('confirmar', $pago)
                                     <form method="POST" action="{{ route('pagos.confirmar', $pago) }}"
-                                        style="margin: 0;">
+                                        class="form-reset">
                                         @csrf
-                                        <button type="submit" class="boton"
-                                            style="min-height: var(--touch-min); min-width: var(--touch-min); padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); background: var(--color-success); color: var(--color-surface); display: inline-flex; align-items: center; gap: var(--space-1);"
+                                        <button type="submit"
+                                            class="boton gastos-boton gastos-boton--compacto gastos-boton--exito gastos-boton--con-icono"
                                             aria-label="Confirmar pago de Bs {{ number_format($pago->monto, 2) }}">
-                                            <x-icono nombre="check" style="width: 14px; height: 14px;" />
+                                            <x-icono nombre="check" class="gastos-icono-mini" />
                                             <span>Confirmar pago</span>
                                         </button>
                                     </form>
 
-                                    <button type="button" class="boton boton-claro"
-                                        style="min-height: var(--touch-min); min-width: var(--touch-min); padding: var(--space-2) var(--space-4); border-radius: var(--radius-pill); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-destructive); border-color: var(--color-destructive-border); display: inline-flex; align-items: center; gap: var(--space-1);"
+                                    <button type="button"
+                                        class="boton boton-claro gastos-boton gastos-boton--compacto gastos-boton--peligro-suave gastos-boton--con-icono"
                                         onclick="document.getElementById('modal-rechazar-{{ $pago->id }}').showModal()"
                                         aria-label="Rechazar pago de Bs {{ number_format($pago->monto, 2) }}">
-                                        <x-icono nombre="bloqueado" style="width: 14px; height: 14px;" />
+                                        <x-icono nombre="bloqueado" class="gastos-icono-mini" />
                                         <span>Rechazar</span>
                                     </button>
                                 @else
-                                    <span
-                                        style="font-size: var(--font-size-sm); color: var(--color-warning); font-weight: var(--font-weight-medium);">
+                                    <span class="gastos-pago-espera">
                                         Esperando confirmación del receptor
                                     </span>
                                 @endcan
                             @elseif ($pago->estado === 'confirmado')
-                                <span
-                                    style="font-size: var(--font-size-sm); color: var(--color-success); font-weight: var(--font-weight-semibold); display: inline-flex; align-items: center; gap: var(--space-1);">
-                                    <x-icono nombre="check" style="width: 14px; height: 14px;" />
+                                <span class="gastos-pago-liquidado">
+                                    <x-icono nombre="check" class="gastos-icono-mini" />
                                     <span>Liquidado el {{ $pago->fecha_resolucion?->format('d/m/Y') }}</span>
                                 </span>
                             @endif
@@ -384,35 +339,28 @@
 
                     {{-- Modal nativo de rechazo para este pago --}}
                     @can('rechazar', $pago)
-                        <dialog id="modal-rechazar-{{ $pago->id }}"
-                            style="border: none; border-radius: var(--radius-xl); padding: var(--space-6); width: 100%; max-width: 460px; box-shadow: var(--shadow-sm);">
+                        <dialog id="modal-rechazar-{{ $pago->id }}" class="dialogo-md">
                             <form method="POST" action="{{ route('pagos.rechazar', $pago) }}">
                                 @csrf
-                                <h3
-                                    style="margin: 0 0 var(--space-2) 0; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-destructive);">
+                                <h3 class="gastos-dialogo-titulo gastos-dialogo-titulo--rechazo">
                                     Rechazar Pago</h3>
-                                <p
-                                    style="margin: 0 0 var(--space-4) 0; font-size: var(--font-size-md); color: var(--color-muted);">
+                                <p class="gastos-dialogo-texto gastos-dialogo-texto--corto">
                                     Indica al deudor la razón por la cual no aceptas este pago (ej. no recibido en tu banco
                                     o monto incorrecto).
                                 </p>
-                                <div style="margin-bottom: var(--space-5);">
-                                    <label for="motivo-rechazo-{{ $pago->id }}"
-                                        style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-1);">
+                                <div class="campo">
+                                    <label for="motivo-rechazo-{{ $pago->id }}">
                                         Motivo del rechazo (obligatorio)
                                     </label>
                                     <textarea id="motivo-rechazo-{{ $pago->id }}" name="motivo_rechazo" rows="3" required minlength="5"
-                                        placeholder="Explica detalladamente por qué rechazas este pago..."
-                                        style="width: 100%; padding: var(--space-3); border: 1px solid var(--color-border-input); border-radius: var(--radius-md); font-size: var(--font-size-md); box-sizing: border-box;"></textarea>
+                                        placeholder="Explica detalladamente por qué rechazas este pago..."></textarea>
                                 </div>
-                                <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
-                                    <button type="button" class="boton boton-claro"
-                                        style="min-height: var(--touch-min); min-width: var(--touch-min); border-radius: var(--radius-pill);"
+                                <div class="gastos-acciones">
+                                    <button type="button" class="boton boton-claro gastos-boton"
                                         onclick="document.getElementById('modal-rechazar-{{ $pago->id }}').close()">
                                         Cancelar
                                     </button>
-                                    <button type="submit" class="boton"
-                                        style="min-height: var(--touch-min); min-width: var(--touch-min); border-radius: var(--radius-pill); background: var(--color-destructive); color: var(--color-surface);">
+                                    <button type="submit" class="boton gastos-boton gastos-boton--peligro">
                                         Confirmar Rechazo
                                     </button>
                                 </div>
@@ -425,67 +373,53 @@
     </div>
 
     {{-- Listado de Gastos Registrados --}}
-    <div
-        style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-5);">
-        <div
-            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4); flex-wrap: wrap; gap: var(--space-2);">
+    <div class="gastos-panel">
+        <div class="gastos-panel-cabecera">
             <div>
-                <h3
-                    style="margin: 0 0 var(--space-1) 0; font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-foreground);">
+                <h3 class="gastos-titulo gastos-titulo--seccion">
                     Historial de Gastos</h3>
-                <p style="margin: 0; font-size: var(--font-size-sm); color: var(--color-muted);">Detalle de consumos y
+                <p class="gastos-descripcion">Detalle de consumos y
                     cuotas asignadas a cada participante.</p>
             </div>
         </div>
 
         @if ($gastos->isEmpty())
-            <div
-                style="padding: var(--space-8) var(--space-5); text-align: center; color: var(--color-muted); background: var(--color-surface-soft); border: 1px dashed var(--color-border-input); border-radius: var(--radius-lg);">
-                <p style="margin: 0 0 var(--space-3) 0; font-size: var(--font-size-base);">No hay gastos registrados en
+            <div class="gastos-vacio gastos-vacio--gastos">
+                <p class="gastos-vacio-texto">No hay gastos registrados en
                     este plan todavía.</p>
                 @can('create', [\App\Models\Gasto::class, $plan])
-                    <button type="button" class="boton"
-                        style="min-height: var(--touch-min); min-width: var(--touch-min); padding: var(--space-2) var(--space-5); border-radius: var(--radius-pill);"
+                    <button type="button" class="boton gastos-boton gastos-boton--ancho"
                         onclick="document.getElementById('modal-crear-gasto').showModal()">
                         + Registrar el primer gasto
                     </button>
                 @endcan
             </div>
         @else
-            <div
-                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--space-4);">
+            <div class="gastos-historial">
                 @foreach ($gastos as $gasto)
-                    <div
-                        style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-4); display: flex; flex-direction: column; justify-content: space-between; gap: var(--space-3); box-shadow: var(--shadow-sm);">
+                    <div class="gastos-gasto">
                         <div>
-                            <div
-                                style="display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-2); margin-bottom: var(--space-1);">
-                                <span
-                                    style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); color: var(--color-foreground); word-break: break-word;">
+                            <div class="gastos-gasto-cabecera">
+                                <span class="gastos-gasto-concepto">
                                     {{ $gasto->concepto }}
                                 </span>
-                                <span
-                                    style="font-weight: var(--font-weight-bold); font-size: var(--font-size-base); color: var(--color-success); white-space: nowrap;">
+                                <span class="gastos-gasto-monto">
                                     Bs {{ number_format($gasto->monto_total, 2) }}
                                 </span>
                             </div>
-                            <div
-                                style="font-size: var(--font-size-sm); color: var(--color-muted); margin-bottom: var(--space-2);">
+                            <div class="gastos-gasto-meta">
                                 Pagado por: <span
-                                    style="font-weight: var(--font-weight-semibold); color: var(--color-foreground);">{{ $gasto->pagador->name ?? 'Usuario' }}</span>
-                                <span style="margin: 0 var(--space-1);">·</span>
-                                <span style="text-transform: capitalize;">{{ $gasto->tipo_division }}</span>
+                                    class="gastos-nombre">{{ $gasto->pagador->name ?? 'Usuario' }}</span>
+                                <span class="gastos-gasto-separador">·</span>
+                                <span class="gastos-gasto-tipo">{{ $gasto->tipo_division }}</span>
                             </div>
 
-                            <div
-                                style="font-size: var(--font-size-xs); color: var(--color-primary-hover); border-top: 1px solid var(--color-neutral-bg); padding-top: var(--space-2);">
-                                <div
-                                    style="font-weight: var(--font-weight-semibold); margin-bottom: var(--space-1); color: var(--color-muted);">
+                            <div class="gastos-gasto-participantes">
+                                <div class="gastos-gasto-participantes-titulo">
                                     Participantes ({{ $gasto->divisiones->count() }}):</div>
-                                <div style="display: flex; flex-wrap: wrap; gap: var(--space-1);">
+                                <div class="gastos-gasto-cuotas">
                                     @foreach ($gasto->divisiones as $div)
-                                        <span
-                                            style="background: var(--color-neutral-bg); border: 1px solid var(--color-border); border-radius: var(--radius-sm); padding: var(--space-1) var(--space-2); font-size: var(--font-size-xs);">
+                                        <span class="gastos-gasto-cuota">
                                             {{ $div->user->name ?? 'Usuario' }}: <strong>Bs
                                                 {{ number_format($div->monto_asignado, 2) }}</strong>
                                         </span>
@@ -494,7 +428,7 @@
                             </div>
                         </div>
 
-                        <div style="font-size: var(--font-size-xs); color: var(--color-muted); text-align: right;">
+                        <div class="gastos-gasto-fecha">
                             {{ $gasto->created_at->format('d/m/Y H:i') }}
                         </div>
                     </div>
@@ -507,96 +441,78 @@
 
 {{-- Modal accesible para Registrar Gasto con Alternancia Dinámica (Hick & Fitts) --}}
 @can('create', [\App\Models\Gasto::class, $plan])
-    <dialog id="modal-crear-gasto"
-        style="border: none; border-radius: var(--radius-xl); padding: var(--space-6); width: 100%; max-width: 520px; box-shadow: var(--shadow-sm);">
+    <dialog id="modal-crear-gasto" class="dialogo-lg">
         <form method="POST" action="{{ route('planes.gastos.guardar', $plan) }}">
             @csrf
-            <h2
-                style="margin: 0 0 var(--space-2) 0; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-foreground);">
+            <h2 class="gastos-dialogo-titulo">
                 Registrar Nuevo Gasto</h2>
-            <p style="margin: 0 0 var(--space-5) 0; font-size: var(--font-size-md); color: var(--color-muted);">Anota el
+            <p class="gastos-dialogo-texto">Anota el
                 consumo realizado y cómo se reparte entre los participantes.</p>
 
-            <div style="margin-bottom: var(--space-4);">
-                <label for="input-gasto-concepto"
-                    style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-1);">
+            <div class="campo">
+                <label for="input-gasto-concepto">
                     Concepto o descripción
                 </label>
                 <input type="text" id="input-gasto-concepto" name="concepto" required
-                    placeholder="Ej. Cena, Supermercado, Alquiler de cabaña"
-                    style="width: 100%; padding: var(--space-3) var(--space-3); border: 1px solid var(--color-border-input); border-radius: var(--radius-md); font-size: var(--font-size-md); box-sizing: border-box; min-height: var(--touch-min);">
+                    placeholder="Ej. Cena, Supermercado, Alquiler de cabaña">
             </div>
 
-            <div style="margin-bottom: var(--space-4);">
-                <label for="input-gasto-monto"
-                    style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-1);">
+            <div class="campo">
+                <label for="input-gasto-monto">
                     Monto total (Bs)
                 </label>
                 <input type="number" id="input-gasto-monto" name="monto_total" step="0.01" min="0.01" required
-                    placeholder="0.00" oninput="recalcularDivision()"
-                    style="width: 100%; padding: var(--space-3) var(--space-3); border: 1px solid var(--color-border-input); border-radius: var(--radius-md); font-size: var(--font-size-md); box-sizing: border-box; min-height: var(--touch-min);">
+                    placeholder="0.00" oninput="recalcularDivision()">
             </div>
 
-            <div style="margin-bottom: var(--space-4);">
-                <label for="select-tipo-division"
-                    style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-1);">
+            <div class="campo">
+                <label for="select-tipo-division">
                     Modo de división
                 </label>
                 <select id="select-tipo-division" name="tipo_division" required
-                    onchange="cambiarModoDivision(this.value)"
-                    style="width: 100%; padding: var(--space-3) var(--space-3); border: 1px solid var(--color-border-input); border-radius: var(--radius-md); font-size: var(--font-size-md); box-sizing: border-box; min-height: var(--touch-min);">
+                    onchange="cambiarModoDivision(this.value)">
                     <option value="equitativa">En partes iguales (Equitativa)</option>
                     <option value="personalizada">Monto personalizado por persona</option>
                 </select>
             </div>
 
-            <div style="margin-bottom: var(--space-5);">
-                <label
-                    style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-1);">
+            <div class="gastos-grupo">
+                <label class="gastos-grupo-etiqueta">
                     Participantes incluidos
                 </label>
-                <p style="margin: 0 0 var(--space-2) 0; font-size: var(--font-size-sm); color: var(--color-muted);">
+                <p class="gastos-grupo-ayuda">
                     Selecciona explícitamente a las personas que asumirán este gasto (opt-in consciente).
                 </p>
-                <div
-                    style="display: flex; flex-direction: column; gap: var(--space-2); max-height: 180px; overflow-y: auto; padding: var(--space-2); border: 1px solid var(--color-border); border-radius: var(--radius-md); background: var(--color-surface-soft);">
+                <div class="gastos-participantes-lista">
                     @foreach ($participantesPlan as $p)
-                        <div
-                            style="display: flex; justify-content: space-between; align-items: center; gap: var(--space-2);">
-                            <label
-                                style="display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-md); cursor: pointer;">
+                        <div class="gastos-participante">
+                            <label class="gastos-participante-etiqueta">
                                 <input type="checkbox" name="participantes[]" value="{{ $p->id }}"
-                                    class="check-participante" onchange="recalcularDivision()"
-                                    style="width: 18px; height: 18px;">
+                                    class="check-participante" onchange="recalcularDivision()">
                                 <span>{{ $p->name }}</span>
                             </label>
-                            <div class="contenedor-monto-personalizado" style="display: none;">
+                            <div class="campo contenedor-monto-personalizado gastos-oculto">
                                 <input type="number" step="0.01" min="0"
                                     name="divisiones[{{ $p->id }}]" placeholder="0.00" class="input-monto-indiv"
-                                    oninput="actualizarSumaPersonalizada()"
-                                    style="width: 100px; padding: var(--space-1) var(--space-2); border: 1px solid var(--color-border-input); border-radius: var(--radius-sm); font-size: var(--font-size-sm);">
+                                    oninput="actualizarSumaPersonalizada()">
                             </div>
                         </div>
                     @endforeach
                 </div>
-                <div id="indicador-participantes-seleccionados"
-                    style="margin-top: var(--space-1); font-size: var(--font-size-xs); color: var(--color-muted);">
+                <div id="indicador-participantes-seleccionados" class="gastos-contador">
                     Participantes seleccionados: <strong id="contador-seleccionados">0</strong> de
                     {{ count($participantesPlan) }}
                 </div>
-                <div id="aviso-suma-personalizada"
-                    style="display: none; margin-top: var(--space-2); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm);">
+                <div id="aviso-suma-personalizada" class="gastos-oculto gastos-aviso-suma">
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: var(--space-3); margin-top: var(--space-6);">
-                <button type="button" class="boton boton-claro"
-                    style="min-height: var(--touch-min); min-width: var(--touch-min); border-radius: var(--radius-pill);"
+            <div class="gastos-acciones gastos-acciones--arriba-6">
+                <button type="button" class="boton boton-claro gastos-boton"
                     onclick="document.getElementById('modal-crear-gasto').close()">
                     Cancelar
                 </button>
-                <button type="submit" class="boton"
-                    style="min-height: var(--touch-min); min-width: var(--touch-min); border-radius: var(--radius-pill); background: var(--color-success); color: var(--color-surface);">
+                <button type="submit" class="boton gastos-boton gastos-boton--exito">
                     Guardar Gasto
                 </button>
             </div>
@@ -606,26 +522,22 @@
 
 {{-- Modal accesible para Registrar Pago --}}
 @can('create', [\App\Models\Pago::class, $plan])
-    <dialog id="modal-crear-pago"
-        style="border: none; border-radius: var(--radius-xl); padding: var(--space-6); width: 100%; max-width: 480px; box-shadow: var(--shadow-sm);">
+    <dialog id="modal-crear-pago" class="dialogo-md">
         <form id="form-crear-pago" method="POST" action="{{ route('planes.pagos.guardar', $plan) }}"
             enctype="multipart/form-data">
             @csrf
-            <h2
-                style="margin: 0 0 var(--space-2) 0; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-foreground);">
+            <h2 class="gastos-dialogo-titulo">
                 Registrar Pago</h2>
-            <p style="margin: 0 0 var(--space-5) 0; font-size: var(--font-size-md); color: var(--color-muted);">
+            <p class="gastos-dialogo-texto">
                 Anota una transferencia o entrega de dinero. Puedes adjuntar tu comprobante para acelerar la verificación.
             </p>
 
-            <div style="margin-bottom: var(--space-4);">
-                <label for="select-pago-receptor"
-                    style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-1);">
+            <div class="campo">
+                <label for="select-pago-receptor">
                     ¿A quién le pagas?
                 </label>
                 <select id="select-pago-receptor" name="receptor_id" required
-                    onchange="actualizarDatosReceptor(this.value)"
-                    style="width: 100%; padding: var(--space-3) var(--space-3); border: 1px solid var(--color-border-input); border-radius: var(--radius-md); font-size: var(--font-size-md); min-height: var(--touch-min); box-sizing: border-box;">
+                    onchange="actualizarDatosReceptor(this.value)">
                     <option value="">-- Selecciona el destinatario --</option>
                     @foreach ($participantesPlan as $p)
                         @if ($p->id !== auth()->id())
@@ -636,112 +548,92 @@
             </div>
 
             {{-- Panel reactivo con datos de cobro del receptor --}}
-            <div id="contenedor-datos-receptor"
-                style="display: none; margin-bottom: var(--space-4); padding: var(--space-3) var(--space-4); background: var(--color-success-bg); border: 1px solid var(--color-success-border); border-radius: var(--radius-md);">
-                <div
-                    style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); color: var(--color-success); margin-bottom: var(--space-1);">
+            <div id="contenedor-datos-receptor" class="gastos-oculto gastos-receptor">
+                <div class="gastos-receptor-titulo">
                     Datos para transferir al receptor
                 </div>
-                <div id="texto-alias-receptor"
-                    style="font-size: var(--font-size-sm); color: var(--color-foreground); margin-bottom: var(--space-1);">
+                <div id="texto-alias-receptor" class="gastos-receptor-dato">
                 </div>
-                <div id="texto-cbu-receptor"
-                    style="font-size: var(--font-size-sm); color: var(--color-foreground); margin-bottom: var(--space-1);">
+                <div id="texto-cbu-receptor" class="gastos-receptor-dato">
                 </div>
-                <div id="contenedor-qr-receptor" style="display: none; margin-top: var(--space-2);">
-                    <span
-                        style="font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); color: var(--color-success); display: block; margin-bottom: var(--space-1);">Código
+                <div id="contenedor-qr-receptor" class="gastos-oculto gastos-receptor-qr">
+                    <span class="gastos-receptor-qr-etiqueta">Código
                         QR para escanear:</span>
-                    <img id="img-qr-receptor" src="" alt="QR del receptor"
-                        style="max-width: 140px; max-height: 140px; border-radius: var(--radius-sm); border: 1px solid var(--color-border);">
+                    <img id="img-qr-receptor" src="" alt="QR del receptor" class="gastos-receptor-qr-img">
                 </div>
-                <div id="aviso-sin-cobro"
-                    style="display: none; font-size: var(--font-size-xs); color: var(--color-warning); background: var(--color-warning-bg); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); border: 1px solid var(--color-warning-border);">
+                <div id="aviso-sin-cobro" class="gastos-oculto gastos-receptor-aviso">
                     El destinatario no ha configurado Alias o QR de cobro.
                 </div>
             </div>
 
             {{-- Selector ergonómico de intención (Ley de Hick & Fitts): Pago Total vs Parcial --}}
-            <div id="selector-modalidad-pago" style="margin-bottom: var(--space-4);">
-                <label
-                    style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-2);">
+            <div id="selector-modalidad-pago" class="gastos-modalidad-grupo">
+                <label class="gastos-grupo-etiqueta gastos-grupo-etiqueta--amplia">
                     Modalidad de pago
                 </label>
-                <div role="radiogroup" aria-label="Seleccionar modalidad de pago"
-                    style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
-                    <label id="label-pago-total"
-                        style="flex: 1; min-width: 170px; min-height: var(--touch-min); display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); border: 1px solid var(--color-success-border); background: var(--color-success-bg); border-radius: var(--radius-md); cursor: pointer; font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-success);">
+                <div role="radiogroup" aria-label="Seleccionar modalidad de pago" class="gastos-modalidad-opciones">
+                    <label id="label-pago-total" class="gastos-modalidad gastos-modalidad--activa">
                         <input type="radio" name="modalidad_pago" id="radio-pago-total" value="total"
                             onchange="cambiarModalidadPago('total')">
                         <span id="texto-radio-pago-total">Pagar totalidad (Bs 0.00)</span>
                     </label>
 
-                    <label id="label-pago-parcial"
-                        style="flex: 1; min-width: 170px; min-height: var(--touch-min); display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border-input); background: var(--color-surface); border-radius: var(--radius-md); cursor: pointer; font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); color: var(--color-primary-hover);">
+                    <label id="label-pago-parcial" class="gastos-modalidad">
                         <input type="radio" name="modalidad_pago" id="radio-pago-parcial" value="parcial"
                             onchange="cambiarModalidadPago('parcial')">
                         <span>Pago parcial</span>
                     </label>
                 </div>
-                <div id="aviso-pago-modalidad"
-                    style="font-size: var(--font-size-xs); color: var(--color-success); margin-top: var(--space-1);">
+                <div id="aviso-pago-modalidad" class="gastos-modalidad-aviso">
                     Liquidación completa sin fricción de tipeo (campo numérico protegido).
                 </div>
             </div>
 
-            <div style="margin-bottom: var(--space-4);">
-                <label for="input-pago-monto"
-                    style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-1);">
+            <div class="campo">
+                <label for="input-pago-monto">
                     Monto a pagar (Bs)
                 </label>
                 <input type="number" id="input-pago-monto" name="monto" step="0.01" min="0.01" required
                     readonly oninput="verificarMontoParcial(this.value)" placeholder="0.00"
-                    style="width: 100%; padding: var(--space-3) var(--space-3); border: 1px solid var(--color-border-input); border-radius: var(--radius-md); font-size: var(--font-size-md); min-height: var(--touch-min); box-sizing: border-box; background: var(--color-surface-soft);">
-                <div id="aviso-saldo-restante"
-                    style="display: none; font-size: var(--font-size-xs); margin-top: var(--space-1);"></div>
+                    class="gastos-input-protegido">
+                <div id="aviso-saldo-restante" class="gastos-oculto gastos-aviso-saldo"></div>
             </div>
 
-            <div style="margin-bottom: var(--space-6);">
-                <label for="input-pago-comprobante"
-                    style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-1);">
+            <div class="campo">
+                <label for="input-pago-comprobante">
                     Comprobante de Transferencia (Opcional - Imagen)
                 </label>
                 <input type="file" id="input-pago-comprobante" name="comprobante"
-                    accept="image/png, image/jpeg, image/jpg, image/webp" onchange="previsualizarComprobante(this)"
-                    style="width: 100%; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border-input); border-radius: var(--radius-md); font-size: var(--font-size-sm); box-sizing: border-box;">
-                <p
-                    style="margin: var(--space-1) 0 var(--space-2) 0; font-size: var(--font-size-xs); color: var(--color-muted);">
+                    accept="image/png, image/jpeg, image/jpg, image/webp" onchange="previsualizarComprobante(this)">
+                <p class="campo-ayuda">
                     El escaneo inteligente procesará la imagen para extraer el monto y banco emisor.
                 </p>
-                <div id="preview-comprobante-contenedor" style="display: none; margin-top: var(--space-2);">
-                    <img id="img-preview-comprobante" src="" alt="Vista previa"
-                        style="max-width: 100%; max-height: 160px; border-radius: var(--radius-sm); border: 1px solid var(--color-border-input);">
+                <div id="preview-comprobante-contenedor" class="gastos-oculto gastos-vista-previa">
+                    <img id="img-preview-comprobante" src="" alt="Vista previa" class="gastos-vista-previa-img">
                 </div>
             </div>
 
             {{-- Banner de feedback durante el procesamiento (Nielsen H1) --}}
-            <div id="aviso-procesando-pago"
-                style="display: none; margin-bottom: var(--space-4); padding: var(--space-3) var(--space-3); background: var(--color-warning-bg); border: 1px solid var(--color-brand); border-radius: var(--radius-md); color: var(--color-warning); font-size: var(--font-size-sm); align-items: center; gap: var(--space-2);"
-                role="status" aria-live="polite">
+            <div id="aviso-procesando-pago" class="gastos-oculto gastos-aviso-proceso" role="status"
+                aria-live="polite">
                 <x-icono nombre="spinner" clases="w-5 h-5 flex-shrink-0" />
                 <div>
                     <strong>Procesando tu pago...</strong>
-                    <div style="font-size: var(--font-size-xs); margin-top: var(--space-1); color: var(--color-warning);">
+                    <div class="gastos-aviso-proceso-detalle">
                         Estamos registrando la transferencia y analizando el comprobante. Por favor, no cierres esta
                         ventana.
                     </div>
                 </div>
             </div>
 
-            <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
-                <button type="button" id="btn-cancelar-pago" class="boton boton-claro"
-                    style="min-height: var(--touch-min); min-width: var(--touch-min); border-radius: var(--radius-pill);"
+            <div class="gastos-acciones">
+                <button type="button" id="btn-cancelar-pago" class="boton boton-claro gastos-boton"
                     onclick="document.getElementById('modal-crear-pago').close()">
                     Cancelar
                 </button>
-                <button type="submit" id="btn-submit-pago" class="boton"
-                    style="min-height: var(--touch-min); min-width: var(--touch-min); border-radius: var(--radius-pill); background: var(--color-success); color: var(--color-surface); display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);">
-                    <span id="spinner-submit-pago" style="display: none;">
+                <button type="submit" id="btn-submit-pago"
+                    class="boton gastos-boton gastos-boton--exito gastos-boton--envio">
+                    <span id="spinner-submit-pago" class="gastos-oculto">
                         <x-icono nombre="spinner" clases="w-4 h-4" />
                     </span>
                     <span id="texto-btn-submit-pago">Enviar Pago</span>
@@ -752,64 +644,53 @@
 @endcan
 
 {{-- Modal para configurar datos de cobro personales (Alias, CBU, QR) --}}
-<dialog id="modal-configurar-cobro"
-    style="border: none; border-radius: var(--radius-xl); padding: var(--space-6); width: 100%; max-width: 480px; box-shadow: var(--shadow-sm);">
+<dialog id="modal-configurar-cobro" class="dialogo-md">
     <form method="POST" action="{{ route('perfil.cobro.actualizar') }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
-        <h2
-            style="margin: 0 0 var(--space-2) 0; font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); color: var(--color-foreground);">
+        <h2 class="gastos-dialogo-titulo">
             Mis Datos de Cobro</h2>
-        <p style="margin: 0 0 var(--space-5) 0; font-size: var(--font-size-md); color: var(--color-muted);">
+        <p class="gastos-dialogo-texto">
             Configura tu Alias, CBU o sube tu código QR para que tus compañeros puedan transferirte fácilmente.
         </p>
 
-        <div style="margin-bottom: var(--space-4);">
-            <label for="input-perfil-alias"
-                style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-1);">
+        <div class="campo">
+            <label for="input-perfil-alias">
                 Alias de Cobro (ej. banco o billetera móvil)
             </label>
             <input type="text" id="input-perfil-alias" name="alias_pago"
-                value="{{ old('alias_pago', $miUsuario->alias_pago) }}" placeholder="mi.alias.pago"
-                style="width: 100%; padding: var(--space-3) var(--space-3); border: 1px solid var(--color-border-input); border-radius: var(--radius-md); font-size: var(--font-size-md); min-height: var(--touch-min); box-sizing: border-box;">
+                value="{{ old('alias_pago', $miUsuario->alias_pago) }}" placeholder="mi.alias.pago">
         </div>
 
-        <div style="margin-bottom: var(--space-4);">
-            <label for="input-perfil-cbu"
-                style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-1);">
+        <div class="campo">
+            <label for="input-perfil-cbu">
                 CBU / N° de Cuenta Bancaria
             </label>
             <input type="text" id="input-perfil-cbu" name="cbu_pago"
-                value="{{ old('cbu_pago', $miUsuario->cbu_pago) }}" placeholder="10000000000000"
-                style="width: 100%; padding: var(--space-3) var(--space-3); border: 1px solid var(--color-border-input); border-radius: var(--radius-md); font-size: var(--font-size-md); min-height: var(--touch-min); box-sizing: border-box;">
+                value="{{ old('cbu_pago', $miUsuario->cbu_pago) }}" placeholder="10000000000000">
         </div>
 
-        <div style="margin-bottom: var(--space-6);">
-            <label for="input-perfil-qr"
-                style="display: block; font-size: var(--font-size-md); font-weight: var(--font-weight-semibold); color: var(--color-foreground); margin-bottom: var(--space-1);">
+        <div class="campo">
+            <label for="input-perfil-qr">
                 Imagen de Código QR (Simple / Billetera)
             </label>
-            <input type="file" id="input-perfil-qr" name="qr_pago" accept="image/*"
-                style="width: 100%; padding: var(--space-2) var(--space-3); border: 1px solid var(--color-border-input); border-radius: var(--radius-md); font-size: var(--font-size-sm); box-sizing: border-box;">
+            <input type="file" id="input-perfil-qr" name="qr_pago" accept="image/*">
             @if ($miUsuario->qr_pago_path)
-                <div style="margin-top: var(--space-2);">
-                    <span
-                        style="font-size: var(--font-size-xs); color: var(--color-muted); display: block; margin-bottom: var(--space-1);">QR
+                <div class="gastos-qr-actual">
+                    <span class="gastos-qr-actual-etiqueta">QR
                         configurado actualmente:</span>
                     <img src="{{ asset('storage/' . $miUsuario->qr_pago_path) }}" alt="QR actual"
-                        style="max-width: 120px; max-height: 120px; border-radius: var(--radius-sm); border: 1px solid var(--color-border-input);">
+                        class="gastos-qr-actual-img">
                 </div>
             @endif
         </div>
 
-        <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
-            <button type="button" class="boton boton-claro"
-                style="min-height: var(--touch-min); min-width: var(--touch-min); border-radius: var(--radius-pill);"
+        <div class="gastos-acciones">
+            <button type="button" class="boton boton-claro gastos-boton"
                 onclick="document.getElementById('modal-configurar-cobro').close()">
                 Cancelar
             </button>
-            <button type="submit" class="boton"
-                style="min-height: var(--touch-min); min-width: var(--touch-min); border-radius: var(--radius-pill); background: var(--color-success); color: var(--color-surface);">
+            <button type="submit" class="boton gastos-boton gastos-boton--exito">
                 Guardar Datos
             </button>
         </div>

@@ -69,7 +69,7 @@ class ComponenteMenuNavTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('class="nav-menu"', false);
         $response->assertSee('class="nav-usuario"', false);
-        $response->assertSee('class="nav-usuario-avatar"', false);
+        $response->assertSee('class="avatar"', false);
         $response->assertSee('C', false); // Inicial del nombre
         $response->assertSee('Carlos Mendoza');
         $response->assertSee('class="boton-salir"', false);

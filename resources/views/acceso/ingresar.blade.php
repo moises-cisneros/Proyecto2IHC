@@ -12,7 +12,7 @@
     </header>
 
     {{-- Formulario de login --}}
-    <form method="POST" action="{{ route('ingresar') }}" class="acceso-form" novalidate>
+    <form method="POST" action="{{ route('ingresar') }}" class="formulario" novalidate>
         @csrf
 
         {{-- Campo correo --}}

@@ -91,12 +91,14 @@ class GastosModalErgonomiaTest extends TestCase
         // Sin emojis crudos
         $this->assertDoesNotMatchRegularExpression('#[\x{1F300}-\x{1F9FF}]#u', $contenido);
 
-        // Áreas táctiles de Fitts (>= 44px) en botones del modal
-        $this->assertStringContainsString('min-height: var(--touch-min)', $contenido);
-        $this->assertStringContainsString('min-width: var(--touch-min)', $contenido);
+        // Áreas táctiles de Fitts (>= 44px) en botones del modal: la vista usa la clase y el CSS fija el mínimo
+        $this->assertStringContainsString('gastos-boton', $contenido);
+        $css = file_get_contents(base_path('resources/css/app.css'));
+        $this->assertMatchesRegularExpression('/\.boton\.gastos-boton\s*\{[^}]*min-height: var\(--touch-min\);[^}]*min-width: var\(--touch-min\);/', $css);
 
         // Separación antagónica de botones (gap >= 12px)
-        $this->assertStringContainsString('gap: var(--space-3)', $contenido);
+        $this->assertStringContainsString('gastos-acciones', $contenido);
+        $this->assertMatchesRegularExpression('/\.gastos-acciones\s*\{[^}]*gap: var\(--space-3\);/', $css);
     }
 
     /**

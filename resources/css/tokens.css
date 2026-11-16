@@ -14,6 +14,11 @@
  *   F. Área táctil mínima (Ley de Fitts)
  *   G. Elevación (sombras)
  *   H. Capas (z-index)
+ *   I. Dimensiones de íconos
+ *   J. Dimensiones de avatar
+ *   K. Layout (contenedores, diálogos, tarjetas, navbar)
+ *   L. Interlineado y tracking
+ *   M. Media (miniaturas, vistas previas) y ancho de contenido
  * ================================================================
  */
 
@@ -97,8 +102,38 @@
     --z-floating: 50;
     --z-toast: 60;
 
-    /* ── I. Dimensiones de Íconos Vectoriales (DESIGN.md §3.B) ── */
+    /* ── I. Dimensiones de Íconos Vectoriales ── */
     --icono-sm: 16px;
     --icono-md: 20px;
     --icono-lg: 24px;
+    --icono-xs: 14px;
+    --icono-2xs: 12px;
+    --icono-btn: 18px;
+
+    /* ── J. Dimensiones de Avatar  ───────────── */
+    --avatar-sm: 28px;
+    --avatar-md: 36px;
+    --avatar-lg: 56px;
+
+    /* ── K. Layout: contenedores, diálogos, tarjetas, navbar ──── */
+    --container-page: 1024px;
+    --container-md: 920px;
+    --dialog-sm: 400px;
+    --dialog-md: 480px;
+    --dialog-lg: 520px;
+    --card-min-sm: 240px;
+    --card-min-md: 300px;
+    --nav-height: 60px;
+
+    /* ── L. Tipografía: interlineado y tracking ──────────────── */
+    --line-height-snug: 1.4;
+    --line-height-none: 1;
+    --letter-spacing-wide: 0.5px;
+
+    /* ── M. Media y contenido ────────────────────────────────── */
+    --thumb-sm: 72px;
+    --thumb-md: 128px;
+    --preview-sm: 160px;
+    --preview-lg: 350px;
+    --content-narrow: 400px;
 }

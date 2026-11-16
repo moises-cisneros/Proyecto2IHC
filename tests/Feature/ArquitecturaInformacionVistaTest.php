@@ -143,6 +143,7 @@ class ArquitecturaInformacionVistaTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee('<div class="tabla-contenedor">', false);
         $response->assertSee('<table class="tabla">', false);
-        $response->assertSee('width: 29%; text-align: right;', false);
+        $response->assertSee('tabla-seccion-col-acciones', false);
+        $this->assertStringContainsString('width: 29%;', file_get_contents(base_path('resources/css/app.css')));
     }
 }

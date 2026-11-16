@@ -159,10 +159,13 @@ class SalaColaborativaVistaTest extends TestCase
         $response = $this->actingAs($creador)->get(route('planes.detalle', $plan));
 
         $response->assertStatus(200);
-        // Dimensión táctil mínima según Ley de Fitts y WCAG (44px)
-        $response->assertSee('min-height: var(--touch-min)', false);
+        // Dimensión táctil mínima según Ley de Fitts y WCAG (44px): botones globales + CSS
+        $response->assertSee('class="boton', false);
+        $css = file_get_contents(base_path('resources/css/app.css'));
+        $this->assertMatchesRegularExpression('/\.boton,[^{]*\{[^}]*min-height: var\(--touch-min\);/', $css);
         // Separación antagónica mínima de 12px entre botones de acción y cancelación
-        $response->assertSee('gap: var(--space-3)', false);
+        $response->assertSee('dialogo-botones-derecha', false);
+        $this->assertMatchesRegularExpression('/\.dialogo-botones-derecha\s*\{[^}]*gap: var\(--space-3\);/', $css);
     }
 
     /**

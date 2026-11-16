@@ -13,11 +13,13 @@
      - Tokens de geometría/radios:       rg -A 15 "^### E\. Geometría" resources/DESIGN.md
      - Semántica de estados y roles:     rg -A 35 "^## 2" resources/DESIGN.md
      - Componentes de acción (botones):  rg -A 25 "^## 3" resources/DESIGN.md
+     - Campo de formulario:              rg -A 12 "^### D\. Campo de Formulario" resources/DESIGN.md
      - Componentes de contención/modal:  rg -A 30 "^## 4" resources/DESIGN.md
      - Feedback y prevención de errores: rg -A 35 "^## 5" resources/DESIGN.md
      - Telemetría y embudos (Dev):       rg -A 25 "^## 6" resources/DESIGN.md
      - Componentes de Salida Honesta:    rg -A 40 "^## 7" resources/DESIGN.md
      - Variantes por estado de dato:    rg -A 100 "^## 8" resources/DESIGN.md
+     - Tarjeta / Avatar / Métrica:      rg -A 12 "^### [BDE]\. (Tarjeta|Avatar|Métrica)" resources/DESIGN.md
 -->
 
 ---
@@ -150,6 +152,31 @@ Tokens declarados en `@theme static` de `tokens.css` para normalizar las escalas
 
 - **Navbar:** Sticky superior (`top: 0; z-index: 40; height: 60px; background: brand; border-bottom: border`).
 
+### H. Dimensiones de Avatar
+
+| Token         | Valor  | Clase                   | Contexto de Uso                           |
+| :------------ | :----- | :---------------------- | :---------------------------------------- |
+| `--avatar-sm` | `28px` | `.avatar`               | Navbar (`.nav-usuario`), cabecera de sala |
+| `--avatar-md` | `36px` | `.participantes-avatar` | Lista de participantes (sobre `.avatar`)  |
+| `--avatar-lg` | `56px` | `.avatar-lg`            | Tarjeta de identidad en Mi Cuenta         |
+
+### I. Tokens de Layout, Media y Tipografía
+
+Declarados en `tokens.css` (secciones I-M). Una dimensión reutilizable **siempre** es un token; no se escribe `px` crudo en `app.css`.
+
+| Token                                                         | Valor               | Uso                                                                   |
+| :------------------------------------------------------------ | :------------------ | :-------------------------------------------------------------------- |
+| `--icono-2xs` / `--icono-xs` / `--icono-btn`                  | `12/14/18px`        | Íconos de micro-badge, compactos y dentro de botones (§3.B)           |
+| `--container-page` / `--container-md`                         | `1024px` / `920px`  | Ancho de página / de Mi Cuenta                                        |
+| `--content-narrow`                                            | `400px`             | Toasts, tarjeta de acceso, tarjeta de edición, textos de estado vacío |
+| `--dialog-sm` / `--dialog-md` / `--dialog-lg`                 | `400/480/520px`     | Anchos de `<dialog>` (§4.A)                                           |
+| `--card-min-sm` / `--card-min-md`                             | `240px` / `300px`   | Mínimo de columna en grillas de tarjetas (`auto-fit`/`auto-fill`)     |
+| `--nav-height`                                                | `60px`              | Alto de la barra superior (§3.C)                                      |
+| `--thumb-sm` / `--thumb-md`                                   | `72px` / `128px`    | Miniaturas de QR e ilustraciones                                      |
+| `--preview-sm` / `--preview-lg`                               | `160px` / `350px`   | Alto máximo de vistas previas de comprobante                          |
+| `--line-height` / `--line-height-snug` / `--line-height-none` | `1.5` / `1.4` / `1` | Interlineado de lectura, compacto y de valores grandes                |
+| `--letter-spacing-wide`                                       | `0.5px`             | Etiquetas en mayúsculas                                               |
+
 ---
 
 ## 2. Semántica de Estados y Roles
@@ -193,23 +220,91 @@ Tokens declarados en `@theme static` de `tokens.css` para normalizar las escalas
 - En SVG nativo, el componente `<x-icono>` emite atributos intrínsecos `width` y `height` acordes a la escala para garantizar contención geométrica estricta frente a flexbox y prevenir desbordes.
 - Accesibilidad: Siempre con texto visible o `aria-label` descriptivo.
 
+### C. Barra de Navegación Superior (`.barra`)
+
+Parcial `resources/views/layouts/_partials/nav.blade.php`. Sticky (`--z-nav`), alto `60px`, fondo `brand` (`#ffe683`), borde `border` y sombra `--shadow-sm`. Sin estilos inline: todo vive en `app.css`.
+
+| Clase              | Función                                                            |
+| :----------------- | :----------------------------------------------------------------- |
+| `.barra`           | Contenedor flex; `justify-content: space-between`                  |
+| `.barra-izquierda` | Agrupa marca + menú (gap `24px`); en móvil usa `display: contents` |
+| `.marca`           | Logotipo textual (`font-size-2xl`, bold)                           |
+| `.nav-menu`        | Contenedor del menú (`role="menubar"`) con items `.nav-item-*`     |
+| `.barra-derecha`   | Usuario (`.nav-usuario` con `.avatar`) + botón `.boton-salir`      |
+| `.form-reset`      | Formulario de cierre de sesión sin margen (clase global, §3.D)     |
+
+**Responsive (breakpoint `720px`, no tokenizable porque `var()` no aplica en `@media`):**
+
+| Elemento       | Escritorio                | Móvil (≤ 720px)                                                   |
+| :------------- | :------------------------ | :---------------------------------------------------------------- |
+| `.barra`       | 1 fila, alto `60px`       | 2 filas (`flex-wrap`), alto automático, padding `8px 16px`        |
+| `.nav-menu`    | En línea junto a la marca | Segunda fila a ancho completo, scroll horizontal sin scrollbar    |
+| `.nav-usuario` | Avatar + nombre           | Solo avatar (`.nav-usuario-nombre` oculto)                        |
+| `.boton-salir` | Ícono + «Salir»           | Solo ícono (`aria-label="Cerrar sesión"`), objetivo táctil ≥ 44px |
+
+### D. Campo de Formulario (`.campo` dentro de `.formulario`) — Alcance: global
+
+Único campo de formulario del sistema (acceso, planes, Mi Cuenta, modales). Se envuelve el control y su etiqueta en `.campo`; no se estiliza el control con clases propias ni `style=""`.
+
+- **`.formulario`:** columna con gap `--space-4` (los `.campo` dentro no llevan margen inferior).
+- **Control (`input`, `select`, `textarea` dentro de `.campo`):** ancho 100%, `min-height: --touch-min` (Fitts), padding `--space-2 --space-3`, `font-size-base`, fondo `surface`, borde `border-input`, radio `--radius-md`. Checkbox, radio y hidden quedan fuera.
+- **Etiqueta:** `font-size-sm`, `font-weight-semibold`, `foreground`.
+- **Estados (Figma: propiedad `Estado`):** `Reposo`; `Foco` (outline 2px `foreground`, offset 2px, sin sombra); `Error` (clase `.invalido` en el control → borde `destructive`, mensaje `.campo-error` en `font-size-xs` `destructive`); `Placeholder` (`placeholder`). Texto de apoyo opcional `.campo-ayuda` (`font-size-xs`, `muted`).
+- **Variante archivo (`input[type='file']`):** botón nativo con `::file-selector-button` (`surface-soft`, borde `border`, radio `--radius-md`; hover borde `primary`).
+- **`.form-reset` / `.form-reset-inline`:** quitan el margen de un `<form>` que envuelve solo botones (no se crean clases `*-form` por pantalla).
+- **Excepción documentada:** la barra de búsqueda/filtros (`.filtros`) mantiene forma de píldora (`--radius-pill`) por ser un buscador, no un campo de formulario.
+
 ---
 
 ## 4. Componentes de Contención y Diálogo
 
-### A. Diálogos Modales Nativos (`<dialog>`)
+### A. Diálogos Modales Nativos (`<dialog>`) — Alcance: global
 
 - HTML5 `<dialog>` nativo accesible (apertura con `.showModal()`, cierre con `.close()` o tecla `Escape`).
-- Ancho `400-520px`, fondo `surface` (`#ffffff`), radio `16px`, padding `24-28px`, backdrop `rgba(0,0,0,0.4)`.
-- Cabecera con título H2 e ícono, cuerpo con advertencia contextual y pie de acciones alineado a la derecha con separación de `12px`.
+- **Forma única** definida en el selector `dialog` de `app.css`: fondo `surface`, radio `--radius-xl`, padding `--space-6`, sombra `--shadow-lg`, backdrop `--color-overlay`, alto máximo `100dvh − 2 × --space-4` con scroll interno y `overscroll-behavior: contain`; el fondo no hace scroll mientras hay un `<dialog open>`.
+- **Tamaños (Figma: propiedad `Tamaño`):** `Small` (por defecto, `--dialog-sm` 400px), `Medium` (`.dialogo-md`, `--dialog-md` 480px), `Large` (`.dialogo-lg`, `--dialog-lg` 520px). Siempre limitados a `100vw − 2 × --space-4`.
+- Cabecera con título H2 (`.dialogo-titulo`) e ícono, cuerpo con `.dialogo-mensaje` y pie de acciones `.dialogo-botones` / `.dialogo-botones-derecha` con separación `--space-3`.
+- **Prohibido** crear clases de forma de diálogo por pantalla (`*-dialogo`); solo se elige el tamaño.
 
-### B. Tarjetas Autónomas (`.tarjeta` / `.card`)
+### B. Tarjeta (`.tarjeta`) — Alcance: global
 
-- Fondo `surface` (`#ffffff`), borde `1px solid border` (`#e3e3df`), radio `12px`, padding `16-20px`.
+Contenedor base de contenido. `.activity-card` comparte su declaración (misma superficie, borde, radio y sombra).
+
+- **Base:** fondo `surface`, borde `1px solid border`, radio `--radius-xl` (`16px`), padding `--space-5` (`20px`), sombra `--shadow-sm`. Sin animaciones.
+- **Partes opcionales:**
+
+| Clase                   | Función                                                                          |
+| :---------------------- | :------------------------------------------------------------------------------- |
+| `.tarjeta-header`       | Fila con título + acción/badge, separada por borde inferior `border`             |
+| `.tarjeta-titulo-grupo` | Agrupa ícono + `.tarjeta-titulo` dentro del header                               |
+| `.tarjeta-titulo`       | `font-size-lg`, `font-weight-semibold`, `foreground`                             |
+| `.tarjeta-desc`         | `font-size-sm`, `muted`                                                          |
+| `.tarjeta-acciones`     | Fila de botones (gap `--space-3`, `flex-wrap`); cada botón respeta `--touch-min` |
+| `.tarjeta-acciones-fin` | Modificador: alinea la botonera a la derecha                                     |
+
+- **Variante `Peligro` (`.tarjeta-peligro`):** borde y separador `destructive-border`, título `destructive`. Para zonas de acción irreversible.
+- **Figma:** componente `Tarjeta` con propiedad `Variante = Base | Peligro` y slots `Header`, `Descripción`, `Contenido`.
 
 ### C. Tablas Modulares de Datos (`.tabla-contenedor`)
 
 - Contenedor con scroll horizontal, fondo `surface`, bordes redondeados y altura estándar de fila de `68px`.
+
+### D. Avatar (`.avatar`) — Alcance: global
+
+Círculo con la inicial del nombre. Fondo `foreground`, texto `secondary`, `font-weight-bold`, `--radius-circle`. Siempre decorativo (`aria-hidden="true"`); el nombre va en texto visible.
+
+| Variante (Figma) | Clase                | Tamaño        | Fuente de texto |
+| :--------------- | :------------------- | :------------ | :-------------- |
+| `Small`          | `.avatar`            | `--avatar-sm` | `font-size-xs`  |
+| `Large`          | `.avatar .avatar-lg` | `--avatar-lg` | `font-size-xl`  |
+
+### E. Métrica (`.metrica`) — Alcance: global
+
+Dato numérico con etiqueta, para resúmenes. Contenedor `.metricas-grid` (`repeat(auto-fit, minmax(110px, 1fr))`, gap `--space-3`).
+
+- **Base (`.metrica`):** fondo `surface-soft`, borde `border`, radio `--radius-lg`, padding `--space-4`. Valor `.metrica-valor` en `font-size-2xl` bold; etiqueta `.metrica-label` en `font-size-xs` `muted`, sin uppercase.
+- **Variante `Enlace` (`.metrica-enlace`):** `<a>` navegable. Reposo (`surface-soft`), hover (borde `primary`, fondo `surface`), focus-visible (outline 2px `primary`), alto mínimo `--touch-min`.
+- **Figma:** componente `Métrica` con propiedad `Interactiva = false | true`.
 
 ---
 
@@ -269,15 +364,24 @@ Modal especializado derivado de `<dialog>` bajo estricta **Prueba de Simetría**
         - Botón de Salida Destructiva: `.boton-rojo` (fondo `destructive` `#c0392b`).
         - Idéntica altura táctil $\ge 44$ px, padding simétrico (`10px 22px`) y separación antagónica $\ge 12$ px.
 
-### C. Selector de Exportación de Datos (`.tarjeta-exportacion-datos`)
+### C. Selector de Exportación de Datos
 
-Tarjeta para el ejercicio de derechos de portabilidad de información (acceso y descarga):
+Sin componente propio: se compone con `.tarjeta` (§4.B) + `.tarjeta-header` + `.tarjeta-desc` + `.tarjeta-acciones` con dos `.boton-claro` (`min-height` `--touch-min`, ícono `<x-icono nombre="descarga" />`).
 
-- **Tokens Semánticos:**
-    - Fondo `surface` (`#ffffff`), borde `1px solid border` (`#e3e3df`), radio `12px`, padding `20px`.
-    - Título H2: `18px font-semibold foreground` (`#1c1c1a`).
-    - Texto descriptivo: `14px muted` (`#6f6f6a`).
-    - Botones de descarga directa: `.boton-claro` con altura mínima de 44px e ícono vectorial `<x-icono nombre="descarga" />`.
+### D. Layout de la Página Mi Cuenta — Alcance: solo `perfil/cuenta.blade.php`
+
+Las clases con prefijo `.cuenta-*` pertenecen **únicamente** a esta página y solo resuelven su maquetación. El contenido visual reutiliza componentes globales (`.tarjeta`, `.avatar`, `.metrica`, `.badge-estado`).
+
+| Clase                                                        | Función                                                                                                                           |
+| :----------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `.cuenta-contenedor`                                         | Centrado, max-width `920px`, padding `--space-6 --space-4`                                                                        |
+| `.cuenta-perfil` (+ `-datos`, `-nombre`, `-correo`, `-meta`) | Layout flex de la tarjeta de identidad (`.tarjeta` + `.avatar-lg`); elipsis con `min-width: 0`; bajo `480px` la meta baja de fila |
+| `.cuenta-columnas` / `.cuenta-columna`                       | 2 columnas `minmax(0, 1fr)`, gap `--space-6`, `align-items: start`; 1 columna bajo `760px`                                        |
+| `.cuenta-seccion-completa`                                   | Tarjeta a ancho completo bajo las columnas                                                                                        |
+| `.cuenta-qr-*`                                               | Previsualización del QR de cobro (borde `border`, radio `--radius-md`)                                                            |
+| `.cuenta-danger-*`                                           | Resumen dentro de `.tarjeta-peligro`                                                                                              |
+
+> Los formularios de esta página usan el campo global `.campo` / `.formulario` (§3.D) y `.tarjeta-acciones .tarjeta-acciones-fin` (§4.B) para la botonera alineada a la derecha.
 
 ---
 
@@ -329,18 +433,15 @@ El contenedor de cada fila de pago cambia fondo y borde según el estado del pag
 
 ---
 
-### D. Banner Contextual de Sala de Plan (`_cabecera.blade.php`)
+### D. Banner (`.banner`) — Alcance: global
 
-La cabecera de la sala inyecta banners distintos según el estado del plan o la condición del participante:
+Aviso contextual en bloque. Base `.banner`: padding `--space-4`, borde 1px, radio `--radius-lg`, `font-size-sm`. Partes: `.banner-icono`, `.banner-titulo` (md, bold), `.banner-texto`, `.banner-acciones`. Modificadores de layout: `.banner-fila` (ícono/contenido en fila), `.banner-espaciado` (contenido y acciones separados, con wrap).
 
-| Variante (Figma)   | Condición                      | Fondo     | Borde     | Texto     | Token Fondo      | Token Borde          |
-| :----------------- | :----------------------------- | :-------- | :-------- | :-------- | :--------------- | :------------------- |
-| `Banner Cancelado` | `plan->estado === 'cancelado'` | `#eeeeec` | `#e3e3df` | `#6f6f6a` | `neutral-bg`     | `border`             |
-| `Banner Invitado`  | Participante no aceptó aún     | `#fff4d6` | `#ffe683` | `#8a6100` | `warning-bg`     | `warning-border`     |
-| `Banner Deuda`     | `usuarioTieneDeuda()`          | `#fbeceb` | `#f5c6cb` | `#c0392b` | `destructive-bg` | `destructive-border` |
-| `Banner Info Pago` | Pago pendiente de votación     | `#fff4d6` | `#ffe683` | `#8a6100` | `warning-bg`     | `warning-border`     |
-
-> **Estado:** migrado a tokens oficiales (deuda saldada). Los estilos inline usan `var(--color-*)`.
+| Variante (Figma) | Clase                 | Fondo            | Borde                | Texto         | Uso en Planazo                                      |
+| :--------------- | :-------------------- | :--------------- | :------------------- | :------------ | :-------------------------------------------------- |
+| `Neutro`         | `.banner-neutro`      | `neutral-bg`     | `border`             | `muted`       | Plan cancelado (solo lectura)                       |
+| `Advertencia`    | `.banner-advertencia` | `warning-bg`     | `warning-border`     | `warning`     | Invitación pendiente; anulación automática de votos |
+| `Peligro`        | `.banner-peligro`     | `destructive-bg` | `destructive-border` | `destructive` | Bloqueo por deuda pendiente (retiro del plan)       |
 
 ---
 
@@ -360,22 +461,87 @@ Definido en `resources/views/components/activity-card.blade.php` L10–18. El ti
 
 ---
 
-### F. Tabla de Componentes (Referencia Rápida)
+### F. Badge de Estado (`.badge-estado`) — Alcance: global
 
-> Esta tabla permite a Figma y al código mantenerse sincronizados: cada componente del sistema de diseño tiene un único archivo Blade o CSS de referencia.
+Píldora con borde (`--radius-pill`, `font-size-xs`, bold, ícono opcional `sm`, `white-space: nowrap`). Usada por `<x-activity-card />` y por «Métodos de cobro» en Mi Cuenta.
 
-| Componente                                | Archivo de Referencia                                                        | Sección DESIGN.md |
-| :---------------------------------------- | :--------------------------------------------------------------------------- | :---------------- |
-| `.boton` / `.boton-claro` / `.boton-rojo` | `resources/css/app.css`                                                      | §3.A              |
-| `<x-icono nombre="..." />`                | `resources/views/components/icono.blade.php`                                 | §3.B              |
-| `<dialog>` (modal genérico)               | `resources/views/components/dialog-confirm.blade.php`                        | §4.A              |
-| `.tarjeta` / `.card`                      | Uso inline en vistas                                                         | §4.B              |
-| `.tabla-contenedor`                       | Uso inline en vistas                                                         | §4.C              |
-| `<x-toast-alerta />`                      | `resources/views/components/toast-alerta.blade.php`                          | §5.A              |
-| `.estado .estado-{valor}`                 | `resources/css/app.css`                                                      | §2.A + §8.A       |
-| Chip pago / fila pago                     | `planes/_gastos_liquidacion.blade.php` L186–194                              | §8.B + §8.C       |
-| Banner sala contextual                    | `planes/_cabecera.blade.php` L58–163                                         | §8.D              |
-| `<x-activity-card />`                     | `resources/views/components/activity-card.blade.php`                         | §8.E              |
-| `.caja-salida-honesta`                    | Uso inline (a crear en T10)                                                  | §7.A              |
-| `<x-modal-salida-honesta />`              | `resources/views/components/modal-salida-honesta.blade.php` (a crear en T10) | §7.B              |
-| `.tarjeta-exportacion-datos`              | Vista `mi-cuenta` (a crear en T10)                                           | §7.C              |
+| Variante (Figma) | Clase                      | Fondo            | Borde                | Texto         | Uso                                    |
+| :--------------- | :------------------------- | :--------------- | :------------------- | :------------ | :------------------------------------- |
+| `Confirmado`     | `.badge-estado-confirmado` | `success-bg`     | `success-border`     | `success`     | Plan confirmado; cobro «Configurado»   |
+| `Pendiente`      | `.badge-estado-pendiente`  | `warning-bg`     | `warning-border`     | `warning`     | Plan pendiente; cobro «Sin configurar» |
+| `Cancelado`      | `.badge-estado-cancelado`  | `destructive-bg` | `destructive-border` | `destructive` | Plan cancelado                         |
+| `Default`        | `.badge-estado-default`    | `neutral-bg`     | `border`             | `muted`       | Sin estado conocido                    |
+
+---
+
+### G. Diálogos de Eliminación de Cuenta por Condición (Divulgación Progresiva)
+
+**Contención del diálogo (`dialog.dialogo-md`)**: forma y tamaño del diálogo global (§4.A); la lista de bloqueos y la botonera se resuelven con las clases de abajo.
+
+**Lista de bloqueos (`.caja-salida-honesta-planes`)**: alto máximo `min(40dvh, 320px)` con scroll interno, de modo que título y botonera siempre quedan visibles aunque haya decenas de planes. Cada `.caja-salida-honesta-fila` es `flex` con gap `12px`:
+
+| Elemento                          | Regla                                                                                |
+| :-------------------------------- | :----------------------------------------------------------------------------------- |
+| `.caja-salida-honesta-info`       | Columna (`flex: 1`, `min-width: 0`) con nombre + metadato                            |
+| `.caja-salida-honesta-nombre`     | `font-weight-semibold`, `overflow-wrap: anywhere`, máximo 2 líneas con elipsis       |
+| `.caja-salida-honesta-meta`       | `font-size-xs`, color `muted` («Plan abierto · Pendiente», «Deuda pendiente · X Bs») |
+| Botón de resolución (`.boton-xs`) | `flex-shrink: 0` para no comprimirse con nombres largos                              |
+
+**Botonera (`.dialogo-botones-derecha`)**: fila alineada a la derecha en escritorio; bajo `480px` se apila en columna con botones a `100%` de ancho e igual tamaño (simetría de Fitts).
+
+| Condición de Usuario | Elemento Disparado       | Contenido del Modal                                                                                                                                                                         | Botones                                          |
+| :------------------- | :----------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | :----------------------------------------------- |
+| **Con Bloqueos**     | `#modal-bloqueos-cuenta` | Título «No puedes dar de baja tu cuenta todavía», una línea de contexto y filas `.caja-salida-honesta-fila` (plan/deuda + botón `.boton-xs` Gestionar/Liquidar). Sin prosa explicativa (H8) | `.boton-claro` "Entendido"                       |
+| **Sin Bloqueos**     | `#modal-eliminar-cuenta` | Formulario con input contraseña actual (`#input-current-password`)                                                                                                                          | Botonera simétrica Fitts (Conservar vs Eliminar) |
+
+---
+
+### H. Tabla de Componentes (Referencia Rápida)
+
+> Cada componente tiene un único origen. **Alcance** indica a quién pertenece: `Global` (reutilizable en cualquier vista) o la pantalla/flujo dueño.
+
+| Componente                                                            | Alcance                      | Archivo de Referencia                               | Sección     |
+| :-------------------------------------------------------------------- | :--------------------------- | :-------------------------------------------------- | :---------- |
+| `.boton` / `.boton-claro` / `.boton-rojo`                             | Global                       | `resources/css/app.css`                             | §3.A        |
+| `<x-icono nombre="..." />`                                            | Global                       | `components/icono.blade.php`                        | §3.B        |
+| `.barra` / `.nav-menu` / `.nav-usuario`                               | Layout (`layouts/app`)       | `layouts/_partials/nav.blade.php` & `app.css`       | §3.C        |
+| `<dialog>` (modal genérico)                                           | Global                       | `components/dialog-confirm.blade.php`               | §4.A        |
+| `.tarjeta` (+ `-header`, `-titulo`, `-desc`, `-acciones`, `-peligro`) | Global                       | `resources/css/app.css`                             | §4.B        |
+| `.formulario` / `.campo`                                              | Global                       | `resources/css/app.css`                             | §3.D        |
+| `.tabla-contenedor`                                                   | Global                       | `resources/css/app.css`                             | §4.C        |
+| `.avatar` / `.avatar-lg`                                              | Global                       | `resources/css/app.css`                             | §4.D        |
+| `.metrica` / `.metrica-enlace`                                        | Global                       | `resources/css/app.css`                             | §4.E        |
+| `<x-toast-alerta />`                                                  | Global                       | `components/toast-alerta.blade.php`                 | §5.A        |
+| `.estado .estado-{valor}`                                             | Global                       | `resources/css/app.css`                             | §2.A + §8.A |
+| `.badge-estado .badge-estado-{valor}`                                 | Global                       | `resources/css/app.css`                             | §8.F        |
+| Chip pago / fila pago                                                 | Plan (`_gastos_liquidacion`) | `planes/_gastos_liquidacion.blade.php`              | §8.B + §8.C |
+| `<x-activity-card />`                                                 | Global                       | `components/activity-card.blade.php`                | §8.E        |
+| `.caja-salida-honesta`                                                | Salida Honesta               | `resources/css/app.css`                             | §7.A        |
+| `<x-modal-salida-honesta />`                                          | Salida Honesta               | `components/modal-salida-honesta.blade.php`         | §7.B        |
+| `<dialog>` + `.dialogo-md` / `.dialogo-lg`                            | Global                       | `resources/css/app.css`                             | §4.A        |
+| `.banner` (+ `-neutro`, `-advertencia`, `-peligro`)                   | Global                       | `resources/css/app.css`                             | §8.D        |
+| `.form-reset`                                                         | Global                       | `resources/css/app.css`                             | §3.D        |
+| `.cuenta-*` (layout)                                                  | Solo Mi Cuenta               | `perfil/cuenta.blade.php` & `resources/css/app.css` | §7.D        |
+
+---
+
+## 9. Clases con Alcance de Pantalla
+
+Las vistas **no** llevan `style=""` estático (solo se admite un valor dinámico de Blade, p. ej. `width: {{ $pct }}%`); lo hace cumplir `tests/Unit/DesignSystemGuardTest.php`. Lo específico de una pantalla vive en `app.css` bajo un prefijo que declara su dueño. Antes de crear una clase nueva se reutiliza un componente global (§3-§4, §8).
+
+| Prefijo            | Dueño (vista)                                | Contenido                                                |
+| :----------------- | :------------------------------------------- | :------------------------------------------------------- |
+| `.cuenta-*`        | `perfil/cuenta.blade.php`                    | Layout de Mi Cuenta (§7.D)                               |
+| `.gastos-*`        | `planes/_gastos_liquidacion.blade.php`       | Resumen, deudas, pagos, diálogos y formularios de gastos |
+| `.votacion-*`      | `planes/_sala_votacion.blade.php`, `detalle` | Veredicto, pestañas, opciones y diálogos de votación     |
+| `.cabecera-*`      | `planes/_cabecera.blade.php`                 | Cabecera de sala, banners, diálogo de retiro             |
+| `.participantes-*` | `planes/_participantes.blade.php`            | Grilla de participantes, roles, diálogo de invitación    |
+| `.tabla-seccion-*` | `planes/_tabla_seccion.blade.php`            | Columnas, celdas y diálogo de la tabla de planes         |
+| `.listado-*`       | `planes/listar.blade.php`                    | Pestañas, secciones cronológicas y contadores            |
+| `.historial-*`     | `planes/historial.blade.php`                 | Cabecera, filtros y estado vacío                         |
+| `.analitica-*`     | `analitica/index.blade.php` (solo Dev)       | Embudos, errores y tabla de eventos                      |
+| `.activity-card-*` | `components/activity-card.blade.php`         | Partes internas de la tarjeta de actividad               |
+
+**Dimensiones locales permitidas** (no reutilizables, viven dentro de la clase de su dueño): ancho fijo del botón de acción (`104px`), alto de fila de tabla (`68px`) y ancho mínimo de tabla (`880px`), anchos de columna (`70-210px`), mínimos de campos en línea (`150-260px`), `110px` de métricas, `320px` de alto máximo de lista, `340px` de columna de embudo y bordes/outlines de 1-3px. Cualquier otro `px` crudo debe ser un token (§1.I); `DesignSystemGuardTest` lo hace cumplir.
+
+**Hooks sin estilo:** una clase en una vista sin regla CSS solo se admite si la consumen JS, Playwright o PHPUnit (`badge`, `badge-escaneo`, `badge-estado-pago`, `badge-ia-verificado`, `badge-votos`, `boton-retirarse`, `check-participante`, `contenedor-monto-personalizado`, `discrepante`, `input-monto-indiv`, `seccion-participantes`, `toast-mensaje`, `verificado`); la lista vive en el test guardián.

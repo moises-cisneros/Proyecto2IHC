@@ -36,10 +36,9 @@
 <article class="activity-card" aria-label="Tarjeta de actividad: {{ $etiquetaAccion }}">
 
     {{-- Cabecera de la tarjeta: Qué ocurrió y Cuándo --}}
-    <div
-        style="display: flex; justify-content: space-between; align-items: flex-start; gap: var(--space-3); margin-bottom: var(--space-2);">
+    <div class="activity-card-cabecera">
         {{-- Dimensión 1: Qué ocurrió (Acción) --}}
-        <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+        <div class="activity-card-etiquetas">
             <span class="badge-accion {{ $accionClase }}">
                 {{ $etiquetaAccion }}
             </span>
@@ -53,40 +52,37 @@
         </div>
 
         {{-- Dimensión 2: Cuándo ocurrió (Temporalidad) --}}
-        <time class="meta-tiempo" datetime="{{ $actividad->created_at?->toIso8601String() }}"
-            title="{{ $actividad->created_at?->format('d/m/Y H:i:s') }}"
-            style="font-size: var(--font-size-sm); color: var(--color-muted); white-space: nowrap;">
+        <time class="activity-card-tiempo" datetime="{{ $actividad->created_at?->toIso8601String() }}"
+            title="{{ $actividad->created_at?->format('d/m/Y H:i:s') }}">
             {{ $actividad->created_at?->diffForHumans() ?? 'Reciente' }}
         </time>
     </div>
 
     {{-- Detalle descriptivo del evento --}}
-    <p class="descripcion-actividad"
-        style="margin: 0 0 var(--space-2) 0; font-size: var(--font-size-base); color: var(--color-foreground); line-height: 1.4;">
+    <p class="activity-card-descripcion">
         {{ $actividad->descripcion }}
     </p>
 
     {{-- Dimensión 4: Qué elemento involucró (Plan y Actor) --}}
-    <div class="meta-elemento"
-        style="display: flex; align-items: center; gap: var(--space-3); font-size: var(--font-size-sm); color: var(--color-muted); border-top: 1px solid var(--color-neutral-bg); padding-top: var(--space-2); margin-top: var(--space-1);">
+    <div class="activity-card-meta">
         @if ($actividad->plan)
-            <span class="elemento-plan" style="display: inline-flex; align-items: center; gap: var(--space-1);">
+            <span class="activity-card-elemento">
                 Plan involucrado:
-                <strong style="color: var(--color-foreground);">{{ $actividad->plan->nombre }}</strong>
+                <strong>{{ $actividad->plan->nombre }}</strong>
             </span>
         @endif
 
         @if ($actividad->user)
-            <span class="elemento-usuario" style="display: inline-flex; align-items: center; gap: var(--space-1);">
+            <span class="activity-card-elemento">
                 Autor:
-                <strong style="color: var(--color-foreground);">{{ $actividad->user->name }}</strong>
+                <strong>{{ $actividad->user->name }}</strong>
             </span>
         @endif
 
         @if ($actividad->destinatario)
-            <span class="elemento-destinatario" style="display: inline-flex; align-items: center; gap: var(--space-1);">
+            <span class="activity-card-elemento">
                 Destinatario:
-                <strong style="color: var(--color-foreground);">{{ $actividad->destinatario->name }}</strong>
+                <strong>{{ $actividad->destinatario->name }}</strong>
             </span>
         @endif
     </div>

@@ -10,7 +10,7 @@
         <p>Escribe tu nueva contraseña.</p>
     </header>
 
-    <form method="POST" action="{{ route('restablecer') }}" class="acceso-form" novalidate>
+    <form method="POST" action="{{ route('restablecer') }}" class="formulario" novalidate>
         @csrf
 
         {{-- El token viene en la URL del correo y se manda oculto para validar que el enlace es legítimo --}}

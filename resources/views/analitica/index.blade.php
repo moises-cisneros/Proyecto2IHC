@@ -3,44 +3,38 @@
 @section('titulo', 'Analítica de Interacción')
 
 @section('contenido')
-    <div class="analitica-cabecera" style="margin-bottom: var(--space-6);">
-        <div
-            style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-3);">
+    <div class="analitica-cabecera">
+        <div class="analitica-cabecera-fila">
             <div>
-                <h1
-                    style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-bold); margin: 0 0 var(--space-1) 0; color: var(--color-foreground);">
+                <h1 class="analitica-titulo">
                     Analítica de Interacción y Telemetría
                 </h1>
-                <p style="margin: 0; color: var(--color-muted); font-size: var(--font-size-base);">
+                <p class="analitica-subtitulo">
                     Mapeo integral de los 6 macroembudos de usuario y puntos de freno en Planazo.
                 </p>
             </div>
-            <span
-                style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-1) var(--space-3); background: var(--color-success-bg); border: 1px solid var(--color-success-border); color: var(--color-success); border-radius: var(--radius-pill); font-size: var(--font-size-sm); font-weight: var(--font-weight-bold);">
-                <span
-                    style="width: 8px; height: 8px; border-radius: var(--radius-circle); background: var(--color-success);"></span>
+            <span class="analitica-entorno">
+                <span class="analitica-entorno-punto"></span>
                 Desarrollo · Hora (UTC-4)
             </span>
         </div>
     </div>
 
     {{-- Cuadrícula de los 6 Embudos de Interacción --}}
-    <section aria-labelledby="titulo-embudos" style="margin-bottom: var(--space-8);">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4);">
-            <h2 id="titulo-embudos"
-                style="font-size: var(--font-size-xl); font-weight: var(--font-weight-bold); margin: 0; color: var(--color-foreground);">
+    <section aria-labelledby="titulo-embudos" class="analitica-seccion">
+        <div class="analitica-seccion-cabecera">
+            <h2 id="titulo-embudos" class="analitica-seccion-titulo">
                 Los 6 Embudos de Interacción
             </h2>
-            <span style="font-size: var(--font-size-sm); color: var(--color-muted);">
+            <span class="analitica-seccion-meta">
                 Total histórico: {{ $metricas['total_eventos'] ?? 0 }} eventos registrados
             </span>
         </div>
 
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: var(--space-5);">
+        <div class="analitica-embudos-grid">
             {{-- Embudo 1: Creación y Confirmación de Planes --}}
             <div class="tarjeta-embudo">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-4);">
+                <div class="analitica-embudo-cabecera">
                     <div>
                         <span class="chip-embudo-num">Embudo 1</span>
                         <h3 class="embudo-titulo">Creación y Confirmación</h3>
@@ -87,8 +81,7 @@
 
             {{-- Embudo 2: Deliberación y Votación --}}
             <div class="tarjeta-embudo">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-4);">
+                <div class="analitica-embudo-cabecera">
                     <div>
                         <span class="chip-embudo-num">Embudo 2</span>
                         <h3 class="embudo-titulo">Deliberación y Votación</h3>
@@ -126,8 +119,7 @@
 
             {{-- Embudo 3: Invitaciones y Convocatoria --}}
             <div class="tarjeta-embudo">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-4);">
+                <div class="analitica-embudo-cabecera">
                     <div>
                         <span class="chip-embudo-num">Embudo 3</span>
                         <h3 class="embudo-titulo">Invitaciones y Convocatoria</h3>
@@ -167,8 +159,7 @@
 
             {{-- Embudo 4: Gastos y Liquidación --}}
             <div class="tarjeta-embudo">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-4);">
+                <div class="analitica-embudo-cabecera">
                     <div>
                         <span class="chip-embudo-num">Embudo 4</span>
                         <h3 class="embudo-titulo">Gastos y Liquidación</h3>
@@ -210,8 +201,7 @@
 
             {{-- Embudo 5: Retiro de Participantes --}}
             <div class="tarjeta-embudo">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-4);">
+                <div class="analitica-embudo-cabecera">
                     <div>
                         <span class="chip-embudo-num">Embudo 5</span>
                         <h3 class="embudo-titulo">Retiro de Participantes</h3>
@@ -234,9 +224,9 @@
                         <div class="paso-etiqueta">retiro_confirmado</div>
                     </div>
                     <div class="paso-columna">
-                        <div class="paso-valor" id="retiro-bloqueados" style="color: var(--color-destructive);">
+                        <div class="paso-valor analitica-texto-destructivo" id="retiro-bloqueados">
                             {{ $metricas['retiro']['bloqueados_deuda'] ?? 0 }}</div>
-                        <div class="paso-etiqueta" style="color: var(--color-destructive);">bloqueo_deuda</div>
+                        <div class="paso-etiqueta analitica-texto-destructivo">bloqueo_deuda</div>
                     </div>
                 </div>
 
@@ -250,8 +240,7 @@
 
             {{-- Embudo 6: Búsquedas y Filtros --}}
             <div class="tarjeta-embudo">
-                <div
-                    style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-4);">
+                <div class="analitica-embudo-cabecera">
                     <div>
                         <span class="chip-embudo-num">Embudo 6</span>
                         <h3 class="embudo-titulo">Búsquedas y Filtros</h3>
@@ -275,9 +264,9 @@
                         <div class="paso-etiqueta">filtro_aplicado</div>
                     </div>
                     <div class="paso-columna">
-                        <div class="paso-valor" id="filtros-sin-resultados" style="color: var(--color-warning);">
+                        <div class="paso-valor analitica-texto-advertencia" id="filtros-sin-resultados">
                             {{ $metricas['filtros']['sin_resultados'] ?? 0 }}</div>
-                        <div class="paso-etiqueta" style="color: var(--color-warning);">sin_resultados</div>
+                        <div class="paso-etiqueta analitica-texto-advertencia">sin_resultados</div>
                     </div>
                 </div>
 
@@ -294,21 +283,17 @@
 
     {{-- Errores de Interacción y Puntos de Freno Frecuentes --}}
     @if (!empty($metricas['errores_frecuentes']))
-        <section aria-labelledby="titulo-errores" style="margin-bottom: var(--space-8);">
-            <h2 id="titulo-errores"
-                style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); margin-bottom: var(--space-3); color: var(--color-foreground);">
+        <section aria-labelledby="titulo-errores" class="analitica-seccion">
+            <h2 id="titulo-errores" class="analitica-errores-titulo">
                 Puntos de Freno y Errores de Interacción Recientes
             </h2>
-            <div
-                style="background: var(--color-destructive-bg); border: 1px solid var(--color-destructive-border); border-radius: var(--radius-lg); padding: var(--space-4) var(--space-5);">
-                <p
-                    style="margin: 0 0 var(--space-2) 0; color: var(--color-destructive); font-size: var(--font-size-md); font-weight: var(--font-weight-semibold);">
+            <div class="analitica-errores-caja">
+                <p class="analitica-errores-intro">
                     Fricciones detectadas por el sistema con lista fija de motivos:
                 </p>
-                <div style="display: flex; flex-wrap: wrap; gap: var(--space-2);">
+                <div class="analitica-errores-lista">
                     @foreach ($metricas['errores_frecuentes'] as $motivo => $total)
-                        <span
-                            style="display: inline-flex; align-items: center; gap: var(--space-1); padding: var(--space-1) var(--space-2); background: var(--color-surface); border: 1px solid var(--color-destructive-border); border-radius: var(--radius-pill); font-size: var(--font-size-sm); color: var(--color-destructive); font-weight: var(--font-weight-semibold);">
+                        <span class="analitica-errores-chip">
                             <code>{{ $motivo }}</code>: <strong>{{ $total }}</strong>
                         </span>
                     @endforeach
@@ -318,71 +303,59 @@
     @endif
 
     {{-- Listado de Últimos Eventos Registrados --}}
-    <section aria-labelledby="titulo-ultimos-eventos" style="margin-bottom: var(--space-8);">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-4);">
-            <h2 id="titulo-ultimos-eventos"
-                style="font-size: var(--font-size-lg); font-weight: var(--font-weight-bold); margin: 0; color: var(--color-foreground);">
+    <section aria-labelledby="titulo-ultimos-eventos" class="analitica-seccion">
+        <div class="analitica-seccion-cabecera">
+            <h2 id="titulo-ultimos-eventos" class="analitica-seccion-titulo-menor">
                 Últimos 25 Eventos Registrados
             </h2>
-            <span style="font-size: var(--font-size-sm); color: var(--color-muted);">
+            <span class="analitica-seccion-meta">
                 Hora oficial de Bolivia (UTC-4)
             </span>
         </div>
 
         @if ($ultimosEventos->isEmpty())
-            <div
-                style="background: var(--color-surface); border: 1px dashed var(--color-border); border-radius: var(--radius-lg); padding: var(--space-8) var(--space-5); text-align: center; color: var(--color-muted);">
-                <p
-                    style="font-size: var(--font-size-base); margin: 0 0 var(--space-1) 0; font-weight: var(--font-weight-semibold);">
+            <div class="analitica-vacio">
+                <p class="analitica-vacio-titulo">
                     No hay eventos registrados todavía.</p>
-                <p style="font-size: var(--font-size-sm); margin: 0;">Interactúa con los flujos de creación, votación o
+                <p class="analitica-vacio-texto">Interactúa con los flujos de creación, votación o
                     gastos
                     para observar la telemetría.</p>
             </div>
         @else
-            <div
-                style="background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow-x: auto; box-shadow: var(--shadow-sm); width: 100%;">
-                <table
-                    style="width: 100%; table-layout: fixed; border-collapse: collapse; text-align: left; font-size: var(--font-size-md);">
+            <div class="analitica-tabla-contenedor">
+                <table class="analitica-tabla">
                     <colgroup>
-                        <col style="width: 170px;">
-                        <col style="width: 210px;">
-                        <col style="width: auto;">
+                        <col class="analitica-col-hora">
+                        <col class="analitica-col-evento">
+                        <col class="analitica-col-props">
                     </colgroup>
-                    <thead style="background: var(--color-surface-soft); border-bottom: 1px solid var(--color-border);">
+                    <thead class="analitica-tabla-cabecera">
                         <tr>
-                            <th
-                                style="padding: var(--space-3) var(--space-4); font-weight: var(--font-weight-bold); color: var(--color-foreground); width: 170px;">
+                            <th class="analitica-tabla-th">
                                 Hora</th>
-                            <th
-                                style="padding: var(--space-3) var(--space-4); font-weight: var(--font-weight-bold); color: var(--color-foreground); width: 210px;">
+                            <th class="analitica-tabla-th">
                                 Evento</th>
-                            <th
-                                style="padding: var(--space-3) var(--space-4); font-weight: var(--font-weight-bold); color: var(--color-foreground);">
+                            <th class="analitica-tabla-th">
                                 Propiedades de la Acción</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($ultimosEventos as $ev)
-                            <tr style="border-bottom: 1px solid var(--color-neutral-bg);">
-                                <td
-                                    style="padding: var(--space-3) var(--space-4); font-family: monospace; font-size: var(--font-size-sm); color: var(--color-muted); white-space: nowrap; vertical-align: top;">
+                            <tr class="analitica-tabla-fila">
+                                <td class="analitica-celda-hora">
                                     {{ $ev->fecha_bolivia }}
                                 </td>
-                                <td
-                                    style="padding: var(--space-3) var(--space-4); white-space: nowrap; vertical-align: top;">
-                                    <span
-                                        style="display: inline-block; padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm); font-size: var(--font-size-xs); font-weight: var(--font-weight-semibold); background: var(--color-warning-bg); color: var(--color-warning);">
+                                <td class="analitica-celda-evento">
+                                    <span class="analitica-evento-badge">
                                         {{ $ev->evento }}
                                     </span>
                                 </td>
-                                <td
-                                    style="padding: var(--space-3) var(--space-4); font-family: monospace; font-size: var(--font-size-xs); color: var(--color-foreground); word-break: break-all; overflow-wrap: anywhere; white-space: normal; line-height: 1.45; vertical-align: top;">
+                                <td class="analitica-celda-props">
                                     @if (!empty($ev->props))
                                         <code
-                                            style="word-break: break-all; overflow-wrap: anywhere; white-space: normal; font-family: inherit; font-size: inherit; color: inherit;">{{ json_encode($ev->props, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</code>
+                                            class="analitica-props-codigo">{{ json_encode($ev->props, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) }}</code>
                                     @else
-                                        <span style="color: var(--color-muted);">(sin propiedades adicionales)</span>
+                                        <span class="analitica-props-vacio">(sin propiedades adicionales)</span>
                                     @endif
                                 </td>
                             </tr>

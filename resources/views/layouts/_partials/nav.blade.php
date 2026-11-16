@@ -1,6 +1,6 @@
 {{-- Barra de navegación --}}
 <nav class="barra" aria-label="Navegación principal">
-    <div style="display: flex; align-items: center; gap: var(--space-6);">
+    <div class="barra-izquierda">
         <a href="{{ route('planes.listar') }}" class="marca" aria-label="Planazo - Inicio">Planazo</a>
 
         <div class="nav-menu" role="menubar" aria-label="Secciones de la aplicación">
@@ -22,14 +22,14 @@
 
     <div class="barra-derecha">
         <div class="nav-usuario" title="Usuario autenticado: {{ auth()->user()->name }}">
-            <span class="nav-usuario-avatar" aria-hidden="true">
+            <span class="avatar" aria-hidden="true">
                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
             </span>
             <span class="nav-usuario-nombre">{{ auth()->user()->name }}</span>
         </div>
 
         {{-- Botón accesible para cerrar sesión --}}
-        <form method="POST" action="{{ route('salir') }}" style="margin: 0;">
+        <form method="POST" action="{{ route('salir') }}" class="form-reset">
             @csrf
             <button type="submit" class="boton-salir" aria-label="Cerrar sesión">
                 <x-icono nombre="salir" />

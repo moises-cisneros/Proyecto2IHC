@@ -10,7 +10,7 @@
         <p>Te enviaremos un enlace a tu correo para crear una nueva.</p>
     </header>
 
-    <form method="POST" action="{{ route('enviar.correo') }}" class="acceso-form" novalidate>
+    <form method="POST" action="{{ route('enviar.correo') }}" class="formulario" novalidate>
         @csrf
 
         <div class="campo">

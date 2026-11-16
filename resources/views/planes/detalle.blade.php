@@ -4,7 +4,7 @@
 
 @section('contenido')
 
-    <div class="sala-colaborativa" style="max-width: 1000px; margin: 0 auto; padding-bottom: var(--space-10);">
+    <div class="votacion-contenedor">
         {{-- Parcial 1: Cabecera con título, badge de estado, fecha límite y organizador --}}
         @include('planes._cabecera')
 

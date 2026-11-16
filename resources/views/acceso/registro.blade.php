@@ -10,7 +10,7 @@
         <p>Empieza a crear tus planes.</p>
     </header>
 
-    <form method="POST" action="{{ route('registrar') }}" class="acceso-form" novalidate>
+    <form method="POST" action="{{ route('registrar') }}" class="formulario" novalidate>
         @csrf
 
         <div class="campo">
