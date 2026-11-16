@@ -1,121 +1,201 @@
 # DESIGN.md — Sistema de Diseño y Guía de Interfaz de Planazo
 
 > **Fuente de verdad visual y ergonómica de Planazo.**  
-> Abstrae los tokens y clases reales de [`public/css/app.css`](../public/css/app.css) y [`resources/css/app.css`](css/app.css).  
-> **Regla de oro:** No inventar clases ni estilos ad-hoc; reutilizar exclusivamente los componentes y tokens agnósticos aquí catalogados.
+> Los tokens de diseño viven en [`resources/css/tokens.css`](css/tokens.css) (`@theme static`) y son importados por [`resources/css/app.css`](css/app.css).  
+> **Regla de oro:** No inventar clases ni colores ad-hoc; reutilizar exclusivamente los tokens semánticos y componentes aquí catalogados para garantizar consistencia con Figma y el código.
 
 <!-- GUÍA DE CONSULTA RÁPIDA CON RIPGREP (rg) PARA AGENTES:
      Para auditar o consultar una sección específica sin cargar todo el archivo:
-     - Fundamentos y tokens de color:    rg -A 30 "^## 1" resources/DESIGN.md
+     - Tokens de color nucleares:        rg -A 20 "^### A\. Tokens Nucleares" resources/DESIGN.md
+     - Variaciones y superficies (bg):   rg -A 15 "^### B\. Variaciones de Superficie" resources/DESIGN.md
+     - Tokens de tipografía:             rg -A 20 "^### C\. Tipografía" resources/DESIGN.md
+     - Tokens de espaciado:              rg -A 15 "^### D\. Espaciado" resources/DESIGN.md
+     - Tokens de geometría/radios:       rg -A 15 "^### E\. Geometría" resources/DESIGN.md
      - Semántica de estados y roles:     rg -A 35 "^## 2" resources/DESIGN.md
      - Componentes de acción (botones):  rg -A 25 "^## 3" resources/DESIGN.md
      - Componentes de contención/modal:  rg -A 30 "^## 4" resources/DESIGN.md
-     - Componentes de feedback/info:     rg -A 35 "^## 5" resources/DESIGN.md
+     - Feedback y prevención de errores: rg -A 35 "^## 5" resources/DESIGN.md
      - Telemetría y embudos (Dev):       rg -A 25 "^## 6" resources/DESIGN.md
+     - Componentes de Salida Honesta:    rg -A 40 "^## 7" resources/DESIGN.md
+     - Variantes por estado de dato:    rg -A 100 "^## 8" resources/DESIGN.md
 -->
 
 ---
 
 ## 1. Fundamentos y Tokens de Diseño
 
-### A. Paleta de Colores Semántica
+> **Fuente de código:** los tokens se declaran modularmente en [`resources/css/tokens.css`](css/tokens.css) en `@theme static` (secciones A–H) y son importados en [`resources/css/app.css`](css/app.css), compilado por Vite y cargado con `@vite('resources/css/app.css')` en `layouts/app` y `layouts/acceso`. Todo el proyecto (CSS de componentes, estilos inline de Blade y JS) los consume con `var(--token)`. En Figma, cada token es una _variable_ con el mismo nombre.
+>
+> **Principios:** (1) sin animaciones ni transiciones; (2) sin librerías de UI, solo CSS plano + tokens; (3) Tailwind se usa únicamente por su capa `theme`/`utilities` (sin preflight).
+>
+> **Regla:** Un color, tamaño o radio que no tenga un token aquí NO existe en Planazo.
 
-| Token Semántico    | Hex / RGB                      | Uso Específico en Planazo                                   |
-| :----------------- | :----------------------------- | :---------------------------------------------------------- |
-| `background`       | `#f6f6f4`                      | Fondo general de la página (`body`)                         |
-| `surface` / `card` | `#ffffff`                      | Fondo de tarjetas, tablas, modales y formularios            |
-| `foreground`       | `#1c1c1a`                      | Texto principal de alta legibilidad                         |
-| `muted`            | `#6f6f6a`                      | Texto de apoyo, encabezados y metadatos secundarios         |
-| `border`           | `#e3e3df`                      | Bordes de inputs, tablas, separadores y tarjetas            |
-| `brand-bar`        | `#ffe683`                      | Amarillo cálido del navbar y chips activos                  |
-| `brand-hover`      | `#ffd93d`                      | Estado hover de la barra y chips interactivos               |
-| `primary`          | `#60605f`                      | Botón primario (`.boton`), píldora con texto `#ffffff`      |
-| `primary-hover`    | `#4a4a49`                      | Hover del botón primario                                    |
-| `secondary`        | `#ffffff`                      | Botón secundario (`.boton-claro`) con borde `#e3e3df`       |
-| `destructive`      | `#c0392b` / `rgb(185, 14, 19)` | Botón eliminar (`.boton-rojo`), errores y alertas           |
-| `success`          | `#25663a`                      | Texto de confirmación, estado confirmado y alertas de éxito |
-| `success-bg`       | `#edf7ef`                      | Fondo de alerta y chip confirmado                           |
-| `pending`          | `#8a6100`                      | Texto de estado pendiente                                   |
-| `pending-bg`       | `#fff4d6`                      | Fondo de chip de estado pendiente                           |
-| `canceled`         | `#6f6f6a`                      | Texto de estado cancelado                                   |
-| `canceled-bg`      | `#eeeeec`                      | Fondo de chip de estado cancelado                           |
+La paleta se organiza bajo una arquitectura limpia de tokens: **Tokens Nucleares** (identidad, roles primarios y semántica de estado) y **Variaciones de Superficie y Borde** (fondos suaves y contornos para tarjetas, chips y alertas).
 
-### B. Tipografía y Escala
+### A. Tokens Nucleares (Paleta Principal)
 
-- **Fuente Base:** `system-ui, "Segoe UI", Roboto, sans-serif` (respaldada por `'Instrument Sans'`).
-- **Jerarquía:** H1: `24-28px` bold (`#1c1c1a`); H2: `18-20px` semibold; Cuerpo: `15px` line-height 1.5; Metadatos: `13px` (`#6f6f6a`).
-
-### C. Formas y Geometría Espacial
-
-- **Estilo Píldora (`rounded-full` / `50px`):** Botones, badges, chips de filtro, inputs de búsqueda y nav-links.
-- **Estilo Tarjeta (`rounded-xl` / `12-16px`):** Modales `<dialog>`, tarjetas autónomas y tablas.
-- **Contenedor Maestro:** Ancho máximo `max-w-[1024px]` centrado con padding simétrico `24px 16px`.
-- **Navbar Fijo:** `position: sticky; top: 0; z-index: 40;`, altura `60px`, logo `24px`.
+| Token Semántico | Hex       | Rol y Comportamiento en Planazo                                            |
+| :-------------- | :-------- | :------------------------------------------------------------------------- |
+| `primary`       | `#60605f` | Botón primario (`.boton`), controles principales y acentos neutros         |
+| `primary-hover` | `#4a4a49` | Interacción hover del botón primario                                       |
+| `secondary`     | `#ffffff` | Botón secundario (`.boton-claro`), tarjetas y superficies activas          |
+| `brand`         | `#ffe683` | Amarillo de identidad Planazo (navbar superior, acento activo)             |
+| `brand-hover`   | `#ffd93d` | Hover en elementos de marca interactivos                                   |
+| `surface`       | `#ffffff` | Fondo de tarjetas, tablas, modales y formularios                           |
+| `background`    | `#f6f6f4` | Fondo general de la aplicación (`body`)                                    |
+| `foreground`    | `#1c1c1a` | Texto de lectura principal de alto contraste                               |
+| `muted`         | `#6f6f6a` | Texto secundario, subtítulos, etiquetas y metadatos                        |
+| `border`        | `#e3e3df` | Borde estructural estándar (tarjetas, inputs, separadores)                 |
+| `border-input`  | `#d1d1cd` | Borde de campos de formulario interactivos                                 |
+| `success`       | `#25663a` | Aprobación, confirmación, pagos validados y estado completado              |
+| `destructive`   | `#c0392b` | Acciones irreversibles, errores, bloqueos y botón eliminar (`.boton-rojo`) |
+| `warning`       | `#8a6100` | Avisos importantes, procesos pendientes y votaciones en curso              |
 
 ---
 
-## 2. Semántica de Estados y Roles (Dominio Agnóstico)
+### B. Variaciones de Superficie, Bordes y Badges (Contextuales)
+
+Fondos atenuados de bajo impacto visual diseñados para garantizar contraste WCAG con sus textos respectivos:
+
+| Token de Variación    | Hex                   | Token Nuclear Asociado    | Uso en Interfaz                                      |
+| :-------------------- | :-------------------- | :------------------------ | :--------------------------------------------------- |
+| `success-bg`          | `#edf7ef`             | `success` (`#25663a`)     | Fondo de chips confirmados y alertas de éxito        |
+| `success-border`      | `#c2e2c8`             | `success` (`#25663a`)     | Borde de tarjetas y badges de confirmación           |
+| `destructive-bg`      | `#fbeceb`             | `destructive` (`#c0392b`) | Fondo de avisos de error y bloqueos de eliminación   |
+| `destructive-border`  | `#f5c6cb`             | `destructive` (`#c0392b`) | Borde sutil de advertencias críticas                 |
+| `warning-bg`          | `#fff4d6`             | `warning` (`#8a6100`)     | Fondo de estado pendiente y avisos de anulación      |
+| `warning-border`      | `#ffe683`             | `brand` / `warning`       | Borde de banners informativos                        |
+| `neutral-bg`          | `#eeeeec`             | `muted` (`#6f6f6a`)       | Fondo de chips cancelados y estados desactivados     |
+| `surface-soft`        | `#fbfbf9`             | `surface` (`#ffffff`)     | Fondo de cabeceras de tabla y contenedores anidados  |
+| `destructive-hover`   | `#a63125`             | `destructive` (`#c0392b`) | Hover del botón destructivo (`.boton-rojo`)          |
+| `foreground-soft`     | `#2e2e2c`             | `foreground` (`#1c1c1a`)  | Hover de elementos oscuros (nav activo, toolbar dev) |
+| `placeholder`         | `#b0b0aa`             | `muted` (`#6f6f6a`)       | Texto de placeholder en campos                       |
+| `edit` / `edit-hover` | `#a3a60b` / `#8e9109` | —                         | Botón de edición (`.boton-editar`)                   |
+| `overlay`             | `rgb(0 0 0 / 0.4)`    | —                         | Fondo de `dialog::backdrop`                          |
+
+---
+
+### C. Tipografía y Escala Jerárquica
+
+Tokens definidos en `@theme static` de `resources/css/tokens.css`:
+
+| Token                                 | Valor                                       | Uso                                               |
+| :------------------------------------ | :------------------------------------------ | :------------------------------------------------ |
+| `--font-family`                       | `system-ui, 'Segoe UI', Roboto, sans-serif` | Familia base (Instrument Sans como fallback Vite) |
+| `--font-size-md`                      | `14px`                                      | Texto de componentes (botones, alertas, celdas)   |
+| `--font-family` (mono: `--font-mono`) | —                                           | Etiquetas técnicas de telemetría                  |
+| `--font-size-base`                    | `15px`                                      | Cuerpo de lectura principal                       |
+| `--font-size-sm`                      | `13px`                                      | Metadatos, subtítulos, etiquetas                  |
+| `--font-size-xs`                      | `12px`                                      | Microcopia, badges, chips                         |
+| `--font-size-lg`                      | `18px`                                      | Títulos de sección, subtítulos de modal           |
+| `--font-size-xl`                      | `22px`                                      | Títulos de tarjeta, encabezados                   |
+| `--font-size-2xl`                     | `28px`                                      | H1, título principal de sala                      |
+| `--line-height`                       | `1.5`                                       | Altura de línea base                              |
+| `--font-weight-normal`                | `400`                                       | Texto regular                                     |
+| `--font-weight-medium`                | `500`                                       | Labels, botones secundarios                       |
+| `--font-weight-semibold`              | `600`                                       | Títulos, botones primarios                        |
+| `--font-weight-bold`                  | `700`                                       | H1, montos destacados, badges                     |
+
+---
+
+### D. Espaciado
+
+Escala de espaciado consistente para padding, gap y margin:
+
+| Token        | Valor  | Uso típico                                         |
+| :----------- | :----- | :------------------------------------------------- |
+| `--space-1`  | `4px`  | Gap mínimo entre íconos y texto                    |
+| `--space-2`  | `8px`  | Gap entre botones en fila                          |
+| `--space-3`  | `12px` | Separación antagónica mínima (Fitts), gap estándar |
+| `--space-4`  | `16px` | Padding interno de campos, margen entre secciones  |
+| `--space-5`  | `20px` | Padding de modales, margen de banners              |
+| `--space-6`  | `24px` | Padding de tarjetas y contenedores principales     |
+| `--space-8`  | `32px` | Separación entre bloques mayores                   |
+| `--space-10` | `40px` | Margen superior de contenido                       |
+
+---
+
+### E. Geometría y Formas
+
+| Token             | Valor  | Uso                                                         |
+| :---------------- | :----- | :---------------------------------------------------------- |
+| `--radius-sm`     | `6px`  | Chips de texto, botones compactos                           |
+| `--radius-md`     | `10px` | Campos de formulario (acceso)                               |
+| `--radius-lg`     | `12px` | Tarjetas secundarias, tablas, banners                       |
+| `--radius-xl`     | `16px` | Tarjetas principales, modales, cabecera                     |
+| `--radius-pill`   | `50px` | Botones, chips de filtro, buscador, badges de estado        |
+| `--radius-circle` | `50%`  | Avatares y puntos indicadores                               |
+| `--touch-min`     | `44px` | Área táctil mínima Fitts (todos los controles interactivos) |
+
+### G. Elevación y Capas
+
+| Token                                    | Valor                           | Uso                      |
+| :--------------------------------------- | :------------------------------ | :----------------------- |
+| `--shadow-sm`                            | `0 1px 3px rgb(0 0 0 / 0.05)`   | Tarjetas, tablas, navbar |
+| `--shadow-md`                            | `0 4px 12px rgb(0 0 0 / 0.1)`   | Toasts, toolbar flotante |
+| `--shadow-lg`                            | `0 10px 25px rgb(0 0 0 / 0.15)` | Diálogos modales         |
+| `--z-nav` / `--z-floating` / `--z-toast` | `40` / `50` / `60`              | Orden de capas           |
+
+- **Navbar:** Sticky superior (`top: 0; z-index: 40; height: 60px; background: brand; border-bottom: border`).
+
+---
+
+## 2. Semántica de Estados y Roles
 
 ### A. Chips de Estado de Recursos
 
-| Estado                    | Presentación Visual                                      | Significado en Interacción                                       |
-| :------------------------ | :------------------------------------------------------- | :--------------------------------------------------------------- |
-| `pendiente`               | Fondo `#fff4d6`, texto `#8a6100`                         | Abierto a cambios/votación o pendiente de validación humana.     |
-| `confirmado`              | Fondo `#edf7ef`, texto `#25663a`                         | Acordado o aprobado definitivamente. Inmutable: no reversible.   |
-| `cancelado` / `rechazado` | Fondo `#eeeeec` (`#fbeceb`), texto `#6f6f6a` (`#c0392b`) | Detenido o desestimado con motivo. No altera balances ni saldos. |
+| Estado       | Token Fondo                  | Token Borde                      | Token Texto               | Significado en Interacción                               |
+| :----------- | :--------------------------- | :------------------------------- | :------------------------ | :------------------------------------------------------- |
+| `pendiente`  | `warning-bg` (`#fff4d6`)     | `warning-border` (`#ffe683`)     | `warning` (`#8a6100`)     | Abierto a cambios/votación o en espera de resolución.    |
+| `confirmado` | `success-bg` (`#edf7ef`)     | `success-border` (`#c2e2c8`)     | `success` (`#25663a`)     | Acordado o aprobado definitivamente. Inmutable.          |
+| `cancelado`  | `neutral-bg` (`#eeeeec`)     | `border` (`#e3e3df`)             | `muted` (`#6f6f6a`)       | Detenido sin efecto posterior.                           |
+| `bloqueado`  | `destructive-bg` (`#fbeceb`) | `destructive-border` (`#f5c6cb`) | `destructive` (`#c0392b`) | Detenido por regla de negocio (deuda o planes abiertos). |
 
 ### B. Badges de Rol y Autorización
 
-| Rol                     | Presentación Visual                                     | Capacidades Ergonómicas                                              |
-| :---------------------- | :------------------------------------------------------ | :------------------------------------------------------------------- |
-| `Organizador / Creador` | Badge sólido (`bg-[#60605f] text-white`)                | Gestión total, desempate y cierre. No puede retirarse del recurso.   |
-| `Participante Activo`   | Badge con contorno (`border border-[#e3e3df] bg-white`) | Proponer, votar, retirarse voluntariamente si no posee deudas netas. |
-| `Invitado Pendiente`    | Badge atenuado (`bg-[#eeeeec] text-[#6f6f6a]`)          | Solo lectura hasta aceptar o declinar la membresía.                  |
+| Rol                     | Presentación Visual                                                 | Capacidades Ergonómicas                                       |
+| :---------------------- | :------------------------------------------------------------------ | :------------------------------------------------------------ |
+| `Organizador / Creador` | Sólido (`background: primary; color: #ffffff`)                      | Gestión total, desempate y cierre. No puede huir del recurso. |
+| `Participante Activo`   | Contorno (`background: surface; border: border; color: foreground`) | Proponer, votar, retirarse voluntariamente si no adeuda.      |
+| `Invitado Pendiente`    | Atenuado (`background: neutral-bg; color: muted`)                   | Solo lectura hasta aceptar o declinar membresía.              |
 
 ---
 
-## 3. Componentes de Acción e Interacción (Clic / Fitts)
+## 3. Componentes de Acción e Interacción (Fitts)
 
 ### A. Botones Estándar (`.boton*`)
 
-- **Regla de Fitts Inviolable:** Todo botón garantiza un área táctil mínima de **44×44px** (`min-height: 44px` o `py-2.5 px-4`).
-- **Separación Antagónica:** Controles destructivos contiguos a constructivos mantienen separación mínima de **12px** (`gap-3`).
-- **Variantes:**
-    - **Primario (`.boton`):** Fondo `#60605f`, texto blanco, radio `50px`, padding `9px 16px`.
-    - **Secundario (`.boton-claro`):** Fondo blanco, borde `#e3e3df`, texto `#1c1c1a`, radio `50px`.
-    - **Destructivo (`.boton-rojo`):** Fondo `#c0392b`, reservado para eliminaciones, rechazos o retiros.
-    - **Estado Procesando (`.boton-procesando` / `:disabled`):** Opacidad `0.4`, cursor `not-allowed`, spinner SVG.
+- **Regla de Fitts Inviolable:** Área táctil mínima de **44×44px** (`min-height: 44px`).
+- **Separación Antagónica:** Separación mínima de **12px** (`gap: 12px` / `gap-3`) entre acciones contiguas.
+- **Variantes Oficiales:**
+    - **Primario (`.boton`):** Fondo `primary` (`#60605f`), texto blanco, radio `50px`, padding `9px 16px`.
+    - **Secundario (`.boton-claro`):** Fondo `surface` (`#ffffff`), borde `border` (`#e3e3df`), texto `foreground`, radio `50px`.
+    - **Destructivo (`.boton-rojo`):** Fondo `destructive` (`#c0392b`), texto blanco, radio `50px`.
+    - **Procesando / Deshabilitado:** Opacidad `0.4`, cursor `not-allowed`.
 
 ### B. Componente de Íconos Vectoriales (`<x-icono nombre="..." />`)
 
-- **Directiva:** Prohibido el uso de emojis crudos en vistas. Usar trazados Heroicons/Lucide con `stroke="currentColor"`.
-- **Escala de Tamaños:** Compacto: `16×16px` (`w-4 h-4`); Estándar: `20×20px` (`w-5 h-5`); Destacado: `24×24px`.
-- **Accesibilidad:** Siempre acompaña texto descriptivo o atributo `aria-label` con `aria-hidden="true"` en el SVG.
-
-### C. Píldoras de Navegación (`<x-nav-link>`)
-
-- Píldoras ergonómicas (`min-height: 40px`, padding `6px 14px`, radio `50px`).
-- Activo: fondo `#1c1c1a`, texto blanco. Inactivo: transparente con hover `rgba(0,0,0,0.08)`.
+- Prohibido el uso de emojis crudos en vistas. Usar trazados Heroicons/Lucide con `stroke="currentColor"`.
+- Tamaños: Compacto `16×16px`, Estándar `20×20px`, Destacado `24×24px`.
+- Accesibilidad: Siempre con texto visible o `aria-label` descriptivo.
 
 ---
 
-## 4. Componentes de Contención y Diálogo (Estructura)
+## 4. Componentes de Contención y Diálogo
 
 ### A. Diálogos Modales Nativos (`<dialog>`)
 
-- **Implementación:** HTML5 `<dialog>` nativo accesible (apertura con `.showModal()`, cierre con `.close()` o `Escape`).
-- **Geometría:** Ancho `400-520px` (`w-full max-w-[500px]`), fondo `#ffffff`, bordes redondeados `16px`, padding `24-28px`, backdrop `rgba(0,0,0,0.4)`.
-- **Estructura Interna:** Cabecera con título H2 e ícono, cuerpo con advertencia contextual (Nielsen H5) y pie de acciones alineado a la derecha con separación mínima de `12px` (Fitts).
+- HTML5 `<dialog>` nativo accesible (apertura con `.showModal()`, cierre con `.close()` o tecla `Escape`).
+- Ancho `400-520px`, fondo `surface` (`#ffffff`), radio `16px`, padding `24-28px`, backdrop `rgba(0,0,0,0.4)`.
+- Cabecera con título H2 e ícono, cuerpo con advertencia contextual y pie de acciones alineado a la derecha con separación de `12px`.
 
 ### B. Tarjetas Autónomas (`.tarjeta` / `.card`)
 
-- Fondo `#ffffff`, borde `#e3e3df`, bordes redondeados `12px`, padding `16-20px`.
-- Diseñadas para responder a sus dimensiones clave (qué ocurrió, cuándo, estado) sin forzar navegación secundaria.
+- Fondo `surface` (`#ffffff`), borde `1px solid border` (`#e3e3df`), radio `12px`, padding `16-20px`.
 
 ### C. Tablas Modulares de Datos (`.tabla-contenedor`)
 
-- Contenedor con `overflow-x: auto`, `min-width: 880px`, bordes redondeados y padding lateral de `20px`.
-- Altura estándar de fila: `68px` para ritmo visual homogéneo. Celda de acciones flex alineada al final con botones de 44px.
+- Contenedor con scroll horizontal, fondo `surface`, bordes redondeados y altura estándar de fila de `68px`.
 
 ---
 
@@ -123,23 +203,14 @@
 
 ### A. Notificaciones Flotantes Nativas (`<x-toast-alerta />`)
 
-- Posición fija `position: fixed; top: 20px; right: 20px; z-index: 50;` (Zero Layout Shift).
-- Auto-desvanecimiento en 3 segundos (3000ms), botón de cierre manual (≥ 44 px) y directiva `aria-live="polite"`.
-- Variantes: Éxito (`#edf7ef` / `#25663a`), Error (`#fbeceb` / `#c0392b`).
+- Posición fija `top: 20px; right: 20px; z-index: 50;`.
+- Descarte automático a los 3 segundos (sin animación), botón de cierre manual $\ge 44$ px y `aria-live="polite"`.
+- Variantes: Éxito (`success-bg` / `success`) y Error (`destructive-bg` / `destructive`).
 
 ### B. Banners de Advertencia y Freno de Emergencia (Nielsen H5 y H6)
 
-- **Banner de Freno / Bloqueo:** Fondo `#fbeceb`, borde `#f5c6cb`, texto `#c0392b`, ícono de advertencia. Explica la razón del bloqueo (ej. deuda pendiente) y ofrece la acción de resolución directa.
-- **Banner Informativo / Proceso:** Fondo `#fff4d6`, borde `#ffe683`, texto `#8a6100`. Indica procesos en segundo plano (ej. escaneo OCR de comprobante).
-
-### C. Selector de Modo e Intención (Hick $n \le 4$)
-
-- Selector acotado entre modo total vs parcial (ej. pagar total con 1 clic y campo bloqueado vs habilitar input manual).
-- Elimina tipeo redundante cuando el sistema ya conoce el dato (Nielsen H6).
-
-### D. Estados Vacíos Empáticos
-
-- Contenedor centrado con ícono suave, mensaje contextual en lenguaje natural y botón guiado a la acción primaria.
+- **Banner de Freno / Bloqueo:** Fondo `destructive-bg` (`#fbeceb`), borde `destructive-border` (`#f5c6cb`), texto `destructive` (`#c0392b`).
+- **Banner Informativo:** Fondo `warning-bg` (`#fff4d6`), borde `warning-border` (`#ffe683`), texto `warning` (`#8a6100`).
 
 ---
 
@@ -147,24 +218,150 @@
 
 ### A. Dev Floating Toolbar (`dev_toolbar.blade.php`)
 
-- Píldora discreta fija en esquina inferior derecha (`fixed bottom-4 right-4 z-50`): `[📊 Telemetría Dev · /analitica]`.
-- Exclusiva para entornos `local` y `testing`. No contamina el menú de navegación del usuario común (Nielsen H8).
+- Píldora discreta fija en `fixed bottom-4 right-4 z-50` (`[📊 Telemetría Dev · /analitica]`).
+- Exclusiva para entornos `local` y `testing`. No contamina el menú del usuario común.
 
-### B. Tarjetas de Embudo y Métricas Horizontales (`.tarjeta-embudo`)
+### B. Tarjetas de Embudo y Métricas (`.tarjeta-embudo`)
 
-- **Estructura y Paleta Oficial:**
-    - **Tarjeta base:** Fondo blanco `surface` (`#ffffff`), borde `#e3e3df`, radio `12px` y padding `20px`.
-    - **Chip identificador:** Fondo `#fff4d6` (`pending-bg`), texto `#8a6100` (`pending`), radio `9999px`.
-- **Métricas Horizontales por Paso:**
-    - Contadores destacados (`text-[26px] font-extrabold #1c1c1a`, `line-height: 1`).
-    - Nombre técnico del evento en monospace inferior (`text-xs text-[#6f6f6a] font-mono`).
-- **Caja de Finalización (`.caja-porcentaje-terminan`):**
-    - Contenedor rectangular redondeado (`rounded-xl`), fondo `#edf7ef` (`success-bg`), borde `#bbf7d0` y padding `8px 14px`.
-    - Porcentaje de éxito en `22px font-extrabold #25663a` (`success`) con la etiqueta `terminan` (erradicando la jerga técnica negativa de _drop-off_ en favor de métricas constructivas de éxito).
-- **Barra de Avance Brand-Bar:**
-    - Contenedor redondeado (`rounded-full`, altura `8px`, fondo `#f6f6f4`, borde `#e3e3df`) con relleno de token oficial `#ffe683` (`brand-bar`) mapeando la tasa de $0\%$ a $100\%$.
+- Fondo `surface` (`#ffffff`), borde `border` (`#e3e3df`), radio `12px`.
+- Avance visual mediante barra rellena con token oficial `brand` (`#ffe683`).
+- Caja de finalización en `success-bg` (`#edf7ef`) con texto `success` (`#25663a`).
 
-### C. Listado de Eventos Recientes (`Últimos 25 Eventos Registrados`)
+---
 
-- Tabla estructurada con fondo `#ffffff`, bordes `#e3e3df`, cabecera `#fbfbf9` y badges de evento en `#fff4d6` con texto `#8a6100`.
-- Marca temporal formateada en hora oficial de Bolivia (`UTC-4`).
+## 7. Componentes de Salida Honesta y Prevención de Patrones Oscuros
+
+### A. Caja Informativa de Salida Honesta (`.caja-salida-honesta`)
+
+Componente contenedor para explicar bloqueos de eliminación estructurado en dos partes: **Por qué** no se puede realizar la acción y **Qué hacer** para resolverla (sin callejones sin salida / _anti-roach motel_).
+
+- **Estructura y Tokens Semánticos:**
+    - **Fondo:** `destructive-bg` (`#fbeceb`).
+    - **Borde:** `1px solid destructive-border` (`#f5c6cb`).
+    - **Radio:** `12px` (`rounded-xl`).
+    - **Padding:** `16px 18px`.
+    - **Texto Explicativo:** `13px foreground` (`#1c1c1a`), interlineado 1.45.
+    - **Acciones Sugeridas:** Enlaces y botones de resolución en `.boton-claro` con altura mínima $\ge 44$ px.
+
+### B. Diálogo de Salida Simétrica (`<x-modal-salida-honesta />`)
+
+Modal especializado derivado de `<dialog>` bajo estricta **Prueba de Simetría** (_"Salir tiene que ser tan fácil como entrar"_):
+
+- **Geometría y Jerarquía Simétrica:**
+    - Ancho máximo `480px`, fondo `surface` (`#ffffff`), radio `16px`, padding `28px`.
+    - **Cero confirmshaming:** Lenguaje neutral y asertivo sin reproches ni emojis de culpa.
+    - **Botonera de Acción Simétrica:**
+        - Botón de Permanencia: `.boton-claro` (`surface` con borde `border`).
+        - Botón de Salida Destructiva: `.boton-rojo` (fondo `destructive` `#c0392b`).
+        - Idéntica altura táctil $\ge 44$ px, padding simétrico (`10px 22px`) y separación antagónica $\ge 12$ px.
+
+### C. Selector de Exportación de Datos (`.tarjeta-exportacion-datos`)
+
+Tarjeta para el ejercicio de derechos de portabilidad de información (acceso y descarga):
+
+- **Tokens Semánticos:**
+    - Fondo `surface` (`#ffffff`), borde `1px solid border` (`#e3e3df`), radio `12px`, padding `20px`.
+    - Título H2: `18px font-semibold foreground` (`#1c1c1a`).
+    - Texto descriptivo: `14px muted` (`#6f6f6a`).
+    - Botones de descarga directa: `.boton-claro` con altura mínima de 44px e ícono vectorial `<x-icono nombre="descarga" />`.
+
+---
+
+## 8. Variantes de Componente por Estado de Dato
+
+> **Propósito:** Documenta cómo cambia el aspecto visual de cada componente según el **estado del dato** (`pendiente`, `confirmado`, `cancelado`, `rechazado`, `bloqueado`), no los estados de interacción CSS. Cada fila es una variante nombrada en Figma y su token semántico de referencia para el código.
+
+---
+
+### A. Chip de Estado de Plan (`.estado .estado-{valor}`)
+
+Definido en `resources/css/app.css` (sección Componentes). Clase base `.estado` + modificador semántico.
+
+| Variante (Figma) | Clase CSS            | Fondo     | Texto     | Token Fondo  | Token Texto |
+| :--------------- | :------------------- | :-------- | :-------- | :----------- | :---------- |
+| `Pendiente`      | `.estado-pendiente`  | `#fff4d6` | `#8a6100` | `warning-bg` | `warning`   |
+| `Confirmado`     | `.estado-confirmado` | `#edf7ef` | `#25663a` | `success-bg` | `success`   |
+| `Cancelado`      | `.estado-cancelado`  | `#eeeeec` | `#6f6f6a` | `neutral-bg` | `muted`     |
+
+> **Nota:** `.estado-bloqueado` y `.estado-rechazado` existen y usan `destructive-bg` / `destructive`.
+
+---
+
+### B. Chip de Estado de Pago (Inline en `_gastos_liquidacion.blade.php`)
+
+Estos chips se renderizan con estilos inline por ahora. Los tokens semánticos de referencia son:
+
+| Variante (Figma)  | Estado del Dato | Fondo del chip | Color del chip | Token Fondo      | Token Texto   |
+| :---------------- | :-------------- | :------------- | :------------- | :--------------- | :------------ |
+| `Pago Pendiente`  | `pendiente`     | `#fff4d6`      | `#8a6100`      | `warning-bg`     | `warning`     |
+| `Pago Confirmado` | `confirmado`    | `#edf7ef`      | `#25663a`      | `success-bg`     | `success`     |
+| `Pago Rechazado`  | `rechazado`     | `#fbeceb`      | `#c0392b`      | `destructive-bg` | `destructive` |
+
+> **Estado:** migrado a tokens oficiales (deuda saldada). Los estilos inline usan `var(--color-*)`.
+
+---
+
+### C. Fila / Tarjeta de Pago (contenedor en `_gastos_liquidacion.blade.php` L186)
+
+El contenedor de cada fila de pago cambia fondo y borde según el estado del pago:
+
+| Variante (Figma)       | Estado del Dato | Fondo del contenedor | Borde     | Token Fondo      | Token Borde          |
+| :--------------------- | :-------------- | :------------------- | :-------- | :--------------- | :------------------- |
+| `Fila Pago Pendiente`  | `pendiente`     | `#fff4d6`            | `#ffe683` | `warning-bg`     | —                    |
+| `Fila Pago Confirmado` | `confirmado`    | `#edf7ef`            | `#c2e2c8` | `success-bg`     | `success-border`     |
+| `Fila Pago Rechazado`  | `rechazado`     | `#fbeceb`            | `#f5c6cb` | `destructive-bg` | `destructive-border` |
+
+> **Estado:** migrado a tokens oficiales (deuda saldada). Los estilos inline usan `var(--color-*)`.
+
+---
+
+### D. Banner Contextual de Sala de Plan (`_cabecera.blade.php`)
+
+La cabecera de la sala inyecta banners distintos según el estado del plan o la condición del participante:
+
+| Variante (Figma)   | Condición                      | Fondo     | Borde     | Texto     | Token Fondo      | Token Borde          |
+| :----------------- | :----------------------------- | :-------- | :-------- | :-------- | :--------------- | :------------------- |
+| `Banner Cancelado` | `plan->estado === 'cancelado'` | `#eeeeec` | `#e3e3df` | `#6f6f6a` | `neutral-bg`     | `border`             |
+| `Banner Invitado`  | Participante no aceptó aún     | `#fff4d6` | `#ffe683` | `#8a6100` | `warning-bg`     | `warning-border`     |
+| `Banner Deuda`     | `usuarioTieneDeuda()`          | `#fbeceb` | `#f5c6cb` | `#c0392b` | `destructive-bg` | `destructive-border` |
+| `Banner Info Pago` | Pago pendiente de votación     | `#fff4d6` | `#ffe683` | `#8a6100` | `warning-bg`     | `warning-border`     |
+
+> **Estado:** migrado a tokens oficiales (deuda saldada). Los estilos inline usan `var(--color-*)`.
+
+---
+
+### E. Activity Card (`.activity-card` / `<x-activity-card />`)
+
+Definido en `resources/views/components/activity-card.blade.php` L10–18. El tipo de evento determina el estilo del chip de la tarjeta de actividad:
+
+| Variante (Figma)            | Tipo de Evento    | Fondo     | Borde     | Texto     | Token de Referencia                                        |
+| :-------------------------- | :---------------- | :-------- | :-------- | :-------- | :--------------------------------------------------------- |
+| `Actividad Confirmado`      | `confirmado`      | `#edf7ef` | `#c2e2c8` | `#25663a` | `success-bg` / `success-border` / `success` ✅             |
+| `Actividad Cancelado`       | `cancelado`       | `#fbeceb` | `#f5c6cb` | `#c0392b` | `destructive-bg` / `destructive-border` / `destructive` ✅ |
+| `Actividad Pendiente`       | `pendiente`       | `#fff4d6` | `#ffe683` | `#8a6100` | `warning-bg` / `warning-border` / `warning` ✅             |
+| `Actividad Pago Confirmado` | `pago_confirmado` | `#edf7ef` | `#c2e2c8` | `#25663a` | `success-*` ✅                                             |
+| `Actividad Pago Rechazado`  | `pago_rechazado`  | `#fbeceb` | `#f5c6cb` | `#c0392b` | `destructive-*` ✅                                         |
+
+> **Estado:** migrado a tokens oficiales (deuda saldada). Los estilos inline usan `var(--color-*)`.
+
+---
+
+### F. Tabla de Componentes (Referencia Rápida)
+
+> Esta tabla permite a Figma y al código mantenerse sincronizados: cada componente del sistema de diseño tiene un único archivo Blade o CSS de referencia.
+
+| Componente                                | Archivo de Referencia                                                        | Sección DESIGN.md |
+| :---------------------------------------- | :--------------------------------------------------------------------------- | :---------------- |
+| `.boton` / `.boton-claro` / `.boton-rojo` | `resources/css/app.css`                                                      | §3.A              |
+| `<x-icono nombre="..." />`                | `resources/views/components/icono.blade.php`                                 | §3.B              |
+| `<dialog>` (modal genérico)               | `resources/views/components/dialog-confirm.blade.php`                        | §4.A              |
+| `.tarjeta` / `.card`                      | Uso inline en vistas                                                         | §4.B              |
+| `.tabla-contenedor`                       | Uso inline en vistas                                                         | §4.C              |
+| `<x-toast-alerta />`                      | `resources/views/components/toast-alerta.blade.php`                          | §5.A              |
+| `.estado .estado-{valor}`                 | `resources/css/app.css`                                                      | §2.A + §8.A       |
+| Chip pago / fila pago                     | `planes/_gastos_liquidacion.blade.php` L186–194                              | §8.B + §8.C       |
+| Banner sala contextual                    | `planes/_cabecera.blade.php` L58–163                                         | §8.D              |
+| `<x-activity-card />`                     | `resources/views/components/activity-card.blade.php`                         | §8.E              |
+| `.caja-salida-honesta`                    | Uso inline (a crear en T10)                                                  | §7.A              |
+| `<x-modal-salida-honesta />`              | `resources/views/components/modal-salida-honesta.blade.php` (a crear en T10) | §7.B              |
+| `.tarjeta-exportacion-datos`              | Vista `mi-cuenta` (a crear en T10)                                           | §7.C              |

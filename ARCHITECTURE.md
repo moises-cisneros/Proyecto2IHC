@@ -75,7 +75,7 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 ├── docker/                                   # Dockerfiles y scripts de arranque
 ├── docs/                                     # Documentación técnica, evidencias e informes
 ├── openspec/                                 # Especificaciones SDD (propuestas, cambios, tareas)
-├── public/                                   # Raíz pública web (index.php, css/app.css, js/ui.js)
+├── public/                                   # Raíz pública web (index.php, js/ui.js; CSS vía Vite)
 ├── resources/
 │   ├── css/                                  # Estilos base Tailwind v4
 │   ├── js/                                   # Entry points de JavaScript

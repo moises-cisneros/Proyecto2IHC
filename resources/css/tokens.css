@@ -1,0 +1,99 @@
+/*
+ * ================================================================
+ * tokens.css — Sistema de Tokens de Planazo (Fuente Única de Verdad)
+ * Contrato de diseño: resources/DESIGN.md
+ *
+ * Mapeo 1:1 con las variables de Figma y el código del proyecto.
+ *
+ * Categorías:
+ *   A. Color: Tokens Nucleares
+ *   B. Color: Variaciones de Superficie, Borde e Interacción
+ *   C. Tipografía
+ *   D. Espaciado
+ *   E. Geometría (radios)
+ *   F. Área táctil mínima (Ley de Fitts)
+ *   G. Elevación (sombras)
+ *   H. Capas (z-index)
+ * ================================================================
+ */
+
+@theme static {
+    /* ── A. Color: Tokens Nucleares ──────────────────────────── */
+    --color-primary: #60605f;
+    --color-primary-hover: #4a4a49;
+    --color-secondary: #ffffff;
+    --color-brand: #ffe683;
+    --color-brand-hover: #ffd93d;
+    --color-surface: #ffffff;
+    --color-background: #f6f6f4;
+    --color-foreground: #1c1c1a;
+    --color-muted: #6f6f6a;
+    --color-border: #e3e3df;
+    --color-border-input: #d1d1cd;
+    --color-success: #25663a;
+    --color-destructive: #c0392b;
+    --color-warning: #8a6100;
+
+    /* ── B. Color: Variaciones de Superficie, Borde e Interacción ─ */
+    --color-success-bg: #edf7ef;
+    --color-success-border: #c2e2c8;
+    --color-destructive-bg: #fbeceb;
+    --color-destructive-border: #f5c6cb;
+    --color-destructive-hover: #a63125;
+    --color-warning-bg: #fff4d6;
+    --color-warning-border: #ffe683;
+    --color-neutral-bg: #eeeeec;
+    --color-surface-soft: #fbfbf9;
+    --color-foreground-soft: #2e2e2c;
+    --color-placeholder: #b0b0aa;
+    --color-edit: #a3a60b;
+    --color-edit-hover: #8e9109;
+    --color-overlay: rgb(0 0 0 / 0.4);
+
+    /* ── C. Tipografía ───────────────────────────────────────── */
+    --font-family: system-ui, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: ui-monospace, 'Cascadia Mono', Consolas, monospace;
+    --font-size-xs: 12px;
+    --font-size-sm: 13px;
+    --font-size-md: 14px;
+    --font-size-base: 15px;
+    --font-size-lg: 18px;
+    --font-size-xl: 22px;
+    --font-size-2xl: 28px;
+    --line-height: 1.5;
+    --font-weight-normal: 400;
+    --font-weight-medium: 500;
+    --font-weight-semibold: 600;
+    --font-weight-bold: 700;
+
+    /* ── D. Espaciado ────────────────────────────────────────── */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+
+    /* ── E. Geometría (radios de borde) ──────────────────────── */
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --radius-pill: 50px;
+    --radius-circle: 50%;
+
+    /* ── F. Área táctil mínima (Ley de Fitts) ────────────────── */
+    --touch-min: 44px;
+
+    /* ── G. Elevación (sombras) ──────────────────────────────── */
+    --shadow-sm: 0 1px 3px rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 12px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 25px rgb(0 0 0 / 0.15);
+
+    /* ── H. Capas (z-index) ──────────────────────────────────── */
+    --z-nav: 40;
+    --z-floating: 50;
+    --z-toast: 60;
+}

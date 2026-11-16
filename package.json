@@ -19,6 +19,7 @@
     "devDependencies": {
         "@axe-core/playwright": "^4.14.0",
         "@playwright/test": "^1.64.1",
+        "@shufo/prettier-plugin-blade": "^1.16.3",
         "@tailwindcss/vite": "^4.0.0",
         "@types/node": "^26.6.6",
         "axios": "^1.11.0",

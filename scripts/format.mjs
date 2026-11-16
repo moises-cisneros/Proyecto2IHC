@@ -20,14 +20,14 @@ try {
     hasError = true;
 }
 
-// 2. Formateador Frontend y Markdown con Prettier
-console.log('🎨 2. Formateando archivos (JS, TS, CSS, JSON, Markdown) con Prettier...');
+// 2. Formateador Frontend, Blade y Markdown con Prettier
+console.log('🎨 2. Formateando archivos (JS, TS, CSS, JSON, Markdown, Blade) con Prettier...');
 try {
     const prettierCmd = isFix
-        ? 'npx prettier --write "**/*.{js,mjs,cjs,ts,css,json,md}"'
-        : 'npx prettier --check "**/*.{js,mjs,cjs,ts,css,json,md}"';
+        ? 'npx prettier --write "**/*.{js,mjs,cjs,ts,css,json,md}" "resources/views/**/*.blade.php"'
+        : 'npx prettier --check "**/*.{js,mjs,cjs,ts,css,json,md}" "resources/views/**/*.blade.php"';
     execSync(prettierCmd, { stdio: 'inherit' });
-    console.log('✅ Prettier (Frontend + Markdown): Formato correcto.');
+    console.log('✅ Prettier (Frontend + Blade + Markdown): Formato correcto.');
 } catch (error) {
     console.error('❌ Prettier: Se detectaron archivos con problemas de formato.');
     hasError = true;
