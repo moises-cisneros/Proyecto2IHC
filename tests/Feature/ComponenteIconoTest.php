@@ -28,6 +28,8 @@ class ComponenteIconoTest extends TestCase
 
             $this->assertStringContainsString('<svg', $rendered, "Fallo al renderizar el icono {$nombre}");
             $this->assertStringContainsString('viewBox="0 0 24 24"', $rendered);
+            $this->assertStringContainsString('width="20"', $rendered);
+            $this->assertStringContainsString('height="20"', $rendered);
             $this->assertStringContainsString('aria-hidden="true"', $rendered);
             $this->assertStringContainsString('stroke="currentColor"', $rendered);
             $this->assertStringContainsString('fill="none"', $rendered);
@@ -59,18 +61,23 @@ class ComponenteIconoTest extends TestCase
     }
 
     /**
-     * Verifies that additional icons for system workflows (balance, card) are supported.
+     * Verifies that the icon component supports compact (16px), standard (20px), and prominent (24px) size variants.
      */
-    public function test_soporta_iconos_adicionales_del_sistema(): void
+    public function test_soporta_variantes_de_tamano_compacto_estandar_y_destacado(): void
     {
-        $adicionales = ['balanza', 'tarjeta'];
+        $renderedSm = (string) Blade::render('<x-icono nombre="calendario" tamano="sm" />');
+        $this->assertStringContainsString('width="16"', $renderedSm);
+        $this->assertStringContainsString('height="16"', $renderedSm);
+        $this->assertStringContainsString('icono-sm', $renderedSm);
 
-        foreach ($adicionales as $nombre) {
-            $rendered = (string) Blade::render("<x-icono nombre=\"{$nombre}\" />");
+        $renderedMd = (string) Blade::render('<x-icono nombre="calendario" tamano="md" />');
+        $this->assertStringContainsString('width="20"', $renderedMd);
+        $this->assertStringContainsString('height="20"', $renderedMd);
+        $this->assertStringContainsString('icono-md', $renderedMd);
 
-            $this->assertStringContainsString('<svg', $rendered, "Fallo al renderizar el icono adicional {$nombre}");
-            $this->assertStringContainsString('viewBox="0 0 24 24"', $rendered);
-            $this->assertStringContainsString('aria-hidden="true"', $rendered);
-        }
+        $renderedLg = (string) Blade::render('<x-icono nombre="calendario" tamano="lg" />');
+        $this->assertStringContainsString('width="24"', $renderedLg);
+        $this->assertStringContainsString('height="24"', $renderedLg);
+        $this->assertStringContainsString('icono-lg', $renderedLg);
     }
 }

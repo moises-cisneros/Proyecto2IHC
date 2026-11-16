@@ -96,4 +96,9 @@
     --z-nav: 40;
     --z-floating: 50;
     --z-toast: 60;
+
+    /* ── I. Dimensiones de Íconos Vectoriales (DESIGN.md §3.B) ── */
+    --icono-sm: 16px;
+    --icono-md: 20px;
+    --icono-lg: 24px;
 }

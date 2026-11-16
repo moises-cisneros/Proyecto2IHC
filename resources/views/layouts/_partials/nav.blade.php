@@ -21,13 +21,12 @@
     </div>
 
     <div class="barra-derecha">
-        <a href="{{ route('perfil.datos') }}" class="nav-usuario" style="text-decoration: none;"
-            title="Mi Cuenta y Privacidad ({{ auth()->user()->name }})" aria-label="Mi Cuenta y Privacidad">
+        <div class="nav-usuario" title="Usuario autenticado: {{ auth()->user()->name }}">
             <span class="nav-usuario-avatar" aria-hidden="true">
                 {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
             </span>
             <span class="nav-usuario-nombre">{{ auth()->user()->name }}</span>
-        </a>
+        </div>
 
         {{-- Botón accesible para cerrar sesión --}}
         <form method="POST" action="{{ route('salir') }}" style="margin: 0;">
