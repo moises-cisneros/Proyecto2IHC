@@ -771,6 +771,108 @@ dialog h2,
     font-weight: var(--font-weight-medium);
 }
 
+/* ───────────────────────────────────────────────────────────────
+   7. COMPONENTES DE SALIDA HONESTA Y PREVENCIÓN DE PATRONES OSCUROS (DESIGN.md §7)
+   ─────────────────────────────────────────────────────────────── */
+.caja-salida-honesta {
+    background: var(--color-destructive-bg);
+    border: 1px solid var(--color-destructive-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4) var(--space-5);
+    margin: var(--space-4) 0;
+    font-size: var(--font-size-sm);
+    line-height: 1.45;
+    color: var(--color-foreground);
+}
+
+.caja-salida-honesta-titulo {
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-destructive);
+    font-size: var(--font-size-md);
+    margin: 0 0 var(--space-2);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.caja-salida-honesta-seccion {
+    margin-bottom: var(--space-3);
+}
+
+.caja-salida-honesta-seccion:last-child {
+    margin-bottom: 0;
+}
+
+.caja-salida-honesta-label {
+    font-weight: var(--font-weight-semibold);
+    display: block;
+    margin-bottom: var(--space-1);
+    color: var(--color-foreground);
+}
+
+.caja-salida-honesta-acciones {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.tarjeta-exportacion-datos {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-xl);
+    padding: var(--space-5);
+    margin-bottom: var(--space-6);
+}
+
+.tarjeta-exportacion-datos-titulo {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-foreground);
+    margin: 0 0 var(--space-1);
+}
+
+.tarjeta-exportacion-datos-desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-muted);
+    margin: 0 0 var(--space-4);
+}
+
+.tarjeta-exportacion-datos-botones {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    flex-wrap: wrap;
+}
+
+.dialogo-salida-simetrica {
+    width: 100%;
+    max-width: 480px;
+    background: var(--color-surface);
+    border: none;
+    border-radius: var(--radius-2xl);
+    padding: var(--space-7);
+    box-shadow: var(--shadow-xl);
+}
+
+.dialogo-salida-simetrica::backdrop {
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.boton-simetrico {
+    min-height: var(--touch-min);
+    padding: var(--space-2) var(--space-5);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
 /* ═══════════════════════════════════════════════════════════════
    4. PANTALLAS DE ACCESO (layouts/acceso.blade.php)
    ═══════════════════════════════════════════════════════════════ */

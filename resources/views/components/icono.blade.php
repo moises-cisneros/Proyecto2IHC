@@ -141,5 +141,50 @@
         </svg>
     @break
 
+    @case('descarga')
+    @case('download')
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="{{ $clasesCss }}"
+            {{ $atributosExtra }}>
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" x2="12" y1="15" y2="3" />
+        </svg>
+    @break
+
+    @case('usuario')
+    @case('cuenta')
+
+    @case('perfil')
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="{{ $clasesCss }}"
+            {{ $atributosExtra }}>
+            <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+        </svg>
+    @break
+
+    @case('alerta')
+    @case('advertencia')
+
+    @case('peligro')
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="{{ $clasesCss }}"
+            {{ $atributosExtra }}>
+            <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+            <line x1="12" x2="12" y1="9" y2="13" />
+            <line x1="12" x2="12.01" y1="17" y2="17" />
+        </svg>
+    @break
+
+    @case('x')
+    @case('cerrar')
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="{{ $clasesCss }}"
+            {{ $atributosExtra }}>
+            <path d="M18 6 6 18M6 6l12 12" />
+        </svg>
+    @break
+
     @default
 @endswitch

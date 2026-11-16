@@ -102,14 +102,25 @@
                     </div>
 
                     @if ($esInvitadoActual)
-                        <form method="POST" action="{{ route('planes.aceptar', $plan) }}" style="margin: 0;">
-                            @csrf
-                            <button type="submit" class="boton"
-                                style="min-height: var(--touch-min); min-width: var(--touch-min); display: inline-flex; align-items: center; justify-content: center; padding: var(--space-2) var(--space-4); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); border-radius: var(--radius-sm);"
-                                aria-label="Aceptar invitación">
-                                Aceptar invitación
-                            </button>
-                        </form>
+                        <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+                            <form method="POST" action="{{ route('planes.aceptar', $plan) }}" style="margin: 0;">
+                                @csrf
+                                <button type="submit" class="boton"
+                                    style="min-height: var(--touch-min); min-width: var(--touch-min); display: inline-flex; align-items: center; justify-content: center; padding: var(--space-2) var(--space-4); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); border-radius: var(--radius-sm);"
+                                    aria-label="Aceptar invitación">
+                                    Aceptar invitación
+                                </button>
+                            </form>
+                            <form method="POST" action="{{ route('planes.rechazar-invitacion', $plan) }}"
+                                style="margin: 0;">
+                                @csrf
+                                <button type="submit" class="boton boton-claro"
+                                    style="min-height: var(--touch-min); min-width: var(--touch-min); display: inline-flex; align-items: center; justify-content: center; padding: var(--space-2) var(--space-4); font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); border-radius: var(--radius-sm);"
+                                    aria-label="Rechazar invitación">
+                                    Rechazar invitación
+                                </button>
+                            </form>
+                        </div>
                     @endif
                 </div>
             @endif
