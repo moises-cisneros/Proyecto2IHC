@@ -96,6 +96,6 @@ class CuentaController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect('/')->with('exito', 'Tu cuenta ha sido eliminada correctamente de Planazo.');
+        return redirect()->route('login')->with('exito', 'Tu cuenta ha sido eliminada correctamente de Planazo.');
     }
 }
