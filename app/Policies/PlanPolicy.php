@@ -28,6 +28,18 @@ class PlanPolicy
     }
 
     /**
+     * Determine whether the user can decline an invitation to the plan.
+     */
+    public function rechazar(User $user, Plan $plan): bool
+    {
+        if ($plan->estado === 'cancelado') {
+            return false;
+        }
+
+        return $this->isInvitado($user, $plan);
+    }
+
+    /**
      * Determine whether the user can update the plan.
      */
     public function update(User $user, Plan $plan): bool

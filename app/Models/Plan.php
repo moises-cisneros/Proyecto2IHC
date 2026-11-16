@@ -432,6 +432,64 @@ class Plan extends Model
     }
 
     /**
+     * Determina si el plan posee deudas pendientes entre los participantes.
+     */
+    public function tieneDeudasPendientes(): bool
+    {
+        $saldos = $this->calcularSaldosNetos();
+        foreach ($saldos['deudas'] as $deuda) {
+            if ((float) ($deuda['monto'] ?? 0) > 0.009) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Determina si el plan puede eliminarse honestamente sin impedimentos.
+     */
+    public function puedeEliminarse(): bool
+    {
+        return empty($this->validarBloqueosEliminacion());
+    }
+
+    /**
+     * Valida y retorna los motivos de bloqueo para la eliminación del plan.
+     *
+     * @return array<string, array{codigo: string, motivo: string, accion_sugerida: string, url_accion: string|null}>
+     */
+    public function validarBloqueosEliminacion(): array
+    {
+        $bloqueos = [];
+
+        // 1. Plan confirmado (debe cancelarse primero para avisar a los participantes)
+        if ($this->estado === 'confirmado') {
+            $bloqueos['plan_confirmado'] = [
+                'codigo' => 'plan_confirmado',
+                'motivo' => 'Un plan confirmado no puede eliminarse directamente.',
+                'accion_sugerida' => 'Primero cancélalo para notificar formalmente a los participantes.',
+                'url_accion' => null,
+            ];
+        }
+
+        // 2. Deudas pendientes en gastos entre participantes
+        if ($this->tieneDeudasPendientes()) {
+            $saldos = $this->calcularSaldosNetos();
+            $bloqueos['deudas_pendientes_gastos'] = [
+                'codigo' => 'deudas_pendientes_gastos',
+                'motivo' => 'El plan tiene gastos con saldos pendientes por saldar entre los participantes.',
+                'accion_sugerida' => 'Debes registrar o confirmar los pagos pendientes en la sección de gastos antes de eliminar.',
+                'url_accion' => url("/planes/{$this->id}?pestana=gastos"),
+                'total_deudas' => count($saldos['deudas']),
+                'monto_total_gastado' => $saldos['total_gastado'],
+            ];
+        }
+
+        return $bloqueos;
+    }
+
+    /**
      * Retira formalmente a un participante del plan, anulando sus votos emitidos,
      * desvinculando su membresía y registrando la actividad en la bitácora.
      *
