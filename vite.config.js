@@ -19,7 +19,21 @@ export default defineConfig({
             clientPort: 9373,
         },
         watch: {
-            ignored: ['**/storage/framework/views/**'],
+            ignored: [
+                '**/storage/**',
+                '**/node_modules/**',
+                '**/vendor/**',
+                '**/.git/**',
+                '**/public/build/**',
+                '**/test-results/**',
+                '**/playwright-report/**',
+                '**/docs/**',
+                '**/tests/**',
+                '**/odd/**',
+            ],
+            // Docker sobre Windows no propaga eventos de archivo (inotify): sin polling el CSS servido queda obsoleto.
+            usePolling: true,
+            interval: 1000,
         },
     },
 });
