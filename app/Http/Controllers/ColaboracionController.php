@@ -141,6 +141,40 @@ class ColaboracionController extends Controller
     }
 
     /**
+     * Rechazar formalmente una invitación al plan.
+     */
+    public function rechazar(Request $request, Plan $plan)
+    {
+        Gate::authorize('rechazar', $plan);
+
+        $usuario = auth()->user();
+
+        $invitacion = $plan->invitaciones()
+            ->where('estado', 'pendiente')
+            ->where(function ($q) use ($usuario) {
+                $q->where('user_id', $usuario->id)
+                    ->orWhere('email', $usuario->email);
+            })
+            ->firstOrFail();
+
+        $invitacion->rechazar();
+
+        $plan->actividades()->create([
+            'user_id' => $usuario->id,
+            'accion' => 'invitacion_rechazada',
+            'descripcion' => "{$usuario->name} rechazó la invitación al plan.",
+            'estado_resultante' => $plan->estado,
+        ]);
+
+        Evento::registrar('invitacion_rechazada', [
+            'plan_id' => $plan->id,
+        ]);
+
+        return redirect()->route('planes.listar')
+            ->with('exito', 'Has rechazado la invitación al plan.');
+    }
+
+    /**
      * Propose a date or location option for a plan.
      */
     public function guardarOpcion(Request $request, Plan $plan)

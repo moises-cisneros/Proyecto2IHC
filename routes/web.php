@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AutentificacionController;
 use App\Http\Controllers\ColaboracionController;
+use App\Http\Controllers\CuentaController;
 use App\Http\Controllers\EventosController;
 use App\Http\Controllers\GastosController;
 use App\Http\Controllers\HistorialController;
@@ -41,6 +42,7 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/planes/{plan}/invitar', [ColaboracionController::class, 'invitar'])->name('planes.invitar');
     Route::post('/planes/{plan}/aceptar', [ColaboracionController::class, 'aceptar'])->name('planes.aceptar');
+    Route::post('/planes/{plan}/rechazar-invitacion', [ColaboracionController::class, 'rechazar'])->name('planes.rechazar-invitacion');
     Route::post('/planes/{plan}/opciones', [ColaboracionController::class, 'guardarOpcion'])->name('planes.opciones.guardar');
     Route::post('/opciones/{opcion}/votar', [ColaboracionController::class, 'votar'])->name('opciones.votar');
     Route::post('/planes/{plan}/abandonar', [ColaboracionController::class, 'abandonar'])->name('planes.abandonar');
@@ -50,6 +52,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/pagos/{pago}/confirmar', [GastosController::class, 'confirmarPago'])->name('pagos.confirmar');
     Route::post('/pagos/{pago}/rechazar', [GastosController::class, 'rechazarPago'])->name('pagos.rechazar');
 
+    Route::get('/perfil/datos', [CuentaController::class, 'datos'])->name('perfil.datos');
+    Route::get('/perfil/datos/exportar', [CuentaController::class, 'exportar'])->name('perfil.datos.exportar');
+    Route::post('/perfil/eliminar-cuenta', [CuentaController::class, 'eliminarCuenta'])->name('perfil.eliminar-cuenta');
     Route::put('/perfil/datos-cobro', [PerfilCobroController::class, 'update'])->name('perfil.cobro.actualizar');
 
     Route::get('/historial', [HistorialController::class, 'index'])->name('historial.index');
