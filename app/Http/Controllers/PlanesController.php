@@ -8,6 +8,7 @@ use App\Http\Requests\StorePlanRequest;
 use App\Http\Requests\UpdatePlanRequest;
 use App\Models\Evento;
 use App\Models\Plan;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -163,17 +164,40 @@ class PlanesController extends Controller
     /**
      * Eliminar un plan existente
      *
-     * @return RedirectResponse
+     * @return RedirectResponse|JsonResponse
      */
-    public function eliminar(Plan $plan)
+    public function eliminar(Request $request, Plan $plan)
     {
         Gate::authorize('delete', $plan);
 
-        // Regla de negocio: no se puede eliminar un plan confirmado
-        if ($plan->estado === 'confirmado') {
-            return redirect()->route('planes.listar')
-                ->with('error', 'Un plan confirmado no puede eliminarse. Primero cancélalo.');
+        if (! $plan->puedeEliminarse()) {
+            $bloqueos = $plan->validarBloqueosEliminacion();
+
+            Evento::registrar('plan_eliminacion_bloqueada', [
+                'plan_id' => $plan->id,
+                'motivos' => array_keys($bloqueos),
+            ]);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'message' => 'No se puede eliminar el plan debido a impedimentos activos.',
+                    'bloqueos' => $bloqueos,
+                ], 422);
+            }
+
+            $mensaje = isset($bloqueos['plan_confirmado'])
+                ? 'Un plan confirmado no puede eliminarse. Primero cancélalo.'
+                : 'El plan tiene gastos con deudas pendientes entre participantes que deben liquidarse antes de eliminarlo.';
+
+            return redirect()->back()
+                ->with('error', $mensaje)
+                ->with('bloqueo_plan_eliminacion', $bloqueos);
         }
+
+        Evento::registrar('plan_eliminado', [
+            'plan_id' => $plan->id,
+            'estado_previo' => $plan->estado,
+        ]);
 
         $plan->delete();
 

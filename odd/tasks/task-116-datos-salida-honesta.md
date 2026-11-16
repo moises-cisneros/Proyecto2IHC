@@ -15,7 +15,7 @@ Estado: EN PROCESO — Orquestación ODD para Issue Madre #116 y Sub-issues #117
 
 ## Tasks
 
-- [ ] T1 (S1, S2, S3, S5): [Backend] Portabilidad de datos (JSON/CSV), regla difícil de eliminación de cuenta y bloqueo de plan con pendientes (Sub-issue #117)
+- [x] T1 (S1, S2, S3, S5): [Backend] Portabilidad de datos (JSON/CSV), regla difícil de eliminación de cuenta y bloqueo de plan con pendientes (Sub-issue #117) — Commit: 9227226 (PR #121)
 - [ ] T2 (S1, S2, S3, S5, S7): [Controlador] Endpoints de exportación de datos, baja de cuenta, resolución de plan y eventos sin PII (Sub-issue #118)
 - [ ] T3 (S1, S3, S4, S5, S6): [Interfaz] Centro 'Mi Cuenta y Privacidad', modales de salida honesta (cuenta y plan) y desmantelamiento de patrones oscuros (Sub-issue #119)
 - [ ] T4 (S8): [Testing/Docs] Suites PHPUnit y Playwright E2E de salida honesta, y reporte con matriz de 6 patrones en tarea-10.md (Sub-issue #120)
@@ -23,3 +23,4 @@ Estado: EN PROCESO — Orquestación ODD para Issue Madre #116 y Sub-issues #117
 ## Log
 
 - L1: "Implementa las subissues de la issue #116, usando gentle-ai y ODD"
+- L2: "Sub-issue #117 completada y mergeada (PR #121): portabilidad JSON/CSV, validación de bloqueos de eliminación de cuenta y planes con deudas, inhabilitación con soft deletes y rechazo de invitación."
