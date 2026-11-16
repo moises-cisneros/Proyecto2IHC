@@ -36,6 +36,7 @@ class AutentificacionController extends Controller
         $credenciales = [
             'email' => $request->correo,
             'password' => $request->contrasena,
+            'activo' => true,
         ];
 
         if (Auth::attempt($credenciales)) {

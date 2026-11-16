@@ -45,4 +45,13 @@ class Invitacion extends Model
     {
         return $query->where('estado', 'aceptada');
     }
+
+    /**
+     * Rechaza formalmente la invitación pendiente.
+     */
+    public function rechazar(): void
+    {
+        $this->estado = 'rechazada';
+        $this->save();
+    }
 }
