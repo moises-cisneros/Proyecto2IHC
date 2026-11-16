@@ -671,7 +671,7 @@
                     style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
                     <label id="label-pago-total"
                         style="flex: 1; min-width: 170px; min-height: var(--touch-min); display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); border: 1px solid var(--color-success-border); background: var(--color-success-bg); border-radius: var(--radius-md); cursor: pointer; font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-success);">
-                        <input type="radio" name="modalidad_pago" id="radio-pago-total" value="total" checked
+                        <input type="radio" name="modalidad_pago" id="radio-pago-total" value="total"
                             onchange="cambiarModalidadPago('total')">
                         <span id="texto-radio-pago-total">Pagar totalidad (Bs 0.00)</span>
                     </label>

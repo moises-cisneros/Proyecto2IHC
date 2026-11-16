@@ -70,7 +70,8 @@
                 <div
                     style="font-weight: var(--font-weight-bold); color: var(--color-foreground); font-size: var(--font-size-md);">
                     Plan cancelado</div>
-                <div style="font-size: var(--font-size-sm);">Este plan ha sido cancelado. La sala se encuentra en modo de solo lectura (no se permiten ediciones, invitaciones, nuevas propuestas ni votos).</div>
+                <div style="font-size: var(--font-size-sm);">Este plan ha sido cancelado. La sala se encuentra en modo
+                    de solo lectura (no se permiten ediciones, invitaciones, nuevas propuestas ni votos).</div>
             </div>
         </div>
     @endif
@@ -84,14 +85,24 @@
                 <div style="color: var(--color-warning); font-size: var(--font-size-sm);">Acepta la invitación para proponer
                     fechas, lugares y votar en las opciones del grupo.</div>
             </div>
-            <form method="POST" action="{{ route('planes.aceptar', $plan) }}" style="margin: 0;">
-                @csrf
-                <button type="submit" class="boton"
-                    style="min-height: var(--touch-min); min-width: var(--touch-min); padding: var(--space-2) var(--space-5); font-weight: var(--font-weight-semibold);"
-                    aria-label="Aceptar invitación al plan">
-                    Aceptar invitación
-                </button>
-            </form>
+            <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+                <form method="POST" action="{{ route('planes.aceptar', $plan) }}" style="margin: 0;">
+                    @csrf
+                    <button type="submit" class="boton"
+                        style="min-height: var(--touch-min); min-width: var(--touch-min); padding: var(--space-2) var(--space-5); font-weight: var(--font-weight-semibold);"
+                        aria-label="Aceptar invitación al plan">
+                        Aceptar invitación
+                    </button>
+                </form>
+                <form method="POST" action="{{ route('planes.rechazar-invitacion', $plan) }}" style="margin: 0;">
+                    @csrf
+                    <button type="submit" class="boton boton-claro"
+                        style="min-height: var(--touch-min); min-width: var(--touch-min); padding: var(--space-2) var(--space-5); font-weight: var(--font-weight-semibold);"
+                        aria-label="Rechazar invitación al plan">
+                        Rechazar invitación
+                    </button>
+                </form>
+            </div>
         </div>
     @endcan
 </div>

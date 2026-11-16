@@ -117,30 +117,115 @@
                                 @endcan
                             @endcan
 
-                            {{-- 3. Botón ELIMINAR (SVG nítido de alta definición) --}}
+                            {{-- 3. Botón ELIMINAR con Diálogo de Salida Honesta (DESIGN.md §7.B) --}}
                             @can('delete', $plan)
-                                @if ($plan->estado == 'confirmado')
-                                    <button class="boton boton-rojo boton-accion-sm" disabled
-                                        style="opacity: 0.4; cursor: not-allowed;"
-                                        title="Cancela el plan antes de eliminarlo"
-                                        aria-label="Eliminar no disponible en plan confirmado">
-                                        <x-icono nombre="eliminar" style="width: 18px; height: 18px;" />
-                                        <span class="sr-only">Eliminar plan</span>
-                                    </button>
-                                @else
-                                    <form method="POST" action="{{ route('planes.eliminar', $plan) }}" style="margin: 0;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="boton boton-rojo boton-accion-sm"
-                                            data-confirm="¿Eliminar &laquo;{{ $plan->nombre }}&raquo;? Esta acción no se puede deshacer."
-                                            data-title="Eliminar plan" data-btn-ok="Sí, eliminar" data-btn-cancel="Volver"
-                                            data-type="danger" title="Eliminar plan"
-                                            aria-label="Eliminar plan {{ $plan->nombre }}">
-                                            <x-icono nombre="eliminar" style="width: 18px; height: 18px;" />
-                                            <span class="sr-only">Eliminar plan</span>
-                                        </button>
-                                    </form>
-                                @endif
+                                <button type="button" class="boton boton-rojo boton-accion-sm"
+                                    onclick="document.getElementById('modal-eliminar-plan-{{ $plan->id }}').showModal()"
+                                    title="Eliminar plan" aria-label="Eliminar plan {{ $plan->nombre }}">
+                                    <x-icono nombre="eliminar" style="width: 18px; height: 18px;" />
+                                    <span class="sr-only">Eliminar plan</span>
+                                </button>
+
+                                <dialog id="modal-eliminar-plan-{{ $plan->id }}" class="dialogo-salida-simetrica"
+                                    style="text-align: left;">
+                                    @php
+                                        $puedeEliminar = $plan->puedeEliminarse();
+                                        $bloqueosPlan = $puedeEliminar ? [] : $plan->validarBloqueosEliminacion();
+                                    @endphp
+
+                                    @if (!$puedeEliminar)
+                                        <h2 class="dialogo-titulo"
+                                            style="color: var(--color-destructive); display: flex; align-items: center; gap: var(--space-2);">
+                                            <x-icono nombre="alerta" />
+                                            <span>No es posible eliminar este plan</span>
+                                        </h2>
+
+                                        <div class="caja-salida-honesta">
+                                            <div class="caja-salida-honesta-seccion">
+                                                <span class="caja-salida-honesta-label">1. ¿Por qué está bloqueada la
+                                                    eliminación?</span>
+                                                <ul
+                                                    style="margin: var(--space-1) 0 var(--space-2) var(--space-4); padding: 0;">
+                                                    @if (isset($bloqueosPlan['plan_confirmado']))
+                                                        <li style="margin-bottom: var(--space-1);">
+                                                            <strong>Plan confirmado:</strong> Este plan ya fue confirmado
+                                                            formalmente y tiene propuestas ganadoras definidas. Para
+                                                            eliminarlo, primero debes cancelarlo notificando al grupo.
+                                                        </li>
+                                                    @endif
+                                                    @if (isset($bloqueosPlan['deudas_pendientes_gastos']))
+                                                        <li style="margin-bottom: var(--space-1);">
+                                                            <strong>Gastos con deudas pendientes:</strong> Existen saldos
+                                                            impagos entre los participantes. Deben saldarse antes de
+                                                            destruir el registro del plan.
+                                                        </li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+
+                                            <div class="caja-salida-honesta-seccion">
+                                                <span class="caja-salida-honesta-label">2. ¿Qué debes hacer para
+                                                    resolverlo?</span>
+                                                <div class="caja-salida-honesta-acciones">
+                                                    @if (isset($bloqueosPlan['plan_confirmado']))
+                                                        <form method="POST" action="{{ route('planes.estado', $plan) }}"
+                                                            style="margin: 0;">
+                                                            @csrf
+                                                            @method('PUT')
+                                                            <input type="hidden" name="estado" value="cancelado">
+                                                            <button type="submit" class="boton boton-claro"
+                                                                style="min-height: var(--touch-min); padding: var(--space-1) var(--space-3);"
+                                                                aria-label="Cancelar plan formalmente">
+                                                                Cancelar plan formalmente
+                                                            </button>
+                                                        </form>
+                                                    @endif
+
+                                                    @if (isset($bloqueosPlan['deudas_pendientes_gastos']))
+                                                        <a href="{{ route('planes.detalle', ['plan' => $plan->id, 'pestana' => 'gastos']) }}"
+                                                            class="boton boton-claro"
+                                                            style="min-height: var(--touch-min); padding: var(--space-1) var(--space-3); text-decoration: none;"
+                                                            aria-label="Ver gastos y liquidación">
+                                                            Ir a saldar gastos
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="dialogo-botones">
+                                            <button type="button" class="boton boton-claro boton-simetrico"
+                                                onclick="document.getElementById('modal-eliminar-plan-{{ $plan->id }}').close()"
+                                                aria-label="Cerrar modal de advertencia">
+                                                Entendido, volver
+                                            </button>
+                                        </div>
+                                    @else
+                                        <form method="POST" action="{{ route('planes.eliminar', $plan) }}"
+                                            style="margin: 0;">
+                                            @csrf
+                                            @method('DELETE')
+                                            <h2 class="dialogo-titulo" style="color: var(--color-destructive);">
+                                                Eliminar plan
+                                            </h2>
+                                            <p class="dialogo-mensaje" style="line-height: 1.5;">
+                                                ¿Estás seguro de que deseas eliminar «{{ $plan->nombre }}»? Esta acción
+                                                borrará el plan y todas sus propuestas. No se puede deshacer.
+                                            </p>
+                                            <div class="dialogo-botones">
+                                                <button type="button" class="boton boton-claro boton-simetrico"
+                                                    onclick="document.getElementById('modal-eliminar-plan-{{ $plan->id }}').close()"
+                                                    aria-label="Conservar plan">
+                                                    Conservar plan
+                                                </button>
+                                                <button type="submit" class="boton boton-rojo boton-simetrico"
+                                                    aria-label="Confirmar eliminación de plan">
+                                                    Sí, eliminar plan
+                                                </button>
+                                            </div>
+                                        </form>
+                                    @endif
+                                </dialog>
                             @endcan
 
                             {{-- 4. Acciones para participantes o invitados --}}
