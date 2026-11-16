@@ -17,11 +17,13 @@ Estado: EN PROCESO — Orquestación ODD para Issue Madre #116 y Sub-issues #117
 
 - [x] T1 (S1, S2, S3, S5): [Backend] Portabilidad de datos (JSON/CSV), regla difícil de eliminación de cuenta y bloqueo de plan con pendientes (Sub-issue #117) — Commit: 9227226 (PR #121)
 - [x] T2 (S1, S2, S3, S5, S7): [Controlador] Endpoints de exportación de datos, baja de cuenta, resolución de plan y eventos sin PII (Sub-issue #118) — Commit: 148113b (PR #122)
-- [ ] T3 (S1, S3, S4, S5, S6): [Interfaz] Centro 'Mi Cuenta y Privacidad', modales de salida honesta (cuenta y plan) y desmantelamiento de patrones oscuros (Sub-issue #119)
-- [ ] T4 (S8): [Testing/Docs] Suites PHPUnit y Playwright E2E de salida honesta, y reporte con matriz de 6 patrones en tarea-10.md (Sub-issue #120)
+- [x] T3 (S1, S3, S4, S5, S6): [Interfaz] Centro 'Mi Cuenta y Privacidad', modales de salida honesta (cuenta y plan) y desmantelamiento de patrones oscuros (Sub-issue #119) — Commit: 1226c65 (PR #123)
+- [x] T4 (S8): [Testing/Docs] Suites PHPUnit y Playwright E2E de salida honesta, y reporte con matriz de 6 patrones en tarea-10.md (Sub-issue #120)
 
 ## Log
 
 - L1: "Implementa las subissues de la issue #116, usando gentle-ai y ODD"
 - L2: "Sub-issue #117 completada y mergeada (PR #121): portabilidad JSON/CSV, validación de bloqueos de eliminación de cuenta y planes con deudas, inhabilitación con soft deletes y rechazo de invitación."
 - L3: "Sub-issue #118 completada y mergeada (PR #122): endpoints /perfil/datos, exportación JSON/CSV, baja asistida con validación de password, bloqueo de planes con deudas y rechazo de invitaciones con telemetría sin PII."
+- L4: "Sub-issue #119 completada y mergeada (PR #123): vistas perfil/cuenta, modales de salida simétrica, diálogos honestos al eliminar plan, botones de rechazo de invitación y selector neutral de gastos."
+- L5: "Sub-issue #120 completada: suites PHPUnit (tests/Feature/SalidaHonestaTest.php con 6 tests), Playwright E2E (e2e/tarea-10-datos-salida-honesta.spec.ts con 5 flujos y 5 capturas generadas), y memoria técnica con matriz de 6 patrones oscuros en docs/evidencias/tarea-10.md."

@@ -101,7 +101,7 @@ class SalidaHonestaControllerTest extends TestCase
             'current_password' => 'password123',
         ]);
 
-        $response->assertRedirect('/');
+        $response->assertRedirect(route('login'));
         $response->assertSessionHas('exito');
         $this->assertGuest();
 

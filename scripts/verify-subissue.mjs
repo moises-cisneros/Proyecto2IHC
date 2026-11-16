@@ -5,7 +5,12 @@ import fs from 'node:fs';
 
 function run(cmd, options = {}) {
     try {
-        const output = execSync(cmd, { encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'], ...options });
+        const output = execSync(cmd, {
+            encoding: 'utf-8',
+            stdio: ['pipe', 'pipe', 'pipe'],
+            maxBuffer: 10 * 1024 * 1024,
+            ...options,
+        });
         return output == null ? '' : output.trim();
     } catch (error) {
         if (options.allowFailure) {
@@ -136,14 +141,11 @@ if (process.env.GITHUB_EVENT_PATH && fs.existsSync(process.env.GITHUB_EVENT_PATH
 // 5. Ejecutar pruebas unitarias automatizadas (Laravel PHPUnit)
 console.log('🧪 Ejecutando suite de pruebas automatizadas (PHPUnit)...');
 try {
-    let testOutput = run('php artisan test', { allowFailure: true });
-    if (testOutput === null) {
-        // Intentar dentro del contenedor si php local no está disponible
-        testOutput =
-            run('docker exec planazo_app php artisan test', { allowFailure: true }) ||
-            run('docker compose exec -T planazo_app php artisan test', { allowFailure: true }) ||
-            run('docker compose exec -T app php artisan test', { allowFailure: true });
-    }
+    let testOutput =
+        run('docker compose exec -T app php artisan test', { allowFailure: true }) ||
+        run('docker exec planazo_app php artisan test', { allowFailure: true }) ||
+        run('docker compose exec -T planazo_app php artisan test', { allowFailure: true }) ||
+        run('php artisan test', { allowFailure: true });
     if (testOutput !== null) {
         console.log(testOutput);
         console.log('✅ Todas las pruebas unitarias pasaron satisfactoriamente.');
