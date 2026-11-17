@@ -117,6 +117,7 @@ Para optimizar el uso de tokens y mantener el contexto ligero, los protocolos ex
 | **`heuristic-evaluation`**     | Al ejecutar evaluaciones de usabilidad.                 | Escala de severidad 0-4 de Nielsen (H1–H10), issue tracker único y sub-issues de hallazgos.                                |
 | **`refactoring`**              | Al simplificar controladores o vistas monolíticas.      | Transformaciones Fowler seguras, preservación de tests y desacople de lógica sin alterar contratos observables.            |
 | **`design-system-audit`**      | Al crear o modificar vistas Blade, modales o CSS.       | Auditoría contra `resources/DESIGN.md`, prevención de emojis, verificación Fitts ($\ge 44$ px) y tokens oficiales.         |
+| **`dark-patterns`**            | Al diseñar o revisar flujos donde el usuario decide (entrar, salir, pagar, confirmar) o su copy. | Prueba de simetría, catálogo de 6 patrones, comandos `rg` de detección y checklist de salida honesta (Clase 22). |
 
 ---
 

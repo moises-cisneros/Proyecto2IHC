@@ -66,3 +66,29 @@ Al implementar o modificar la estructura de información de una vista:
 - [ ] ¿Hay indicadores visuales (badges de conteo, colores semánticos) que anticipen el estado de la información?
 - [ ] ¿Se proveen estados vacíos empáticos con llamada a la acción clara cuando no hay datos?
 - [ ] ¿Los cambios estructurales están documentados y actualizados en `resources/DESIGN.md`?
+
+---
+
+## 4. Decisiones Vigentes del Proyecto
+
+### App Map vs Task Flow (se documentan por separado)
+* **App Map:** inventario de pantallas y las salidas entre ellas. Un nodo = una pantalla (ruta). Los **estados** de un recurso no son nodos del mapa.
+* **Task Flow:** una secuencia por tarea de usuario (p. ej. «retirarse con deuda»), con sus ramas por rol y estado.
+* No mezclar ambos en un solo diagrama.
+
+### Inventario vigente de pantallas
+Acceso (guest): `ingresar`, `registro`, `recuperar`, `restablecer/{token}`. App (auth): `mis-planes`, `planes/{id}` (sala), `planes/{id}/editar`, `historial`, `perfil/datos` (Mi Cuenta). Dev: `analitica` (+ Dev Toolbar).
+
+### Navegación global
+Navbar: `Planes`, `Historial`, `Mi Cuenta`, `Salir`. La analítica no forma parte de la navegación de usuario.
+
+### Reglas de dominio que gobiernan la estructura
+* Estados canónicos del plan: `pendiente`, `confirmado` (inmutable), `cancelado`.
+* La sala es una pantalla con **varias vistas por rol**: organizador, participante, invitado pendiente (gobernadas por `PlanPolicy`).
+* Salida de un plan: única vía `retirarse`, bloqueada con explicación si hay deuda.
+* Eliminar plan o cuenta con bloqueos usa la «Salida Honesta»: por qué + qué hacer (`.caja-salida-honesta`).
+
+### Checklist adicional
+- [ ] ¿Toda pantalla nueva figura en el inventario y en el App Map?
+- [ ] ¿Todo flujo nuevo tiene su Task Flow con ramas por rol y estado?
+- [ ] ¿Los estados mostrados son solo los canónicos?

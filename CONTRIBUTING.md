@@ -140,6 +140,7 @@ El repositorio incluye habilidades versionadas para que desarrolladores y agente
 - **`e2e-testing`:** Pruebas Playwright orientadas a tareas humanas con localizadores semánticos (`getByRole`, `getByLabel`).
 - **`refactoring`:** Transformaciones Fowler seguras y preservación estricta de contratos.
 - **`design-system-audit`:** Verificación contra `resources/DESIGN.md` para prevenir estilos inline, emojis o clases arbitrarias.
+- **`dark-patterns`:** Prueba de simetría, catálogo de 6 patrones oscuros y checklist de salida honesta (Clase 22) para cualquier flujo de decisión.
 
 ---
 

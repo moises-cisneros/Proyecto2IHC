@@ -60,7 +60,7 @@ Al evaluar o implementar una funcionalidad en Planazo:
 3. **Justificación Técnica:**
    * Explicar la reducción concreta de tiempo motriz $T_{\text{Fitts}}$, tiempo de decisión $T_{\text{Hick}}$ o carga intrínseca/extrínseca en la memoria de trabajo.
 4. **Verificación Automatizada:**
-   * Escribir pruebas unitarias en Vitest (`*.test.tsx` o `*.test.ts`) que verifiquen el renderizado, accesibilidad de targets y filtrado. Mínimo 4 tests por suite.
+   * Escribir pruebas en PHPUnit (`tests/Feature/`, `tests/Unit/`; mínimo 4 por suite, con un caso `302` y uno `403`) y, para recorridos humanos, Playwright (`e2e/`, skill `e2e-testing`). El proyecto no usa Vitest.
 
 ---
 
@@ -68,3 +68,15 @@ Al evaluar o implementar una funcionalidad en Planazo:
 
 * **Sin atribución de IA:** Prohibido agregar `Co-Authored-By` o menciones de IA en commits, pull requests, issues o documentación.
 * **Formato de Commits:** Conventional Commits relacionando los sub-issues (`feat(...)`, `fix(...)`, `docs(...)`, `test(...)`).
+
+---
+
+## 4. Decisiones Vigentes del Proyecto
+
+Estas decisiones ya están tomadas; no se reabren sin una razón nueva.
+
+* **Tokens, no px sueltos:** el área táctil es `--touch-min` (44px) y la separación antagónica es `--space-3` (12px), definidos en `resources/css/tokens.css`. Detalle en `resources/DESIGN.md` §1.D–E y §3.A.
+* **Una sola vía de salida por recurso:** salir de un plan es únicamente `planes.retirarse`; no existen endpoints paralelos que eviten la regla de deuda.
+* **Simetría de confirmación:** los diálogos de salida usan `.boton-claro` (permanecer) y `.boton-rojo` (salir) con idéntica altura y separación (`DESIGN.md` §7.B). El criterio completo vive en la skill `dark-patterns`.
+* **Ley de Hick aplicada:** filtros visibles ≤ 4; pestañas por rol en `/mis-planes`; categorías del historial acotadas.
+* **Registro previo de decisiones:** `docs/decisiones-interaccion.md` y `docs/hallazgos de interaccion.md` guardan el antes/después ya documentado; actualizarlos en lugar de crear documentos paralelos.

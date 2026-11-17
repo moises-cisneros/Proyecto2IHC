@@ -37,9 +37,17 @@ metadata:
 
 ## 3. Entrega Oficial y Evidencias
 
-- **Documento oficial:** `docs/evaluacion-heuristica.md`
+- **Documento oficial:** `docs/evaluacion-euristica.md` (nombre real del archivo en el repo; no crear un duplicado con otra ortografía)
   - Resumen ejecutivo con tabla de 5 columnas: `Observación | Heurística | Severidad (0-4) | Mejora | Comprobación`.
   - Registro detallado H1 a H10 con código fuente y capturas embebidas.
   - Toda heurística debe terminar en estado **«Cumple»** o **«Corregida»**.
 - **Evidencias gráficas:** Guardadas en `docs/evidencias/` con nomenclatura estándar (`H<num>-antes.png`, `H<num>-despues.png`).
 - **Sin atribución de IA:** Prohibido incluir `Co-Authored-By` o menciones de IA en commits, issues o PRs.
+
+## 4. Decisiones Vigentes y Criterios de Severidad del Proyecto
+
+* **Auditoría de todo el repo:** cuando se evalúa el repositorio completo (no una sola funcionalidad), se recorre la **lista de pantallas** del App Map (acceso, `/mis-planes`, sala, editar, historial, Mi Cuenta, analítica) y se registra cada hallazgo con su pantalla.
+* **Salidas y bloqueos (H3, H5, H6, H9):** se evalúan con la prueba de simetría y el catálogo de la skill `dark-patterns`. Un bloqueo sin explicación ni acción de salida es severidad >= 3.
+* **Reglas de negocio evadibles por una ruta paralela** (un endpoint que hace menos validaciones que el oficial) es severidad 4: rompe H5 (prevención de errores) y la integridad de datos. Corregir consolidando en la ruta con las invariantes, no parchando la copia.
+* **Evidencia mínima por hallazgo:** referencia `archivo:línea`, heurística, severidad 0–4, y test (PHPUnit o Playwright) que lo cubra.
+* **Estados canónicos del plan:** `pendiente`, `confirmado`, `cancelado`. Cualquier otro valor de estado en código o copy es un hallazgo de consistencia (H4).

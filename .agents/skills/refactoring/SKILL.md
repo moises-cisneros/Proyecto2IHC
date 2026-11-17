@@ -82,3 +82,26 @@ metadata:
 - [ ] ¿Se redujo la complejidad ciclomática de los métodos intervenidos?
 - [ ] ¿Las nuevas clases o componentes respetan el principio de responsabilidad única (SRP)?
 - [ ] ¿El commit utiliza la convención semántica `refactor(...)` sin atribuciones de IA?
+
+## 5. Duplicados con Otro Nombre y Decisiones Vigentes
+
+### Smell: endpoint o método duplicado (bypass)
+* **Síntoma:** dos rutas/métodos que producen el mismo efecto de negocio con nombres distintos (ejemplo real resuelto: `abandonar` vs `retirarse`).
+* **Diagnóstico obligatorio antes de borrar:** comparar las **invariantes** de cada copia (autorización, estado permitido, reglas de deuda, telemetría, historial). Casi siempre una copia es un subconjunto más débil de la otra.
+* **Regla:** consolidar en la versión que conserva las invariantes (la del dominio/modelo), nunca en la más corta. Una copia que evita una regla de negocio no se «migra»: se elimina.
+* **Procedimiento:**
+  1. Línea base verde (`php artisan test`).
+  2. Test que fija la decisión (RED), p. ej. `Route::has('planes.abandonar')` es `false`.
+  3. Migrar los tests de la copia a la ruta conservada solo si cubren un caso que la otra no cubre; descartar los redundantes.
+  4. Eliminar ruta, método de controlador, método de policy y tests obsoletos.
+  5. Actualizar specs vivos y `ARCHITECTURE.md`; los cambios archivados de OpenSpec son histórico y no se editan.
+  6. Suite completa y Pint en verde.
+
+### Consultas de dominio compartidas (una sola fuente)
+* Membresía de un usuario en un plan: `Invitacion::deUsuario($user)` (scope) y `Plan::esParticipanteAceptado($user)`. Prohibido volver a escribir `where('user_id', …)->orWhere('email', …)` en controladores o policies.
+* Salida de un plan: `Plan::retirarParticipante($user)`, invocado únicamente desde `planes.retirarse`.
+* Bloqueos de eliminación: `Plan::validarBloqueosEliminacion()` y `User::validarBloqueosEliminacionCuenta()`.
+
+### Entorno
+* En host con PHP disponible: `php artisan test` y `vendor/bin/pint --test app tests`; en contenedor: `docker compose exec planazo_app php artisan test`.
+* Los cambios de rutas, policies o permisos son de **riesgo alto** (contrato y seguridad): exigen la suite completa antes de cerrar.

@@ -92,3 +92,13 @@ Cuando una tarea docente o entrega requiera evidencias visuales del flujo:
 * **`workers: 1` obligatorio:** En `playwright.config.ts`, la ejecución es secuencial para no colisionar mutaciones en la base de datos de MySQL.
 * **Autenticación limpia:** Cada test debe autenticarse explícitamente utilizando los usuarios del seeder (`moises@ejemplo.com`, `ana@ejemplo.com`, etc.) o resetear cookies/almacenamiento antes de evaluar flujos anónimos o de diferentes roles.
 * **Prevención de efectos colaterales:** Evitar que una prueba dependa del orden de ejecución de otra prueba.
+
+---
+
+## 6. Decisiones Vigentes del Proyecto
+
+* **Specs existentes** (`e2e/`): `crear-plan`, `feedback-1/2`, `tarea-6` a `tarea-10`, `clase-21-analitica`, `clase-22-patron-oscuro`. Antes de crear uno nuevo, extender el del flujo correspondiente.
+* **Salida de plan:** el único flujo es «Retirarse» (`tarea-9-retirarse-plan.spec.ts`). No se prueba ni se documenta «abandonar»: ese endpoint fue eliminado.
+* **Patrones oscuros:** la evidencia visual de la prueba de simetría se genera desde `clase-22-patron-oscuro.spec.ts` y `tarea-10-datos-salida-honesta.spec.ts`; criterios en la skill `dark-patterns`.
+* **Cobertura por pantalla:** cada pantalla del App Map debe tener al menos un recorrido humano por rol (organizador, participante, invitado). Una pantalla sin spec es una brecha a registrar.
+* **Localizadores en diálogos:** `getByRole('dialog', { name })` usando el título del `<dialog>` (`aria-labelledby`); nunca por `id`.
