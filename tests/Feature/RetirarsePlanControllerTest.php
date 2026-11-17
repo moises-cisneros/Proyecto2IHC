@@ -10,6 +10,7 @@ use App\Models\Plan;
 use App\Models\User;
 use App\Models\Voto;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Route;
 use Tests\TestCase;
 
 class RetirarsePlanControllerTest extends TestCase
@@ -73,6 +74,56 @@ class RetirarsePlanControllerTest extends TestCase
         $this->assertDatabaseHas('eventos', [
             'evento' => 'retiro_confirmado',
         ]);
+    }
+
+    /**
+     * Caso 1b: El retiro revoca solo la membresía propia; el plan y los demás participantes permanecen.
+     * (Migrado desde el antiguo endpoint duplicado `abandonar`.)
+     */
+    public function test_retiro_no_borra_el_plan_ni_afecta_a_otros_participantes(): void
+    {
+        $organizador = User::factory()->create();
+        $participante1 = User::factory()->create();
+        $participante2 = User::factory()->create();
+
+        $plan = Plan::factory()->create([
+            'user_id' => $organizador->id,
+            'organizador' => $organizador->name,
+            'estado' => 'pendiente',
+        ]);
+
+        foreach ([$participante1, $participante2] as $i => $participante) {
+            Invitacion::create([
+                'plan_id' => $plan->id,
+                'user_id' => $participante->id,
+                'email' => $participante->email,
+                'estado' => 'aceptada',
+                'token' => 'tok_aislamiento_'.$i,
+            ]);
+        }
+
+        $this->actingAs($participante1)->post(route('planes.retirarse', $plan))
+            ->assertRedirect(route('planes.listar'));
+
+        $this->assertDatabaseHas('planes', ['id' => $plan->id]);
+        $this->assertDatabaseMissing('invitaciones', [
+            'plan_id' => $plan->id,
+            'user_id' => $participante1->id,
+        ]);
+        $this->assertDatabaseHas('invitaciones', [
+            'plan_id' => $plan->id,
+            'user_id' => $participante2->id,
+            'estado' => 'aceptada',
+        ]);
+    }
+
+    /**
+     * Decisión de diseño: existe una única salida de plan (`retirarse`) con la regla de deuda.
+     * El endpoint `abandonar` duplicaba la lógica sin validar deuda ni estado y fue eliminado.
+     */
+    public function test_no_existe_un_segundo_endpoint_de_salida_que_evada_la_regla_de_deuda(): void
+    {
+        $this->assertFalse(Route::has('planes.abandonar'));
     }
 
     /**

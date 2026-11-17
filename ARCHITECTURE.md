@@ -118,7 +118,7 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
     - Aplica el **Principio de Menor Privilegio (Zero-Trust)**: La autenticación solo comprueba identidad; ninguna acción sobre un recurso se ejecuta sin verificar explícitamente autorización de pertenencia o rol.
     - En el dominio de planes (`PlanPolicy.php`):
         - Solo el **Creador** puede editar, cancelar o eliminar el recurso.
-        - Los **Participantes aceptados** pueden colaborar activamente (proponer opciones, votar y abandonar el plan según H3).
+        - Los **Participantes aceptados** pueden colaborar activamente (proponer opciones, votar y retirarse del plan según H3).
         - Los **Invitados pendientes** tienen acceso de solo lectura hasta aceptar o rechazar su invitación.
         - Los **Recursos en estado terminal o cancelado** bloquean de forma terminante cualquier mutación posterior.
     - En el dominio de gastos y liquidación (`GastoPolicy.php` y `PagoPolicy.php`):
@@ -188,5 +188,5 @@ Planazo es una aplicación web monolítica basada en el framework **Laravel 12**
 2. El organizador invita miembros mediante email o token.
 3. Los participantes aceptados proponen opciones de fechas o lugares.
 4. Los participantes votan (un voto por opción por usuario garantizado por base de datos).
-5. Los participantes cuentan con salida de emergencia (H3) para abandonar el plan sin romper la sala.
+5. Los participantes cuentan con salida de emergencia (H3) para retirarse del plan sin romper la sala (única vía: `planes.retirarse`, con bloqueo por deuda).
 6. En la etapa de liquidación, los miembros registran gastos (división equitativa o personalizada) y emiten pagos que son auditados y aprobados por los receptores.

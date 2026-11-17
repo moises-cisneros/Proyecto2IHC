@@ -113,10 +113,7 @@ class ColaboracionController extends Controller
 
         $invitacion = $plan->invitaciones()
             ->where('estado', 'pendiente')
-            ->where(function ($q) use ($usuario) {
-                $q->where('user_id', $usuario->id)
-                    ->orWhere('email', $usuario->email);
-            })
+            ->deUsuario($usuario)
             ->firstOrFail();
 
         $invitacion->estado = 'aceptada';
@@ -151,10 +148,7 @@ class ColaboracionController extends Controller
 
         $invitacion = $plan->invitaciones()
             ->where('estado', 'pendiente')
-            ->where(function ($q) use ($usuario) {
-                $q->where('user_id', $usuario->id)
-                    ->orWhere('email', $usuario->email);
-            })
+            ->deUsuario($usuario)
             ->firstOrFail();
 
         $invitacion->rechazar();
@@ -253,40 +247,5 @@ class ColaboracionController extends Controller
         }
 
         return back()->with('exito', $mensaje);
-    }
-
-    /**
-     * Remove the authenticated user's participation and votes from the plan.
-     */
-    public function abandonar(Request $request, Plan $plan)
-    {
-        Gate::authorize('abandonar', $plan);
-
-        $usuario = auth()->user();
-
-        // 0. Registrar actividad en historial antes de desvincular
-        $plan->actividades()->create([
-            'user_id' => $usuario->id,
-            'accion' => 'participacion',
-            'descripcion' => "{$usuario->name} abandonó el plan",
-            'estado_resultante' => $plan->estado,
-        ]);
-
-        // 1. Limpiar invitaciones/membresía del usuario para este plan
-        $plan->invitaciones()
-            ->where(function ($q) use ($usuario) {
-                $q->where('user_id', $usuario->id)
-                    ->orWhere('email', $usuario->email);
-            })
-            ->delete();
-
-        // 2. Limpiar todos los votos emitidos por el usuario en opciones de este plan
-        $opcionIds = $plan->opciones()->pluck('id');
-        Voto::whereIn('opcion_id', $opcionIds)
-            ->where('user_id', $usuario->id)
-            ->delete();
-
-        return redirect()->route('planes.listar')
-            ->with('exito', 'Has abandonado el plan exitosamente.');
     }
 }

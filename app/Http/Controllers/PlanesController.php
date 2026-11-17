@@ -31,7 +31,6 @@ class PlanesController extends Controller
     public function listar(Request $request)
     {
         $userId = auth()->id();
-        $userEmail = auth()->user()->email;
 
         // Leemos los filtros adicionales del query string (?buscar=...&estado=...&fecha=...)
         $buscar = $request->input('buscar', '');
@@ -49,10 +48,7 @@ class PlanesController extends Controller
 
         // Consulta filtrada según la sección seleccionada
         if ($seccion === 'invitaciones') {
-            $query = Plan::whereHas('invitaciones', function ($q) use ($userId, $userEmail) {
-                $q->where('user_id', $userId)
-                    ->orWhere('email', $userEmail);
-            });
+            $query = Plan::whereHas('invitaciones', fn ($q) => $q->deUsuario(auth()->user()));
         } else {
             $query = Plan::where('user_id', $userId);
         }

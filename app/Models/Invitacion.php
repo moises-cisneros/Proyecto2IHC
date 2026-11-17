@@ -47,6 +47,17 @@ class Invitacion extends Model
     }
 
     /**
+     * Scope: invitaciones que pertenecen al usuario, vinculadas por su id o por su correo.
+     */
+    public function scopeDeUsuario($query, User $user)
+    {
+        return $query->where(function ($q) use ($user) {
+            $q->where('user_id', $user->id)
+                ->orWhere('email', $user->email);
+        });
+    }
+
+    /**
      * Rechaza formalmente la invitación pendiente.
      */
     public function rechazar(): void

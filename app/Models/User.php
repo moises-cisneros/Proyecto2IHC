@@ -174,7 +174,7 @@ class User extends Authenticatable
 
         // 1. Planes abiertos organizados (debe transferirlos o cancelarlos)
         $planesAbiertos = $this->planes()
-            ->whereIn('estado', ['pendiente', 'propuesta', 'votando'])
+            ->where('estado', 'pendiente')
             ->get();
 
         if ($planesAbiertos->isNotEmpty()) {

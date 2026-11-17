@@ -142,19 +142,6 @@ class PlanPolicy
     }
 
     /**
-     * Determine whether the user can abandon the plan.
-     * Only accepted participants can abandon. The creator cannot abandon their own plan.
-     */
-    public function abandonar(User $user, Plan $plan): bool
-    {
-        if ($this->isCreator($user, $plan)) {
-            return false;
-        }
-
-        return $this->isParticipante($user, $plan);
-    }
-
-    /**
      * Determine whether the user is the plan creator/organizer.
      */
     public function isCreator(User $user, Plan $plan): bool
@@ -167,13 +154,7 @@ class PlanPolicy
      */
     public function isParticipante(User $user, Plan $plan): bool
     {
-        return $plan->participantes()->where('users.id', $user->id)->exists()
-            || $plan->invitaciones()
-                ->where('estado', 'aceptada')
-                ->where(function ($query) use ($user) {
-                    $query->where('user_id', $user->id)
-                        ->orWhere('email', $user->email);
-                })->exists();
+        return $plan->esParticipanteAceptado($user);
     }
 
     /**
@@ -183,10 +164,8 @@ class PlanPolicy
     {
         return $plan->invitaciones()
             ->where('estado', 'pendiente')
-            ->where(function ($query) use ($user) {
-                $query->where('user_id', $user->id)
-                    ->orWhere('email', $user->email);
-            })->exists();
+            ->deUsuario($user)
+            ->exists();
     }
 
     /**

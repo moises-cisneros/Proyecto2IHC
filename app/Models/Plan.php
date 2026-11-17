@@ -512,12 +512,7 @@ class Plan extends Model
             ->delete();
 
         // 2. Desvincular de la relación de participantes (invitaciones)
-        $this->invitaciones()
-            ->where(function ($q) use ($user) {
-                $q->where('user_id', $user->id)
-                    ->orWhere('email', $user->email);
-            })
-            ->delete();
+        $this->invitaciones()->deUsuario($user)->delete();
 
         // 3. Registrar actividad formal en el historial del plan
         $this->actividades()->create([
@@ -526,6 +521,15 @@ class Plan extends Model
             'descripcion' => "{$user->name} se retiró del plan.",
             'estado_resultante' => $this->estado,
         ]);
+    }
+
+    /**
+     * Indica si el usuario es participante con invitación aceptada del plan.
+     */
+    public function esParticipanteAceptado(User $user): bool
+    {
+        return $this->participantes()->where('users.id', $user->id)->exists()
+            || $this->invitaciones()->aceptadas()->deUsuario($user)->exists();
     }
 
     //  para busqueda y filtros

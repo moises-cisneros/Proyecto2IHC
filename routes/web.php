@@ -45,7 +45,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/planes/{plan}/rechazar-invitacion', [ColaboracionController::class, 'rechazar'])->name('planes.rechazar-invitacion');
     Route::post('/planes/{plan}/opciones', [ColaboracionController::class, 'guardarOpcion'])->name('planes.opciones.guardar');
     Route::post('/opciones/{opcion}/votar', [ColaboracionController::class, 'votar'])->name('opciones.votar');
-    Route::post('/planes/{plan}/abandonar', [ColaboracionController::class, 'abandonar'])->name('planes.abandonar');
 
     Route::post('/planes/{plan}/gastos', [GastosController::class, 'guardarGasto'])->name('planes.gastos.guardar');
     Route::post('/planes/{plan}/pagos', [GastosController::class, 'guardarPago'])->name('planes.pagos.guardar');

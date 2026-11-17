@@ -3,9 +3,10 @@
 ## Requisitos
 
 ### Criterios de Aceptación
-1. **Endpoint `POST /planes/{plan}/abandonar`:**
-   - Exclusivo para participantes con invitación aceptada.
+1. **Endpoint único de salida `POST /planes/{plan}/retirarse`** (el antiguo `abandonar` fue eliminado por duplicar la lógica sin validar deuda ni estado):
+   - Exclusivo para participantes con invitación aceptada en planes `pendiente`.
    - Si un usuario no participante o ajeno intenta invocarlo, retorna 403 Forbidden.
+   - Bloquea el retiro si el participante tiene deuda pendiente (Salida Honesta: explica el motivo y enlaza a liquidar).
 2. **Validación del Creador:**
    - El creador/organizador del plan no puede abandonarlo; si lo intenta, recibe 403 Forbidden.
 3. **Persistencia e Integridad de Datos:**

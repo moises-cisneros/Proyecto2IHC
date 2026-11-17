@@ -39,5 +39,5 @@
 
 ### REQ-08: Trazabilidad Integral en Colaboración
 
-- **Descripción:** Todas las acciones colaborativas (`invitar`, `guardarOpcion`, `votar`, `abandonar`) registran un registro inmutable en `PlanActivity` con su respectivo `user_id`, `accion` y `descripcion`.
+- **Descripción:** Todas las acciones colaborativas (`invitar`, `guardarOpcion`, `votar`, `retirarse`) registran un registro inmutable en `PlanActivity` con su respectivo `user_id`, `accion` y `descripcion`.
 - **Verificación:** Tras ejecutar cada acción colaborativa, existe un nuevo registro en `plan_activities` con los datos correspondientes.

@@ -26,7 +26,7 @@ class CuentaController extends Controller
         $planesParticipados = $usuario->planesParticipados()->latest()->get();
 
         $resumenActividad = [
-            'activos' => $planesOrganizados->whereIn('estado', ['pendiente', 'propuesta', 'votando'])->count(),
+            'activos' => $planesOrganizados->where('estado', 'pendiente')->count(),
             'completados' => $planesOrganizados->where('estado', 'confirmado')->count(),
             'participaciones' => $planesParticipados->count(),
         ];
