@@ -6,6 +6,7 @@ use App\Models\Opcion;
 use App\Models\Plan;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ConfirmarPlanRequest extends FormRequest
 {
@@ -31,9 +32,11 @@ class ConfirmarPlanRequest extends FormRequest
         }
 
         $tieneEmpate = $plan && ($plan->tieneEmpateFechas() || $plan->tieneEmpateLugares());
+        // Sin propuestas de fecha en la sala, el plan conserva su fecha límite (aviso del modal de confirmación).
+        $hayFechasPropuestas = $plan && $plan->opciones()->where('tipo', 'fecha')->exists();
 
         return [
-            'propuesta_fecha_id' => ['required', 'integer', 'exists:opciones,id'],
+            'propuesta_fecha_id' => [Rule::requiredIf($hayFechasPropuestas), 'nullable', 'integer', 'exists:opciones,id'],
             'propuesta_lugar_id' => ['nullable', 'integer', 'exists:opciones,id'],
             'motivo_desempate' => $tieneEmpate
                 ? ['required', 'string', 'min:5', 'max:1000']
