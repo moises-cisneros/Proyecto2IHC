@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Contracts\ComprobanteScannerInterface;
+use App\DTOs\ComprobanteScanResult;
 use App\Models\Invitacion;
 use App\Models\Plan;
 use App\Models\User;
@@ -14,9 +16,29 @@ class GastosComprobanteControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function mockScanner(
+        bool $esComprobante,
+        ?float $monto = null,
+        ?string $banco = null,
+        ?string $referencia = null,
+        float $confianza = 0.98
+    ): void {
+        $mock = $this->createMock(ComprobanteScannerInterface::class);
+        $mock->method('scan')->willReturn(new ComprobanteScanResult(
+            esComprobante: $esComprobante,
+            monto: $monto,
+            banco: $banco,
+            referencia: $referencia,
+            confianza: $confianza,
+            rawPayload: array_filter(['monto_detectado' => $monto, 'banco' => $banco, 'referencia' => $referencia])
+        ));
+        $this->app->instance(ComprobanteScannerInterface::class, $mock);
+    }
+
     public function test_store_pago_con_comprobante_valido_ejecuta_escaneo_y_asocia_archivo(): void
     {
         Storage::fake('public');
+        $this->mockScanner(esComprobante: true, monto: 100.00, banco: 'Banco Unión', referencia: 'BU-202611-77889');
 
         $creador = User::factory()->create();
         $deudor = User::factory()->create();

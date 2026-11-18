@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Contracts\ComprobanteScannerInterface;
+use App\DTOs\ComprobanteScanResult;
 use App\Models\Invitacion;
 use App\Models\Plan;
 use App\Models\User;
@@ -14,9 +16,29 @@ class ConciliacionComprobantePipelineTest extends TestCase
 {
     use RefreshDatabase;
 
+    private function mockScanner(
+        bool $esComprobante,
+        ?float $monto = null,
+        ?string $banco = null,
+        ?string $referencia = null,
+        float $confianza = 0.98
+    ): void {
+        $mock = $this->createMock(ComprobanteScannerInterface::class);
+        $mock->method('scan')->willReturn(new ComprobanteScanResult(
+            esComprobante: $esComprobante,
+            monto: $monto,
+            banco: $banco,
+            referencia: $referencia,
+            confianza: $confianza,
+            rawPayload: array_filter(['monto_detectado' => $monto, 'banco' => $banco, 'referencia' => $referencia])
+        ));
+        $this->app->instance(ComprobanteScannerInterface::class, $mock);
+    }
+
     public function test_flujo_completo_con_comprobante_coincidente_avanza_a_verificado(): void
     {
         Storage::fake('public');
+        $this->mockScanner(esComprobante: true, monto: 100.00, banco: 'Banco Unión', referencia: 'BU-202611-77889');
 
         $organizador = User::factory()->create(['name' => 'Organizador']);
         $deudor = User::factory()->create(['name' => 'Deudor']);
@@ -69,6 +91,7 @@ class ConciliacionComprobantePipelineTest extends TestCase
     public function test_flujo_con_comprobante_discrepante_genera_alerta_para_acreedor(): void
     {
         Storage::fake('public');
+        $this->mockScanner(esComprobante: true, monto: 35.50, banco: 'Banco Mercantil Santa Cruz', referencia: 'TRX-DISCREP-7721');
 
         $organizador = User::factory()->create(['name' => 'Acreedor']);
         $deudor = User::factory()->create(['name' => 'Deudor']);
@@ -121,6 +144,7 @@ class ConciliacionComprobantePipelineTest extends TestCase
     public function test_flujo_con_comprobante_invalido_mantiene_estado_sin_verificar(): void
     {
         Storage::fake('public');
+        $this->mockScanner(esComprobante: false);
 
         $organizador = User::factory()->create();
         $deudor = User::factory()->create();
@@ -160,6 +184,7 @@ class ConciliacionComprobantePipelineTest extends TestCase
     public function test_flujo_con_comprobante_sintetico_bnb_20bs_concilia_exitosamente(): void
     {
         Storage::fake('public');
+        $this->mockScanner(esComprobante: true, monto: 20.00, banco: 'Banco Nacional de Bolivia', referencia: 'BNB-98432170');
 
         $organizador = User::factory()->create(['name' => 'Organizador BNB']);
         $deudor = User::factory()->create(['name' => 'Deudor BNB']);
