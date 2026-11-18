@@ -45,8 +45,6 @@ jobs:
 
             - name: Instalar pnpm
               uses: pnpm/action-setup@v4
-              with:
-                  version: 10
 
             - name: Configurar Node.js 22
               uses: actions/setup-node@v4
@@ -63,9 +61,12 @@ jobs:
             - name: Preparar entorno de aplicación
               run: |
                   cp .env.example .env
+                  sed -i 's/DB_DATABASE=.*/DB_DATABASE=planazo/' .env
+                  sed -i 's/DB_PASSWORD=.*/DB_PASSWORD=password/' .env
+                  sed -i 's|APP_URL=.*|APP_URL=http://127.0.0.1:9300|' .env
                   php artisan key:generate
-              env:
-                  APP_ENV: testing
+                  php artisan migrate:fresh --seed --force
+                  php artisan storage:link || true
 
             - name: Compilar assets de frontend con Vite
               run: pnpm run build
@@ -75,8 +76,15 @@ jobs:
 
             - name: Iniciar servidor local para pruebas E2E
               run: |
-                  php artisan serve --port=9300 &
-                  sleep 3
+                  php artisan serve --host=127.0.0.1 --port=9300 &
+                  for i in {1..30}; do
+                    if curl -s http://127.0.0.1:9300 > /dev/null; then
+                      echo "Servidor disponible en http://127.0.0.1:9300"
+                      break
+                    fi
+                    echo "Esperando que el servidor responda... ($i/30)"
+                    sleep 1
+                  done
 
             - name: Ejecutar pruebas E2E (Playwright con Chromium)
               run: pnpm exec playwright test --project=chromium
