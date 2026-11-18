@@ -10,7 +10,13 @@ use App\Http\Controllers\PerfilCobroController;
 use App\Http\Controllers\PlanesController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/ingresar');
+Route::get('/', function () {
+    if (auth()->check()) {
+        return redirect()->route('planes.listar');
+    }
+
+    return view('landing');
+})->name('landing');
 
 Route::middleware('guest')->group(function () {
     Route::get('/ingresar', [AutentificacionController::class, 'mostrarIngreso'])->name('login');

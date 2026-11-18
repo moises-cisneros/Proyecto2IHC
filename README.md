@@ -1,5 +1,7 @@
 # Planazo — Proyecto 2 IHC
 
+[![Pruebas](https://github.com/moises-cisneros/Proyecto2IHC/actions/workflows/pruebas.yml/badge.svg)](https://github.com/moises-cisneros/Proyecto2IHC/actions/workflows/pruebas.yml)
+
 > Aplicación web desarrollada con **Laravel 12**, plantillas **Blade**, **Tailwind CSS 4** y **MySQL 8.0**. Diseñada para ejecutarse por defecto mediante **Docker**, con soporte completo para **ejecución manual local**.
 
 ---
@@ -164,88 +166,80 @@ docker compose exec planazo_app php artisan db:seed
 
 ---
 
-## 🗺️ App Map — Mapa de Flujos y Arquitectura de la Aplicación
+## 🗺️ App Map — Pantallas y Navegación
+
+> El App Map muestra **qué pantallas existen y cómo se llega a ellas**. Los pasos de cada tarea de usuario (con sus ramas por rol y estado) están en los [Task Flows](#-task-flows--tareas-de-usuario).
+>
+> **Detalle completo y fuente de verdad:** [`resources/FLOWS.md`](resources/FLOWS.md) (composición de cada pantalla, matriz de permisos, Task Flows, trazabilidad e inventario de rutas). Este apartado es un resumen.
 
 ```mermaid
 flowchart TD
-    subgraph G_Acceso["1. Acceso y Control de Sesión"]
-        Login["/ingresar | /registro | /recuperar<br/>Rate-limiting y cuentas de prueba"]
+    subgraph Acceso["Acceso (invitado)"]
+        Ingresar["/ingresar"]
+        Registro["/registro"]
+        Recuperar["/recuperar"]
+        Restablecer["/restablecer/{token}"]
     end
 
-    subgraph G_Dashboard["2. Dashboard de Gestión (/mis-planes)"]
-        Dash["Pestañas por Rol (Creados vs Participo)<br/>Bloques LATCH + Filtros Hick"]
-        ModalCrear["Modal Crear Plan<br/>(Organizador automático de sesión)"]
-        Dash -->|"Organizador crea plan"| ModalCrear
+    subgraph App["Aplicación (autenticado) — Navbar: Mis Planes · Historial · Mi Cuenta · Salir"]
+        MisPlanes["/mis-planes<br/>Pestañas por rol + filtros"]
+        Sala["/planes/{plan}<br/>Sala: votación · participantes · gastos<br/>(vista según rol)"]
+        Editar["/planes/{plan}/editar"]
+        Historial["/historial<br/>4 categorías + Todos"]
+        MiCuenta["/perfil/datos<br/>Mi Cuenta y Privacidad"]
     end
 
-    subgraph G_Sala["3. Sala Colaborativa (/planes/{id}) — Máquina de Estados"]
-        direction TB
-        EstadoPendiente{"Estado: PENDIENTE"}
-
-        subgraph S_Participante["Perspectiva: Invitado / Participante"]
-            AceptarInv["Aceptar Invitación"] --> ProponerVotar["Proponer Fechas/Lugares<br/>Votación Aprobación (Toggle Reactivo)"]
-            ProponerVotar --> RetiroCheck{"¿Retirarse del Plan?<br/>(Verificación de Deuda)"}
-            RetiroCheck -->|"Con deuda en gastos"| BloqueoRetiro["Bloqueo H5: Freno por deuda<br/>(Alerta y enlace a liquidar)"]
-            RetiroCheck -->|"Sin deuda pendiente"| RetiroExito["Anulación de votos del usuario,<br/>recálculo de ganadoras y salida"]
-        end
-
-        subgraph S_Organizador["Perspectiva: Organizador"]
-            Invitar["Invitar Miembros por Correo"]
-            Cierre{"¿Cierre de Votación / Fecha Límite?"}
-            Empate{"¿Existe Empate en 1er Lugar?"}
-            DesempateModal["Modal Desempate Obligatorio<br/>(Motivo justificado >= 5 caracteres)"]
-            ConfirmarAccion["Confirmar Plan Oficial<br/>(Congela sala y bloquea votos)"]
-
-            Invitar --> Cierre
-            Cierre --> Empate
-            Empate -->|"Sí"| DesempateModal
-            DesempateModal --> ConfirmarAccion
-            Empate -->|"No (Ganador directo)"| ConfirmarAccion
-        end
-
-        EstadoPendiente --> S_Participante
-        EstadoPendiente --> S_Organizador
+    subgraph Dev["Solo Dev (local / testing)"]
+        Analitica["/analitica"]
     end
 
-    subgraph G_Post["4. Post-Evento & Liquidación (/planes/{id})"]
-        EstadoConfirmado["Estado: CONFIRMADO (Sala Congelada)"]
-        Gastos["Módulo de Gastos y Saldos Netos<br/>(División 1/N o personalizada)"]
-        Pagos["Liquidación de Deudas Bilaterales<br/>(Pendiente -> Confirmado/Rechazado)"]
-        EstadoConfirmado --> Gastos --> Pagos
-    end
+    Ingresar --> Registro
+    Ingresar --> Recuperar --> Restablecer --> Ingresar
+    Registro --> Ingresar
+    Ingresar -->|"sesión iniciada"| MisPlanes
 
-    subgraph G_Auditoria["5. Trazabilidad Transversal (/historial)"]
-        Bitacora["Bitácora Inmutable de 4 Dimensiones<br/>(Qué, Quién, Cuándo, Resultado) + 4 Categorías"]
-    end
-
-    subgraph G_Telemetria["6. Telemetría y Observabilidad (/analitica)"]
-        DevToolbar["Dev Floating Toolbar (local/testing)<br/>Fuera de barra de usuario"]
-        AnaliticaPanel["Dashboard de Analítica de Interacción<br/>(6 Embudos, Drop-off, Errores de freno y Hora BOL)"]
-        DevToolbar --> AnaliticaPanel
-    end
-
-    Login --> Dash
-    ModalCrear -->|"Redirección tras creación"| EstadoPendiente
-    Dash -->|"Acceso a detalle del plan"| EstadoPendiente
-    ConfirmarAccion --> EstadoConfirmado
-
-    ModalCrear & ProponerVotar & DesempateModal & ConfirmarAccion & Pagos & RetiroExito -.-> Bitacora
-    ModalCrear & ProponerVotar & DesempateModal & ConfirmarAccion & Pagos & RetiroExito & BloqueoRetiro -.-> G_Telemetria
+    MisPlanes -->|"Entrar a la sala / Confirmar"| Sala
+    MisPlanes -->|"Editar"| Editar --> MisPlanes
+    MisPlanes <-->|"Navbar"| Historial
+    MisPlanes <-->|"Navbar"| MiCuenta
+    Sala -->|"Retirarse / Salir"| MisPlanes
+    MiCuenta -->|"Gestionar / Liquidar (bloqueos)"| Sala
+    MiCuenta -->|"Eliminar cuenta"| Ingresar
+    MisPlanes -.->|"Dev Toolbar"| Analitica
 ```
 
-### Detalle de los Flujos de la Aplicación
+**Navegación global (navbar):** `Mis Planes`, `Historial`, `Mi Cuenta` y `Salir`. La analítica solo se alcanza por la píldora flotante de desarrollo.
 
-1. **Flujo 1 (Acceso y Control de Sesión):** Puerta de entrada (`/ingresar`, `/registro`, `/recuperar`). Rate-limiting (`throttle:5,1`), protección contra enumeración de credenciales, autenticación con cuentas de prueba sembradas y regeneración de token CSRF al cerrar sesión.
-2. **Flujo 2 (Dashboard y Organización de Planes - `/mis-planes`):** Centro de navegación posautenticación. Aplica Arquitectura de la Información con dos pestañas semánticas por propósito/rol (_«Mis planes creados»_ vs _«Planes donde participo»_), clasificación cronológica LATCH (_Hoy_, _Próximos_, _Vencidos_), y filtros rápidos acotados ($\le 4$ opciones) conforme a la Ley de Hick.
-3. **Flujo 3 (Creación y Ciclo de Vida del Plan):** Diálogo modal nativo `<dialog>` de creación ágil con captura automática del organizador desde la sesión (`auth()->user()->name`), validación preventiva de fechas pasadas (`after_or_equal:today`) y transición segura de la máquina de estados (`pendiente` &rarr; `confirmado` &rarr; `cancelado` inmutable).
-4. **Flujo 4 (Sala Colaborativa, Deliberación y Retiro - `/planes/{plan}`):** Espacio interactivo unificado que bifurca la experiencia según el rol gobernado por políticas (`PlanPolicy`):
-    - **Carril Participante:** Aceptación de invitación, propuesta de opciones (fechas/lugares), votación reactiva por aprobación (Approval Voting), y proceso formal de retiro:
-        - _Verificación de Deuda:_ Si el participante tiene saldos deudores en gastos, el sistema bloquea el retiro desplegando advertencia informativa y enlace a liquidar (Nielsen H5 y H6).
-        - _Consecuencia de Retiro:_ Si no adeuda montos, confirma la salida, se anulan automáticamente todos sus votos de fechas/lugares, se recalculan las opciones líderes en tiempo real y se desvincula de la lista.
-    - **Carril Organizador:** Envío de invitaciones por correo, supervisión de quórum, resolución obligatoria de empates con motivo justificado ($\ge 5$ caracteres) y confirmación oficial que congela la sala (`403` a votos y propuestas posteriores). El organizador no puede retirarse del plan (debe cancelarlo o eliminarlo).
-5. **Flujo 5 (Gastos, Liquidación y Saldos Netos):** Proceso post-evento activado exclusivamente en planes confirmados. Registro de gastos grupales (partes iguales $Monto/N$ o cuotas personalizadas), cálculo automatizado de la matriz de saldos netos cruzados y ciclo de liquidación de deudas con comprobante bancario adjunto y estados controlados (`pendiente` emitido por el deudor &rarr; `confirmado` o `rechazado` con motivo obligatorio por el acreedor, visible para ambas partes en su historial).
-6. **Servicio Transversal (Auditoría y Trazabilidad - `/historial`):** Bitácora inmutable accesible desde la navegación global. Registra en 4 dimensiones (Qué, Quién, Cuándo, Resultado) todas las transiciones de estado, propuestas, votos, desempates, liquidaciones y retiros, con selector temático de 4 categorías.
-7. **Servicio de Observabilidad (Analítica de Interacción - `/analitica`):** Plataforma interna de diagnóstico ergonómico disponible en entorno local y de pruebas. Visualiza en tiempo real 6 embudos de conversión, tasas de abandono (_drop-off_) y motivos frecuentes de error de validación/permiso. Se accede de forma discreta mediante una píldora flotante de desarrollo en la esquina inferior (`Dev Floating Toolbar`), manteniendo la navegación del usuario final libre de sobrecarga cognitiva.
+**Estados canónicos del plan:** `pendiente` → `confirmado` (inmutable) · `cancelado` (inmutable).
+
+---
+
+## 🧭 Task Flows — Tareas de Usuario
+
+Cada flujo describe **una tarea** de principio a fin con sus ramas. Convenciones: 👤 participante · 🧑‍💼 organizador · ✉️ invitado pendiente.
+
+|  #   | Tarea                                    |   Rol    | Pasos y ramas principales                                                                                                                                                                                                                    |
+| :--: | :--------------------------------------- | :------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TF1  | Ingresar, registrarse y recuperar acceso | Invitado | `/ingresar` (límite 5 intentos/min, mensaje genérico ante error) · `/registro` · `/recuperar` responde igual exista o no el correo · `/restablecer/{token}` con enlace vencido pide uno nuevo                                                |
+| TF2  | Crear plan                               |    🧑‍💼    | `+ Crear plan` (modal) → nombre + fecha límite (no pasada) → organizador tomado de la sesión → plan `pendiente`                                                                                                                              |
+| TF3  | Invitar y responder invitación           | 🧑‍💼 / ✉️  | Organizador invita por correo → invitado ve «Aceptar» **y** «Rechazar» (simétricos) → al aceptar pasa a participante                                                                                                                         |
+| TF4  | Proponer y votar                         | 👤 / 🧑‍💼  | Proponer fecha o lugar → votar por aprobación (varios votos, se pueden retirar) → bloqueado cuando el plan se confirma                                                                                                                       |
+| TF5  | Confirmar plan                           |    🧑‍💼    | **Única vía: la sala** («Cerrar votación y confirmar») → ganador indiscutido, o **empate** con motivo ≥ 5 caracteres → sin propuestas de fecha conserva la fecha límite → sala congelada. Desde el listado, «Confirmar» solo lleva a la sala |
+| TF6  | Retirarse de un plan                     |    👤    | `Retirarse` (solo en plan `pendiente`) → **con deuda**: diálogo explica el motivo y enlaza a liquidar · **sin deuda**: se anulan sus votos y sale. El organizador no puede retirarse                                                         |
+| TF7  | Gastos y liquidación                     | 👤 / 🧑‍💼  | Plan no cancelado → registrar gasto (participantes elegidos conscientemente) → saldos netos → pago eligiendo modalidad (total o parcial, sin preselección) con comprobante opcional → acreedor **confirma** o **rechaza con motivo**         |
+| TF8  | Editar, cancelar o eliminar plan         |    🧑‍💼    | Editar (no si está cancelado) · Cancelar un plan confirmado (diálogo destructivo con «Mantener plan») · Eliminar: si está bloqueado, la **Salida Honesta** explica por qué y qué hacer                                                       |
+| TF9  | Gestionar Mi Cuenta                      |  Todos   | Editar datos y contraseña · datos de cobro · descargar datos (JSON/CSV) · **Eliminar cuenta**: con bloqueos (planes abiertos o deudas) el diálogo lista cada causa con su acción; sin bloqueos pide la contraseña con botonera simétrica     |
+| TF10 | Consultar historial                      |  Todos   | `/historial` → filtrar por Estados · Creaciones · Participación · Gastos (o Todos) → estado vacío con salida hacia Mis planes                                                                                                                |
+| TF11 | Analizar interacción (Dev)               |   Dev    | Píldora flotante → `/analitica`: 6 embudos, abandono y errores de freno                                                                                                                                                                      |
+
+### Detalle de los Flujos
+
+1. **TF1 — Acceso y control de sesión:** rate-limiting (`throttle:5,1`), protección contra enumeración de credenciales y de correos, cuentas de prueba sembradas y regeneración del token CSRF al cerrar sesión.
+2. **TF2 y `/mis-planes` — Dashboard:** dos pestañas por propósito/rol (_«Mis planes creados»_ y _«Planes donde participo»_), clasificación cronológica LATCH (_Hoy_, _Próximos_, _Vencidos_) y filtros acotados conforme a la Ley de Hick.
+3. **TF3–TF6 — Sala colaborativa (`/planes/{plan}`):** una sola pantalla con vistas por rol gobernadas por `PlanPolicy`. La **única** forma de salir de un plan es `planes.retirarse`; la **única** forma de confirmar es `planes.confirmar`.
+4. **TF7 — Gastos:** partes iguales ($Monto/N$) o cuotas personalizadas; matriz de saldos netos cruzados; ciclo de liquidación bilateral visible para ambas partes.
+5. **Servicio transversal — Historial (`/historial`):** bitácora inmutable en 4 dimensiones (Qué, Quién, Cuándo, Resultado) con selector temático de 4 categorías.
+6. **Servicio de observabilidad — Analítica (`/analitica`):** solo entorno local y de pruebas; la navegación del usuario final queda libre de sobrecarga cognitiva.
 
 ---
 
@@ -326,21 +320,46 @@ _(Para ejecución de pruebas puntuales, filtrado por nombres y el protocolo deta
 
 ---
 
-## 🧪 Pruebas Automatizadas
+## 🧪 Pruebas Automatizadas y Calidad Continua (CI)
 
-La suite de pruebas unitarias y de integración de Laravel se ejecuta mediante **PHPUnit**:
+### Pruebas Unitarias y de Integración (PHPUnit)
 
-- **Dentro del contenedor Docker (Recomendado):**
+La suite de pruebas de Laravel valida la lógica de negocio, políticas de autorización y contratos:
+
+- **Ejecución básica:**
 
     ```bash
+    # En Docker:
     docker compose exec planazo_app php artisan test
-    ```
 
-- **Desde el host local (si se cuenta con PHP y Composer instalados):**
-
-    ```bash
+    # En Host local:
     php artisan test
     ```
+
+- **Ejecución con reporte de Cobertura de Código (`--coverage`):**
+
+    ```bash
+    php artisan test --coverage
+    ```
+
+### Pruebas E2E (Playwright)
+
+Automatización de tareas humanas accesibles en el navegador Chromium:
+
+```bash
+pnpm run test:e2e          # Modo headless (predeterminado)
+pnpm run test:e2e:headed   # Modo visible en escritorio
+pnpm run test:e2e:ui       # Consola interactiva de Playwright
+```
+
+### Integración Continua en GitHub Actions (`.github/workflows/pruebas.yml`)
+
+El repositorio cuenta con un pipeline de CI obligatorio que se dispara en cada `push` y `pull_request` sobre `main` y `master`:
+
+1. **Paso visible PHPUnit + Cobertura:** Ejecución de las 280+ pruebas backend con reporte detallado.
+2. **Paso visible Playwright E2E:** Ejecución secuencial de los 14 flujos end-to-end con Chromium.
+3. **Subida de Artefactos (`actions/upload-artifact@v4`):** Guarda automáticamente los reportes `playwright-report` y `coverage` (`if: always()`).
+4. **Política de Cero Tolerancia:** Si una prueba falla en Actions, se repara inmediatamente; está terminantemente prohibido omitirla o borrarla.
 
 ---
 
@@ -348,9 +367,11 @@ La suite de pruebas unitarias y de integración de Laravel se ejecuta mediante *
 
 - [AGENTS.md](AGENTS.md): Reglas operativas estrictas para agentes de IA, prohibición de atribución de IA, principios IHC (Fitts, Hick, Carga Cognitiva) y flujo de sub-issues.
 - [ARCHITECTURE.md](ARCHITECTURE.md): Arquitectura de capas, modelos Eloquent, controladores y vistas Blade.
-- [resources/DESIGN.md](resources/DESIGN.md): Guía oficial del sistema de diseño, tokens cromáticos y directrices visuales y ergonómicas (IHC).
+- [resources/DESIGN.md](resources/DESIGN.md): Guía oficial del sistema de diseño, arquitectura de tokens semánticos y componentes canónicos para Figma y código.
+- [resources/FLOWS.md](resources/FLOWS.md): Contrato interactivo con App Map (11 pantallas), Task Flows (TF1–TF11) e inventario de 36 rutas.
 - [CONTRIBUTING.md](CONTRIBUTING.md): Guía para colaboradores, ramas y convención de Conventional Commits.
-- [docs/](docs/): Evidencias académicas, historial de tareas de clase y capturas del proyecto recibido.
+- [docs/internal/Tareas.md](docs/internal/Tareas.md): Bitácora de clases, hitos de entrega y flujos detallados de la aplicación.
+- [docs/](docs/): Evidencias académicas e historial de tareas previas.
 
 ---
 
