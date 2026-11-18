@@ -1,0 +1,95 @@
+name: Pruebas del Sistema
+
+on:
+    push:
+        branches:
+            - main
+            - master
+    pull_request:
+        branches:
+            - main
+            - master
+
+concurrency:
+    group: pruebas-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    pruebas:
+        name: Pruebas Unitarias y E2E
+        runs-on: ubuntu-latest
+
+        services:
+            mysql:
+                image: mysql:8.0
+                env:
+                    MYSQL_DATABASE: planazo
+                    MYSQL_ROOT_PASSWORD: password
+                ports:
+                    - 3306:3306
+                options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
+
+        steps:
+            - name: Checkout del repositorio
+              uses: actions/checkout@v4
+
+            - name: Configurar PHP 8.2
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  extensions: mbstring, pdo, pdo_mysql, pdo_sqlite, bcmath
+                  coverage: pcov
+
+            - name: Instalar dependencias de Composer
+              run: composer install --prefer-dist --no-interaction --no-progress
+
+            - name: Instalar pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 10
+
+            - name: Configurar Node.js 22
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: 'pnpm'
+
+            - name: Instalar dependencias de Node
+              run: pnpm install --frozen-lockfile
+
+            - name: Instalar navegador Chromium de Playwright
+              run: pnpm exec playwright install --with-deps chromium
+
+            - name: Preparar entorno de aplicación
+              run: |
+                  cp .env.example .env
+                  php artisan key:generate
+              env:
+                  APP_ENV: testing
+
+            - name: Compilar assets de frontend con Vite
+              run: pnpm run build
+
+            - name: Ejecutar pruebas unitarias y de integración (PHPUnit con Cobertura)
+              run: php artisan test --coverage --coverage-clover coverage/clover.xml --coverage-html coverage/html
+
+            - name: Iniciar servidor local para pruebas E2E
+              run: |
+                  php artisan serve --port=9300 &
+                  sleep 3
+
+            - name: Ejecutar pruebas E2E (Playwright con Chromium)
+              run: pnpm exec playwright test --project=chromium
+              env:
+                  CI: true
+                  BASE_URL: http://127.0.0.1:9300
+
+            - name: Subir reportes de pruebas (Playwright y Cobertura)
+              uses: actions/upload-artifact@v4
+              if: always()
+              with:
+                  name: reportes
+                  path: |
+                      playwright-report/
+                      coverage/
+                  retention-days: 14
