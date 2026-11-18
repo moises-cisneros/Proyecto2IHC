@@ -56,8 +56,12 @@ RUN composer dump-autoload --optimize
 # Permisos de escritura para Laravel
 RUN chmod -R 775 storage bootstrap/cache
 
+# Copiar y preparar script de arranque
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh
+
 # Exponer puertos (8000 para local, 10000 para Render)
 EXPOSE 8000 10000
 
 # Script de arranque
-ENTRYPOINT ["/bin/bash", "/var/www/html/docker/entrypoint.sh"]
+ENTRYPOINT ["/bin/bash", "/usr/local/bin/entrypoint.sh"]

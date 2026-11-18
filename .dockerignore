@@ -37,6 +37,7 @@
 Dockerfile
 docker-compose.yml
 docker/
+!docker/entrypoint.sh
 
 # Otros
 Thumbs.db
