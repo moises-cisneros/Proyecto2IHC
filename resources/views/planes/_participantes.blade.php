@@ -9,7 +9,8 @@
 
         @can('invitar', $plan)
             <button type="button" class="boton participantes-boton-invitar"
-                onclick="document.getElementById('modal-invitar').showModal()" aria-label="+ Invitar colaborador">
+                onclick="if (window.track) { window.track('invitacion_iniciada', { plan_id: {{ $plan->id }} }); } document.getElementById('modal-invitar').showModal()"
+                aria-label="+ Invitar colaborador">
                 + Invitar colaborador
             </button>
         @endcan

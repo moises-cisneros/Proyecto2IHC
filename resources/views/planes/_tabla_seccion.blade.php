@@ -65,15 +65,9 @@
                             {{-- 1. Botón de cambio de estado (Confirmar / Cancelar con ancho homogéneo de 104px para evitar desalineación) --}}
                             @can('cambiarEstado', $plan)
                                 @if ($plan->estado == 'pendiente')
-                                    <form class="form-reset" method="POST" action="{{ route('planes.estado', $plan) }}">
-                                        @csrf
-                                        @method('PUT')
-                                        <input type="hidden" name="estado" value="confirmado">
-                                        <button type="submit" class="boton boton-claro boton-accion-md"
-                                            data-confirm="¿Confirmar el plan &laquo;{{ $plan->nombre }}&raquo;?"
-                                            data-title="Confirmar plan" data-btn-ok="Sí, confirmar"
-                                            data-btn-cancel="Mantener pendiente">Confirmar</button>
-                                    </form>
+                                    <a href="{{ route('planes.detalle', $plan) }}" class="boton boton-claro boton-accion-md"
+                                        title="Se confirma en la sala, tras la votación"
+                                        aria-label="Ir a la sala de &laquo;{{ $plan->nombre }}&raquo; para confirmar el plan">Confirmar</a>
                                 @elseif ($plan->estado == 'confirmado')
                                     <form class="form-reset" method="POST" action="{{ route('planes.estado', $plan) }}">
                                         @csrf
@@ -82,12 +76,8 @@
                                         <button type="submit" class="boton boton-claro boton-accion-md"
                                             data-confirm="¿Cancelar el plan &laquo;{{ $plan->nombre }}&raquo;? No podrá volver a confirmarse."
                                             data-title="Cancelar plan" data-btn-ok="Sí, cancelar"
-                                            data-btn-cancel="Mantener plan">Cancelar</button>
+                                            data-btn-cancel="Mantener plan" data-type="danger">Cancelar</button>
                                     </form>
-                                @else
-                                    {{-- Plan cancelado: no puede volver a confirmarse --}}
-                                    <button class="boton boton-claro boton-accion-md" disabled
-                                        title="Un plan cancelado no puede volver a confirmarse">Confirmar</button>
                                 @endif
                             @endcan
 
@@ -98,18 +88,6 @@
                                     <x-icono nombre="editar" />
                                     <span class="sr-only">Editar plan</span>
                                 </a>
-                            @else
-                                @can('cambiarEstado', $plan)
-                                    {{-- Creador pero plan cancelado: deshabilitado (Nielsen H5) --}}
-                                    @if ($plan->estado === 'cancelado')
-                                        <button class="boton boton-editar boton-accion-sm" disabled
-                                            title="Un plan cancelado no puede editarse"
-                                            aria-label="Editar no disponible en plan cancelado">
-                                            <x-icono nombre="editar" />
-                                            <span class="sr-only">Editar plan</span>
-                                        </button>
-                                    @endif
-                                @endcan
                             @endcan
 
                             @can('delete', $plan)
@@ -174,7 +152,7 @@
                                                     @endif
 
                                                     @if (isset($bloqueosPlan['deudas_pendientes_gastos']))
-                                                        <a href="{{ route('planes.detalle', ['plan' => $plan->id, 'pestana' => 'gastos']) }}"
+                                                        <a href="{{ route('planes.detalle', ['plan' => $plan->id, 'tab' => 'gastos']) }}"
                                                             class="boton boton-claro tabla-seccion-boton-resolver"
                                                             aria-label="Ver gastos y liquidación">
                                                             Ir a saldar gastos
@@ -225,8 +203,17 @@
                                     <form class="form-reset-inline" method="POST"
                                         action="{{ route('planes.aceptar', $plan) }}">
                                         @csrf
-                                        <button type="submit" class="boton tabla-seccion-boton-compacto">
+                                        <button type="submit" class="boton tabla-seccion-boton-compacto"
+                                            aria-label="Aceptar invitación al plan {{ $plan->nombre }}">
                                             Aceptar invitación
+                                        </button>
+                                    </form>
+                                    <form class="form-reset-inline" method="POST"
+                                        action="{{ route('planes.rechazar-invitacion', $plan) }}">
+                                        @csrf
+                                        <button type="submit" class="boton boton-claro tabla-seccion-boton-compacto"
+                                            aria-label="Rechazar invitación al plan {{ $plan->nombre }}">
+                                            Rechazar invitación
                                         </button>
                                     </form>
                                 @else

@@ -10,6 +10,17 @@
     {{-- Estilos globales de la app --}}
     @vite('resources/css/app.css')
 
+    {{-- Script anti-flicker de tema (Modo Oscuro) --}}
+    <script>
+        (function() {
+            var tema = localStorage.getItem('planazo_tema') ||
+                (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'oscuro' : 'claro');
+            if (tema === 'oscuro') {
+                document.documentElement.setAttribute('data-tema', 'oscuro');
+            }
+        })();
+    </script>
+
     {{-- Cada vista puede agregar su propio CSS extra aquí --}}
     @yield('estilos')
 </head>
@@ -38,7 +49,7 @@
 
     {{-- Script global: interacción inmediata + confirmaciones modales nativas --}}
     <script src="{{ asset('js/ui.js') }}"></script>
-    {{-- Analítica de interacción (Clase 21 - telemetría de intenciones) --}}
+    {{-- Analítica de interacción (telemetría de intenciones) --}}
     <script src="{{ asset('js/analitica.js') }}"></script>
 
     {{-- Cada vista puede agregar scripts extra --}}

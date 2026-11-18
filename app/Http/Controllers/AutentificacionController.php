@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Illuminate\Support\Facades\RateLimiter;
 
 class AutentificacionController extends Controller
 {
@@ -41,6 +42,11 @@ class AutentificacionController extends Controller
 
         if (Auth::attempt($credenciales)) {
             $request->session()->regenerate(); // Previene ataques de fijación de sesión
+
+            if ($route = $request->route()) {
+                $key = sha1($route->getDomain().'|'.$request->ip());
+                RateLimiter::clear($key);
+            }
 
             return redirect()->route('planes.listar');
         }

@@ -160,7 +160,8 @@ class SalaColaborativaCerradaTest extends TestCase
         $responseOrg->assertStatus(200);
         $responseOrg->assertSee('Editar plan');
         $responseOrg->assertSee('Eliminar plan');
-        $responseOrg->assertSee(route('planes.estado', $planPendiente));
+        $responseOrg->assertSee(route('planes.detalle', $planPendiente));
+        $responseOrg->assertDontSee(route('planes.estado', $planPendiente));
         $responseOrg->assertSee(route('planes.eliminar', $planPendiente));
 
         // Visión del participante: ve el plan y "Ver sala", pero NO controles ni clases de edición/eliminación

@@ -253,4 +253,40 @@
             }
         }
     });
+    /* ─── Control interactivo de Modo Claro / Modo Oscuro ──────────── */
+    function initThemeSwitcher() {
+        const btn = document.getElementById('boton-tema');
+        if (!btn) return;
+
+        function actualizarBoton(esOscuro) {
+            btn.setAttribute('aria-label', esOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+            btn.setAttribute('title', esOscuro ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+        }
+
+        const esInicialOscuro = document.documentElement.getAttribute('data-tema') === 'oscuro';
+        actualizarBoton(esInicialOscuro);
+
+        btn.addEventListener('click', function () {
+            const esOscuro = document.documentElement.getAttribute('data-tema') === 'oscuro';
+            const nuevoTema = esOscuro ? 'claro' : 'oscuro';
+
+            if (nuevoTema === 'oscuro') {
+                document.documentElement.setAttribute('data-tema', 'oscuro');
+            } else {
+                document.documentElement.removeAttribute('data-tema');
+            }
+
+            try {
+                localStorage.setItem('planazo_tema', nuevoTema);
+            } catch (err) {}
+
+            actualizarBoton(nuevoTema === 'oscuro');
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initThemeSwitcher);
+    } else {
+        initThemeSwitcher();
+    }
 })();

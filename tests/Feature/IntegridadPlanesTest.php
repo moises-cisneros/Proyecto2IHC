@@ -75,14 +75,14 @@ class IntegridadPlanesTest extends TestCase
         $resPendiente = $this->actingAs($creador)->put(route('planes.estado', $plan), [
             'estado' => 'pendiente',
         ]);
-        $resPendiente->assertSessionHas('error');
+        $resPendiente->assertSessionHasErrors('estado');
         $this->assertEquals('cancelado', $plan->fresh()->estado);
 
         // Intento hacia confirmado
         $resConfirmado = $this->actingAs($creador)->put(route('planes.estado', $plan), [
             'estado' => 'confirmado',
         ]);
-        $resConfirmado->assertSessionHas('error');
+        $resConfirmado->assertSessionHasErrors('estado');
         $this->assertEquals('cancelado', $plan->fresh()->estado);
     }
 

@@ -122,8 +122,7 @@
                         {{ $totalHoy }}
                     </span>
                 </h2>
-                <span class="listado-seccion-descripcion">Planes con fecha límite programada
-                    para hoy</span>
+                <span class="listado-seccion-descripcion">Planes programada para hoy</span>
             </div>
 
             @if ($hoy->isEmpty())

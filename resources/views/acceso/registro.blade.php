@@ -5,7 +5,7 @@
 @section('contenido')
 
     <header class="acceso-encabezado">
-        <span class="acceso-logo">✓</span>
+        <span class="acceso-logo"><x-icono nombre="check" tamano="md" /></span>
         <h1>Crear cuenta</h1>
         <p>Empieza a crear tus planes.</p>
     </header>

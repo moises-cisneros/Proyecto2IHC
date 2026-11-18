@@ -99,8 +99,9 @@ class HistorialVistaTest extends TestCase
         $response->assertSee('Creaciones');
         $response->assertSee('Participación');
 
-        // Verifica aria-pressed activo en el chip seleccionado
-        $response->assertSee('aria-pressed="true"', false);
+        // El chip activo se anuncia con aria-current (los chips son enlaces; aria-pressed solo es válido en botones)
+        $response->assertSee('aria-current="page"', false);
+        $response->assertDontSee('aria-pressed', false);
     }
 
     /**

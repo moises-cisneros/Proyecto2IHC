@@ -480,7 +480,7 @@ class Plan extends Model
                 'codigo' => 'deudas_pendientes_gastos',
                 'motivo' => 'El plan tiene gastos con saldos pendientes por saldar entre los participantes.',
                 'accion_sugerida' => 'Debes registrar o confirmar los pagos pendientes en la sección de gastos antes de eliminar.',
-                'url_accion' => url("/planes/{$this->id}?pestana=gastos"),
+                'url_accion' => url("/planes/{$this->id}?tab=gastos"),
                 'total_deudas' => count($saldos['deudas']),
                 'monto_total_gastado' => $saldos['total_gastado'],
             ];

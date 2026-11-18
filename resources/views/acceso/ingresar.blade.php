@@ -6,7 +6,7 @@
 
     {{-- Encabezado: logo + título + descripción --}}
     <header class="acceso-encabezado">
-        <span class="acceso-logo">✓</span>
+        <span class="acceso-logo"><x-icono nombre="check" tamano="md" /></span>
         <h1>Ingresar</h1>
         <p>Entra para ver tus planes.</p>
     </header>
@@ -18,7 +18,8 @@
         {{-- Campo correo --}}
         <div class="campo">
             <label for="correo">Correo electrónico</label>
-            <input type="email" id="correo" name="correo" value="{{ old('correo') }}" placeholder="tucorreo@ejemplo.com"
+            <input type="email" id="correo" name="correo"
+                value="{{ old('correo', request('email') ?? request('correo')) }}" placeholder="tucorreo@ejemplo.com"
                 class="{{ $errors->has('correo') ? 'invalido' : '' }}">
             @error('correo')
                 <span class="campo-error">{{ $message }}</span>

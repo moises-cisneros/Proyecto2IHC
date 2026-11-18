@@ -5,7 +5,7 @@
 @section('contenido')
 
     <header class="acceso-encabezado">
-        <span class="acceso-logo">✓</span>
+        <span class="acceso-logo"><x-icono nombre="check" tamano="md" /></span>
         <h1>Nueva contraseña</h1>
         <p>Escribe tu nueva contraseña.</p>
     </header>
