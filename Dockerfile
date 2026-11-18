@@ -53,8 +53,9 @@ COPY --from=frontend /app/public/build /var/www/html/public/build
 # Finalizar autoloader de Composer
 RUN composer dump-autoload --optimize
 
-# Permisos de escritura para Laravel
-RUN chmod -R 775 storage bootstrap/cache
+# Directorios de framework y permisos de escritura para Laravel
+RUN mkdir -p storage/framework/cache/data storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
+    && chmod -R 777 storage bootstrap/cache
 
 # Copiar y preparar script de arranque
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
