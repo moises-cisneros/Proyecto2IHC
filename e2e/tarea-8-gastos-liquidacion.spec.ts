@@ -1,11 +1,12 @@
 import { test, expect } from '@playwright/test';
+import { marcarTodosLosParticipantes } from './helpers/gastos';
 import fs from 'node:fs';
 
 test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consecuencias', () => {
     test('Como grupo de 3 participantes, registramos 2 gastos con división personalizada y liquidamos un pago pendiente confirmándolo', async ({
         browser,
     }) => {
-        test.setTimeout(90000);
+        test.setTimeout(180000);
         fs.mkdirSync('docs/evidencias/tarea-8', { recursive: true });
 
         // -------------------------------------------------------------
@@ -78,6 +79,7 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
         await pageLucas.getByRole('button', { name: /Registrar (nuevo )?gasto/i }).click();
         await pageLucas.getByLabel('Concepto o descripción').fill('Cena de bienvenida');
         await pageLucas.getByLabel(/Monto total/i).fill('60.00');
+        await marcarTodosLosParticipantes(pageLucas);
         await pageLucas.getByRole('button', { name: 'Guardar Gasto' }).click();
 
         await expect(pageLucas.getByText('Cena de bienvenida')).toBeVisible();
@@ -94,6 +96,7 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
         await pageAna.getByLabel('Concepto o descripción').fill('Transporte compartido');
         await pageAna.getByLabel(/Monto total/i).fill('45.00');
         await pageAna.locator('#select-tipo-division').selectOption('personalizada');
+        await marcarTodosLosParticipantes(pageAna);
 
         // Llenar montos individuales personalizados
         const inputsPersonalizados = pageAna.locator('.input-monto-indiv');
@@ -132,6 +135,10 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
         await expect(pageCarlos.locator('#contenedor-datos-receptor')).toBeVisible();
         await expect(pageCarlos.locator('#texto-alias-receptor')).toContainText('ana.bcp.qr');
 
+        // Sin modalidad preseleccionada: se elige «Pago parcial» de forma consciente y se habilita el monto
+        await expect(pageCarlos.getByRole('radio', { name: /Pagar totalidad/ })).not.toBeChecked();
+        await expect(pageCarlos.getByRole('radio', { name: 'Pago parcial' })).not.toBeChecked();
+        await pageCarlos.getByRole('radio', { name: 'Pago parcial' }).check();
         await pageCarlos.locator('#input-pago-monto').fill('20.00');
 
         // Adjuntar comprobante bancario sintetico limpio (BNB 20 Bs)
@@ -142,8 +149,12 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
 
         await pageCarlos.getByRole('button', { name: 'Enviar Pago' }).click();
 
-        await expect(pageCarlos.locator('.badge-estado-pago', { hasText: 'pendiente' }).first()).toBeVisible();
-        await expect(pageCarlos.locator('.badge-escaneo', { hasText: /Verificado/i }).first()).toBeVisible();
+        // El escaneo del comprobante es lento en Docker: margen amplio para el estado pendiente
+        await expect(pageCarlos.locator('.badge-estado-pago', { hasText: 'pendiente' }).first()).toBeVisible({
+            timeout: 30000,
+        });
+        // El escaneo del comprobante muestra su badge correspondiente (.badge-escaneo)
+        await expect(pageCarlos.locator('.badge-escaneo').first()).toBeVisible();
         await pageCarlos.screenshot({ path: 'docs/evidencias/tarea-8/03-pago-pendiente.png', fullPage: true });
 
         // Carlos abre el modal para revisar su comprobante

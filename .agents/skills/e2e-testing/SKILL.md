@@ -9,7 +9,7 @@ metadata:
 
 # Pruebas End-to-End (E2E) con Playwright — Protocolo Planazo
 
-> **Premisa Pedagógica Fundamental:**  
+> **Premisa Fundamental:**  
 > *"Una prueba es una tarea humana."*  
 > Las pruebas E2E no evalúan selectores de CSS ni implementaciones técnicas internas; simulan el recorrido real de una persona interactuando con la pantalla mediante elementos semánticos y accesibles.
 
@@ -41,9 +41,9 @@ Playwright ofrece selectores que reflejan cómo las tecnologías asistivas y los
 * **Flujos de Dominio Generales:**
   `e2e/<modulo>-<escenario-kebab>.spec.ts`
   * Ejemplos: `e2e/planes-creacion-flujo-completo.spec.ts`, `e2e/sala-votacion-desempate.spec.ts`.
-* **Casos Asignados por Tarea de Clase o Feedback:**
-  `e2e/<prefijo-de-tarea>-<descripcion-kebab>.spec.ts`
-  * Ejemplos: `e2e/tarea-7-confirmacion-desempate.spec.ts`, `e2e/feedback-1-selector-fechas.spec.ts`.
+* **Casos Específicos por Hito o Módulo:**
+  `e2e/<prefijo-o-modulo>-<descripcion-kebab>.spec.ts`
+  * Ejemplos: `e2e/planes-editar.spec.ts`, `e2e/historial-filtros.spec.ts`, `e2e/acceso-recuperar-contrasena.spec.ts`.
 
 ### B. Narrativa Humana del Test (`test(...)`)
 Formular la descripción orientada al rol, la acción y el resultado esperado:
@@ -73,13 +73,13 @@ test('Como organizador, puedo desempatar seleccionando la opción ganadora con m
 
 ## 4. Captura de Evidencias Gráficas Automatizadas
 
-Cuando una tarea docente o entrega requiera evidencias visuales del flujo:
+Cuando una auditoría de interfaz o validación de flujo requiera evidencias visuales:
 
-1. **Ruta estandarizada:** `docs/evidencias/<nombre-entrega>/<secuencia>-<descripcion>.png`.
+1. **Ruta estandarizada:** `docs/evidencias/<modulo-o-hito>/<secuencia>-<descripcion>.png`.
 2. **Método en el test:**
    ```typescript
    await page.screenshot({
-       path: 'docs/evidencias/clase-20/01-listado-pestanas.png',
+       path: 'docs/evidencias/planes/01-listado-pestanas.png',
        fullPage: false // o true según la necesidad del reporte
    });
    ```
@@ -97,8 +97,18 @@ Cuando una tarea docente o entrega requiera evidencias visuales del flujo:
 
 ## 6. Decisiones Vigentes del Proyecto
 
-* **Specs existentes** (`e2e/`): `crear-plan`, `feedback-1/2`, `tarea-6` a `tarea-10`, `clase-21-analitica`, `clase-22-patron-oscuro`. Antes de crear uno nuevo, extender el del flujo correspondiente.
+* **Specs existentes** (`e2e/`): catalogados en `resources/FLOWS.md` §6 (creación de plan, recuperación de acceso, edición, historial, gastos, votación, analítica, salida honesta). Antes de crear uno nuevo, verificar si corresponde extender el spec del flujo existente.
 * **Salida de plan:** el único flujo es «Retirarse» (`tarea-9-retirarse-plan.spec.ts`). No se prueba ni se documenta «abandonar»: ese endpoint fue eliminado.
 * **Patrones oscuros:** la evidencia visual de la prueba de simetría se genera desde `clase-22-patron-oscuro.spec.ts` y `tarea-10-datos-salida-honesta.spec.ts`; criterios en la skill `dark-patterns`.
+* **Fuente de los flujos a probar:** `resources/FLOWS.md` §6 (Task Flows) lista, por flujo, el spec que lo verifica; un flujo nuevo o modificado actualiza esa línea.
 * **Cobertura por pantalla:** cada pantalla del App Map debe tener al menos un recorrido humano por rol (organizador, participante, invitado). Una pantalla sin spec es una brecha a registrar.
 * **Localizadores en diálogos:** `getByRole('dialog', { name })` usando el título del `<dialog>` (`aria-labelledby`); nunca por `id`.
+* **Specs nuevos para brechas:** `acceso-recuperar-contrasena.spec.ts` (recuperar y restablecer, incluido enlace vencido con `?email=`), `planes-editar.spec.ts` y `historial-filtros.spec.ts`.
+* **Confirmar un plan en un spec:** siempre desde la sala: botón «Cerrar votación y confirmar» → diálogo `#modal-confirmar-plan` → «Confirmar y cerrar votación» → mensaje «Plan confirmado con éxito».
+* **Límite de login:** `POST /ingresar` tiene `throttle:5,1`. Más de 5 inicios de sesión por minuto producen fallos falsos; al correr varios archivos seguidos, dejar ≥ 60 s entre ellos.
+* **Entorno Docker:** el Vite con *polling* se satura tras editar archivos y provoca `page.goto` con timeout; esperar a que se estabilice antes de correr Playwright y no mezclar edición con ejecución.
+* **Mensajes `role="status"`:** el toast flash y los banners comparten rol; filtrar por texto (`.filter({ hasText })`) para evitar violaciones de modo estricto.
+* **Registrar un gasto:** el modal no preselecciona participantes; usar `marcarTodosLosParticipantes(page)` de `e2e/helpers/gastos.ts`. Los helpers compartidos van en `e2e/helpers/` (no coinciden con `*.spec.ts`).
+* **Registrar un pago:** elegir la modalidad de forma explícita (`getByRole('radio', { name: 'Pago parcial' }).check()` o «Pagar totalidad»); el monto está bloqueado hasta entonces. Comprobar que ninguna esté marcada al abrir el modal.
+* **Escaneo de comprobantes:** el estado «pendiente» tras «Enviar Pago» tarda en Docker; usar `toBeVisible({ timeout: 30000 })` y `test.setTimeout(180000)` en ese flujo.
+* **Primer arranque tras editar archivos:** el primer `page.goto` suele agotar el tiempo (Vite en frío); repetir la corrida antes de concluir que hay un fallo.

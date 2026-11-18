@@ -22,8 +22,8 @@ test.describe('Tarea 10 — Mis Datos, Salida Honesta y Eliminación de Cuenta s
         await expect(page.getByRole('heading', { name: 'Mi Cuenta y Privacidad' })).toBeVisible();
 
         // 3. Verificar sección de datos y botones de portabilidad
-        await expect(page.getByRole('heading', { name: 'Datos personales y de actividad' })).toBeVisible();
-        await expect(page.getByRole('heading', { name: 'Portabilidad y descarga de datos' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Mi Cuenta y Privacidad' })).toBeVisible();
+        await expect(page.getByRole('heading', { name: 'Descarga de datos' })).toBeVisible();
 
         const btnJson = page.getByRole('link', { name: /Descargar.*JSON/i });
         const btnCsv = page.getByRole('link', { name: /Descargar.*CSV/i });
@@ -70,12 +70,13 @@ test.describe('Tarea 10 — Mis Datos, Salida Honesta y Eliminación de Cuenta s
         // 3. Ir a Mi Cuenta
         await page.goto('/perfil/datos');
 
-        // 4. Verificar que se despliega la Caja de Salida Honesta explicativa
-        const avisoBloqueo = page.locator('.caja-salida-honesta');
+        // 4. Al intentar eliminar la cuenta, el diálogo explica el bloqueo y ofrece la acción para resolverlo
+        await page.getByRole('button', { name: 'Revisar requisitos para eliminar mi cuenta' }).click();
+        const avisoBloqueo = page.getByRole('dialog', { name: 'No puedes dar de baja tu cuenta todavía' });
         await expect(avisoBloqueo).toBeVisible();
-        await expect(avisoBloqueo.getByText(/Eliminación de cuenta temporalmente restringida/i)).toBeVisible();
-        await expect(avisoBloqueo.getByText(/1\. ¿Por qué no puedes dar de baja tu cuenta/i)).toBeVisible();
-        await expect(avisoBloqueo.getByText(/2\. ¿Qué debes hacer para resolverlo\?/i)).toBeVisible();
+        await expect(avisoBloqueo.getByText(/Plan abierto · Pendiente/i).first()).toBeVisible();
+        await expect(avisoBloqueo.getByRole('link', { name: /^Gestionar plan/ }).first()).toBeVisible();
+        await expect(avisoBloqueo.getByRole('button', { name: /Cerrar diálogo y resolver pendientes/i })).toBeVisible();
 
         // 5. Capturar evidencia de la caja informativa (Por qué y Qué hacer)
         await page.screenshot({

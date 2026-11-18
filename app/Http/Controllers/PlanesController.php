@@ -82,12 +82,29 @@ class PlanesController extends Controller
         $totalHoy = $hoy->count();
         $totalProximos = $proximos->count();
 
-        if ($buscar !== '' && $planes->isEmpty()) {
-            Evento::registrar('busqueda_sin_resultados', [
+        if ($buscar !== '') {
+            Evento::registrar('busqueda_realizada', [
                 'termino' => $buscar,
                 'seccion' => $seccion,
+                'total_resultados' => $planes->count(),
+            ]);
+
+            if ($planes->isEmpty()) {
+                Evento::registrar('busqueda_sin_resultados', [
+                    'termino' => $buscar,
+                    'seccion' => $seccion,
+                    'estado' => $estado,
+                    'fecha' => $fecha,
+                ]);
+            }
+        }
+
+        if ($estado !== '' || $fecha !== '') {
+            Evento::registrar('filtro_aplicado', [
                 'estado' => $estado,
                 'fecha' => $fecha,
+                'seccion' => $seccion,
+                'total_resultados' => $planes->count(),
             ]);
         }
 
@@ -201,7 +218,8 @@ class PlanesController extends Controller
     }
 
     /**
-     * Cambiar el estado de un plan
+     * Cancelar un plan. Confirmarlo es exclusivo de `confirmar` (votación y desempate);
+     * un plan cancelado es inmutable y no puede reactivarse.
      *
      * @return RedirectResponse
      */
@@ -210,20 +228,16 @@ class PlanesController extends Controller
         Gate::authorize('cambiarEstado', $plan);
 
         $request->validate([
-            'estado' => 'required|in:pendiente,confirmado,cancelado',
+            'estado' => 'required|in:cancelado',
+        ], [
+            'estado.in' => 'Desde aquí solo puedes cancelar el plan. Para confirmarlo, hazlo en la sala de votación.',
         ]);
 
-        // Regla de negocio: un plan cancelado NO puede reactivarse
-        if ($plan->estado === 'cancelado' && $request->estado !== 'cancelado') {
-            return redirect()->route('planes.listar')
-                ->with('error', 'Un plan cancelado no puede reactivarse.');
-        }
-
-        $plan->estado = $request->estado;
+        $plan->estado = 'cancelado';
         $plan->save();
 
         return redirect()->route('planes.listar')
-            ->with('exito', 'El plan ahora está '.$plan->estado.'.');
+            ->with('exito', 'El plan ahora está cancelado.');
     }
 
     /**

@@ -120,16 +120,14 @@ El servicio de escaneo inteligente se diseñó mediante el contrato `Comprobante
                │  ComprobanteScannerInterface  │
                └───────────────▲───────────────┘
                                │
-            ┌──────────────────┴──────────────────┐
-            │                                     │
-┌───────────────────────────┐         ┌───────────────────────────┐
-│ GeminiComprobanteScanner  │         │  FakeComprobanteScanner   │
-│ (Multimodal Vision API)   │         │ (Determinista / Offline)  │
-└───────────────────────────┘         └───────────────────────────┘
+               ┌───────────────┴───────────────┐
+               │    GeminiComprobanteScanner   │
+               │    (Multimodal Vision API)    │
+               └───────────────────────────────┘
 ```
 
-- **Driver Gemini Vision (`gemini`):** Cuando se define `GEMINI_API_KEY` en el entorno, procesa la imagen mediante visión multimodal extrayendo monto, banco, referencia y nivel de confianza.
-- **Driver Fake (`fake`):** Utilizado por defecto en entornos locales y durante las suites de testing en Docker/CI, garantizando que las pruebas pasen al 100% de forma determinista y sin depender de red externa.
+- **Servicio Gemini Vision:** Procesa la imagen mediante visión multimodal con Google Gemini extrayendo monto, banco, referencia y nivel de confianza. En caso de ausencia de API key o indisponibilidad del servicio, aplica un plan de contingencia devolviendo un resultado no verificado para que el acreedor lo audite manualmente.
+- **Entorno de Testing:** Las suites de prueba desacoplan llamadas externas mediante simulación de respuestas con mocks sobre `ComprobanteScannerInterface` y `Http::fake()`.
 
 ### 3. Matriz de Conciliación y Manejo de Casos Borde
 

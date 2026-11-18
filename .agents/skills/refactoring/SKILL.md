@@ -105,3 +105,11 @@ metadata:
 ### Entorno
 * En host con PHP disponible: `php artisan test` y `vendor/bin/pint --test app tests`; en contenedor: `docker compose exec planazo_app php artisan test`.
 * Los cambios de rutas, policies o permisos son de **riesgo alto** (contrato y seguridad): exigen la suite completa antes de cerrar.
+
+### Segundo caso resuelto: cambiar estado vs confirmar
+* `PlanesController::cambiarEstado` aceptaba `confirmado` y confirmaba sin votación, ganadores ni desempate, igual que `planes.confirmar` pero con menos reglas. Resolución: `cambiarEstado` **solo cancela** (`in:cancelado`); confirmar es exclusivo de `planes.confirmar`.
+* Efecto colateral que hay que revisar siempre al quitar un atajo: comprobar que la vía conservada cubre los casos que el atajo cubría. Aquí, `ConfirmarPlanRequest` exigía una propuesta de fecha aunque la sala no tuviera ninguna; ahora la fecha es obligatoria solo si existen propuestas (si no, se conserva la fecha límite).
+
+### Tests de caracterización que no son vacíos
+* Antes de confiar en un test «verde», comprobar que la vista o el flujo realmente renderiza lo que se inspecciona. Ejemplo real: `SalidaHonestaVistaTest` buscaba `?pestana=gastos` (parámetro inexistente), la página no mostraba el modal de pago y el `assertDontSee('checked')` pasaba por vacío mientras el JS seguía preseleccionando la modalidad.
+* Para aserciones sobre HTML grande, preferir `assertStringContainsString` frente a regex con `[^>]*` (PCRE puede fallar de forma silenciosa).

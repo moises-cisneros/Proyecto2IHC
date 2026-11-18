@@ -328,7 +328,7 @@
                     </button>
                 @else
                     <button type="button" class="boton boton-rojo boton-simetrico"
-                        onclick="document.getElementById('modal-eliminar-cuenta').showModal()"
+                        onclick="if (window.track) { window.track('cuenta_baja_iniciada', {}); } document.getElementById('modal-eliminar-cuenta').showModal()"
                         aria-label="Abrir diálogo para eliminar mi cuenta">
                         <x-icono nombre="eliminar" />
                         <span>Eliminar mi cuenta</span>
@@ -376,7 +376,7 @@
                                 <span class="caja-salida-honesta-meta">Deuda pendiente ·
                                     <strong>{{ number_format($planConDeuda['monto'], 2) }} Bs</strong></span>
                             </span>
-                            <a href="{{ route('planes.detalle', ['plan' => $planConDeuda['id'], 'pestana' => 'gastos']) }}"
+                            <a href="{{ route('planes.detalle', ['plan' => $planConDeuda['id'], 'tab' => 'gastos']) }}"
                                 class="boton boton-claro boton-xs"
                                 aria-label="Ir a liquidar deuda en plan {{ $planConDeuda['nombre'] }}">
                                 Liquidar

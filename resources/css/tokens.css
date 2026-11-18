@@ -23,34 +23,54 @@
  */
 
 @theme static {
-    /* ── A. Color: Tokens Nucleares ──────────────────────────── */
+    /* ── A. Color: Paleta Semántica Nuclear (7 Colores Base) ──── */
     --color-primary: #60605f;
-    --color-primary-hover: #4a4a49;
-    --color-secondary: #ffffff;
-    --color-brand: #ffe683;
-    --color-brand-hover: #ffd93d;
+    --color-secondary: #ffe683;
     --color-surface: #ffffff;
-    --color-background: #f6f6f4;
     --color-foreground: #1c1c1a;
-    --color-muted: #6f6f6a;
-    --color-border: #e3e3df;
-    --color-border-input: #d1d1cd;
+    --color-texto: var(--color-foreground);
     --color-success: #25663a;
     --color-destructive: #c0392b;
+    --color-error: var(--color-destructive);
     --color-warning: #8a6100;
 
-    /* ── B. Color: Variaciones de Superficie, Borde e Interacción ─ */
+    /* ── B. Color: Variaciones, Estados e Interacción ─────────── */
+    /* Estados de interacción (Hovers) */
+    --color-primary-hover: #4a4a49;
+    --color-secondary-hover: #ffd93d;
+    --color-destructive-hover: #a63125;
+    --color-error-hover: var(--color-destructive-hover);
+
+    /* Textos de contraste sobre fondos oscuros o de marca (On-tokens) */
+    --color-on-primary: #ffffff;
+    --color-on-destructive: #ffffff;
+    --color-on-brand: #1c1c1a;
+
+    /* Alias identitarios */
+    --color-brand: var(--color-secondary);
+    --color-brand-hover: var(--color-secondary-hover);
+
+    /* Estructura, fondos y neutros */
+    --color-background: #f6f6f4;
+    --color-surface-soft: #fbfbf9;
+    --color-neutral-bg: #eeeeec;
+    --color-foreground-soft: #2e2e2c;
+    --color-muted: #6f6f6a;
+    --color-placeholder: #b0b0aa;
+    --color-border: #e3e3df;
+    --color-border-input: #d1d1cd;
+
+    /* Variaciones contextuales de superficie y borde */
     --color-success-bg: #edf7ef;
     --color-success-border: #c2e2c8;
     --color-destructive-bg: #fbeceb;
     --color-destructive-border: #f5c6cb;
-    --color-destructive-hover: #a63125;
+    --color-error-bg: var(--color-destructive-bg);
+    --color-error-border: var(--color-destructive-border);
     --color-warning-bg: #fff4d6;
     --color-warning-border: #ffe683;
-    --color-neutral-bg: #eeeeec;
-    --color-surface-soft: #fbfbf9;
-    --color-foreground-soft: #2e2e2c;
-    --color-placeholder: #b0b0aa;
+
+    /* Acciones específicas y superposición */
     --color-edit: #a3a60b;
     --color-edit-hover: #8e9109;
     --color-overlay: rgb(0 0 0 / 0.4);
@@ -136,4 +156,66 @@
     --preview-sm: 160px;
     --preview-lg: 350px;
     --content-narrow: 400px;
+
+    /* ── N. Tokens Semánticos por Uso (Figma Variables) ──────── */
+    --color-accion: var(--color-primary);
+    --color-superficie: var(--color-surface);
+    --color-texto-principal: var(--color-foreground);
+    --color-alerta-error: var(--color-destructive);
+    --radio-control: 8px;
+}
+
+/*
+ * ── Tema Oscuro Centralizado ([data-tema="oscuro"]) ───────────
+ * Permite cambiar de tema en toda la app sin alterar las vistas Blade.
+ * Alineado 1:1 con las Variables en modo Oscuro de Figma.
+ */
+:root[data-tema='oscuro'],
+[data-tema='oscuro'] {
+    /* ── A. Color: Paleta Semántica Nuclear Modo Oscuro (7 Colores Base) ─── */
+    --color-primary: #ffffff;
+    --color-secondary: #ffd93d;
+    --color-surface: #1e1e1d;
+    --color-foreground: #f6f6f4;
+    --color-texto: var(--color-foreground);
+    --color-success: #34d399;
+    --color-destructive: #ef4444;
+    --color-error: var(--color-destructive);
+    --color-warning: #f59e0b;
+
+    /* ── B. Color: Variaciones, Estados e Interacción en Oscuro ── */
+    /* Estados de interacción (Hovers) */
+    --color-primary-hover: #e5e5e5;
+    --color-secondary-hover: #ffe683;
+    --color-destructive-hover: #ef4444;
+    --color-error-hover: var(--color-destructive-hover);
+
+    /* Textos de contraste (On-tokens) */
+    --color-on-primary: #121211;
+    --color-on-destructive: #ffffff;
+    --color-on-brand: #1c1c1a;
+
+    /* Alias identitarios */
+    --color-brand: var(--color-secondary);
+    --color-brand-hover: var(--color-secondary-hover);
+
+    /* Estructura, fondos y neutros */
+    --color-background: #121211;
+    --color-surface-soft: #2a2a28;
+    --color-neutral-bg: #27272a;
+    --color-foreground-soft: #e4e4e0;
+    --color-muted: #b8b8b2;
+    --color-placeholder: #888882;
+    --color-border: #383835;
+    --color-border-input: #4c4c47;
+
+    /* Variaciones contextuales oscuras */
+    --color-success-bg: #064e3b;
+    --color-success-border: #047857;
+    --color-destructive-bg: #450a0a;
+    --color-destructive-border: #7f1d1d;
+    --color-error-bg: var(--color-destructive-bg);
+    --color-error-border: var(--color-destructive-border);
+    --color-warning-bg: #451a03;
+    --color-warning-border: #78350f;
 }

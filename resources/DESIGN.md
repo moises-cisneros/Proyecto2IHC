@@ -2,10 +2,12 @@
 
 > **Fuente de verdad visual y ergonómica de Planazo.**  
 > Los tokens de diseño viven en [`resources/css/tokens.css`](css/tokens.css) (`@theme static`) y son importados por [`resources/css/app.css`](css/app.css).  
+> **Pantallas y flujos:** el App Map, la composición de cada pantalla y los Task Flows viven en [`resources/FLOWS.md`](FLOWS.md); este archivo define solo el vocabulario (tokens y componentes).  
 > **Regla de oro:** No inventar clases ni colores ad-hoc; reutilizar exclusivamente los tokens semánticos y componentes aquí catalogados para garantizar consistencia con Figma y el código.
 
 <!-- GUÍA DE CONSULTA RÁPIDA CON RIPGREP (rg) PARA AGENTES:
      Para auditar o consultar una sección específica sin cargar todo el archivo:
+     - Principios y tokens por uso:        rg -A 30 "^### 0\. Principios" resources/DESIGN.md
      - Tokens de color nucleares:        rg -A 20 "^### A\. Tokens Nucleares" resources/DESIGN.md
      - Variaciones y superficies (bg):   rg -A 15 "^### B\. Variaciones de Superficie" resources/DESIGN.md
      - Tokens de tipografía:             rg -A 20 "^### C\. Tipografía" resources/DESIGN.md
@@ -26,54 +28,84 @@
 
 ## 1. Fundamentos y Tokens de Diseño
 
-> **Fuente de código:** los tokens se declaran modularmente en [`resources/css/tokens.css`](css/tokens.css) en `@theme static` (secciones A–H) y son importados en [`resources/css/app.css`](css/app.css), compilado por Vite y cargado con `@vite('resources/css/app.css')` en `layouts/app` y `layouts/acceso`. Todo el proyecto (CSS de componentes, estilos inline de Blade y JS) los consume con `var(--token)`. En Figma, cada token es una _variable_ con el mismo nombre.
+> **Fuente de código:** los tokens se declaran modularmente en [`resources/css/tokens.css`](css/tokens.css) en `@theme static` (secciones A–N) y son importados en [`resources/css/app.css`](css/app.css), compilado por Vite y cargado con `@vite('resources/css/app.css')` en `layouts/app` y `layouts/acceso`. Todo el proyecto (CSS de componentes, estilos inline de Blade y JS) los consume con `var(--token)`. En Figma, cada token es una _variable_ con el mismo nombre.
 >
 > **Principios:** (1) sin animaciones ni transiciones; (2) sin librerías de UI, solo CSS plano + tokens; (3) Tailwind se usa únicamente por su capa `theme`/`utilities` (sin preflight).
 >
 > **Regla:** Un color, tamaño o radio que no tenga un token aquí NO existe en Planazo.
 
-La paleta se organiza bajo una arquitectura limpia de tokens: **Tokens Nucleares** (identidad, roles primarios y semántica de estado) y **Variaciones de Superficie y Borde** (fondos suaves y contornos para tarjetas, chips y alertas).
+### 0. Principios de Arquitectura de Tokens y Figma
 
-### A. Tokens Nucleares (Paleta Principal)
-
-| Token Semántico | Hex       | Rol y Comportamiento en Planazo                                            |
-| :-------------- | :-------- | :------------------------------------------------------------------------- |
-| `primary`       | `#60605f` | Botón primario (`.boton`), controles principales y acentos neutros         |
-| `primary-hover` | `#4a4a49` | Interacción hover del botón primario                                       |
-| `secondary`     | `#ffffff` | Botón secundario (`.boton-claro`), tarjetas y superficies activas          |
-| `brand`         | `#ffe683` | Amarillo de identidad Planazo (navbar superior, acento activo)             |
-| `brand-hover`   | `#ffd93d` | Hover en elementos de marca interactivos                                   |
-| `surface`       | `#ffffff` | Fondo de tarjetas, tablas, modales y formularios                           |
-| `background`    | `#f6f6f4` | Fondo general de la aplicación (`body`)                                    |
-| `foreground`    | `#1c1c1a` | Texto de lectura principal de alto contraste                               |
-| `muted`         | `#6f6f6a` | Texto secundario, subtítulos, etiquetas y metadatos                        |
-| `border`        | `#e3e3df` | Borde estructural estándar (tarjetas, inputs, separadores)                 |
-| `border-input`  | `#d1d1cd` | Borde de campos de formulario interactivos                                 |
-| `success`       | `#25663a` | Aprobación, confirmación, pagos validados y estado completado              |
-| `destructive`   | `#c0392b` | Acciones irreversibles, errores, bloqueos y botón eliminar (`.boton-rojo`) |
-| `warning`       | `#8a6100` | Avisos importantes, procesos pendientes y votaciones en curso              |
+- **Arquitectura de 3 Capas (Estándar W3C Design Tokens):**
+    1. _Capa 1 — Paleta Semántica Nuclear:_ 7 roles originales (`primary`, `secondary`, `surface`, `background`, `texto`/`foreground`, `success`, `error`/`destructive`, `warning`) extraídos directamente del código original de Planazo sin inventar colores ad-hoc.
+    2. _Capa 2 — Variaciones de Superficie y Borde:_ Fondos atenuados (`*-bg`) y bordes (`*-border`) calculados para garantizar contraste WCAG AA sin saturación visual.
+    3. _Capa 3 — Mapeo de Componentes por Estado:_ Aplicación estricta de los tokens a botones, badges de estado, alertas, campos de formulario, módulos de gastos y navegación según su ciclo de vida y rol interactivo.
+- **Regla Central de Nomenclatura:** Nombrar los tokens estrictamente por **función y uso semántico**, jamás por apariencia física o nombres cromáticos (usar `color-accion`, no `violeta` ni `gris`; `color-superficie`, no `blanco`; `color-alerta-error`, no `rojo`; `color-texto-principal`, no `negro`; `radio-control`, no `radio-8`).
+- **Un Solo Lugar de Verdad en Código:** Declarados en [`resources/css/tokens.css`](css/tokens.css) con variables CSS en `@theme static` y soporte para tema oscuro centralizado mediante `:root[data-tema="oscuro"]`, posibilitando el cambio de tema en toda la app sin alterar plantillas Blade.
+- **Integración y Mapeo Bidireccional con Figma:**
+    - **Mismos nombres de variables:** Las Variables de Figma comparten idéntica nomenclatura con las variables CSS (`--color-primary`, `--color-secondary`, `--color-surface`, etc.) tanto para Modo Claro como para Modo Oscuro.
+    - **10 Componentes Canónicos en Figma:** Modelados como `component set` estructurados con **Auto Layout** que consumen directamente las variables de tokens.
+    - **Matriz de Estados Canónica:** Todo componente interactivo define explícitamente sus estados (Normal, Hover, Foco, Deshabilitado, Procesando).
 
 ---
 
-### B. Variaciones de Superficie, Bordes y Badges (Contextuales)
+### A. Paleta Semántica Nuclear (7 Colores Base)
 
-Fondos atenuados de bajo impacto visual diseñados para garantizar contraste WCAG con sus textos respectivos:
+La paleta nuclear consta de 7 colores base de Planazo, definidos en [Coolors (Paleta Original)](https://coolors.co/60605f-ffe683-ffffff-1c1c1a-25663a-c0392b-8a6100) y su contraparte directa en [Coolors (Paleta Modo Oscuro)](https://coolors.co/ffffff-ffd93d-1e1e1d-f6f6f4-34d399-ef4444-f59e0b):
 
-| Token de Variación    | Hex                   | Token Nuclear Asociado    | Uso en Interfaz                                      |
-| :-------------------- | :-------------------- | :------------------------ | :--------------------------------------------------- |
-| `success-bg`          | `#edf7ef`             | `success` (`#25663a`)     | Fondo de chips confirmados y alertas de éxito        |
-| `success-border`      | `#c2e2c8`             | `success` (`#25663a`)     | Borde de tarjetas y badges de confirmación           |
-| `destructive-bg`      | `#fbeceb`             | `destructive` (`#c0392b`) | Fondo de avisos de error y bloqueos de eliminación   |
-| `destructive-border`  | `#f5c6cb`             | `destructive` (`#c0392b`) | Borde sutil de advertencias críticas                 |
-| `warning-bg`          | `#fff4d6`             | `warning` (`#8a6100`)     | Fondo de estado pendiente y avisos de anulación      |
-| `warning-border`      | `#ffe683`             | `brand` / `warning`       | Borde de banners informativos                        |
-| `neutral-bg`          | `#eeeeec`             | `muted` (`#6f6f6a`)       | Fondo de chips cancelados y estados desactivados     |
-| `surface-soft`        | `#fbfbf9`             | `surface` (`#ffffff`)     | Fondo de cabeceras de tabla y contenedores anidados  |
-| `destructive-hover`   | `#a63125`             | `destructive` (`#c0392b`) | Hover del botón destructivo (`.boton-rojo`)          |
-| `foreground-soft`     | `#2e2e2c`             | `foreground` (`#1c1c1a`)  | Hover de elementos oscuros (nav activo, toolbar dev) |
-| `placeholder`         | `#b0b0aa`             | `muted` (`#6f6f6a`)       | Texto de placeholder en campos                       |
-| `edit` / `edit-hover` | `#a3a60b` / `#8e9109` | —                         | Botón de edición (`.boton-editar`)                   |
-| `overlay`             | `rgb(0 0 0 / 0.4)`    | —                         | Fondo de `dialog::backdrop`                          |
+| Rol Semántico / Figma   | Variable CSS (`tokens.css`)             | Valor Claro (Coolors) | Valor Oscuro (Coolors) | Función y Uso en Planazo                                               |
+| :---------------------- | :-------------------------------------- | :-------------------- | :--------------------- | :--------------------------------------------------------------------- |
+| `primary`               | `--color-primary`                       | `#60605f`             | `#ffffff`              | Acción primaria dominante (`.boton`), controles y acentos neutros.     |
+| `secondary`             | `--color-secondary`                     | `#ffe683`             | `#ffd93d`              | Identidad de marca Planazo: barra superior (`.barra`), chips activos.  |
+| `surface`               | `--color-surface`                       | `#ffffff`             | `#1e1e1d`              | Fondo de tarjetas, tablas, modales y formularios.                      |
+| `foreground` / `texto`  | `--color-foreground` / `--color-texto`  | `#1c1c1a`             | `#f6f6f4`              | Tipografía principal de lectura y máximo contraste.                    |
+| `success`               | `--color-success`                       | `#25663a`             | `#34d399`              | Confirmación, pagos validados y saldos netos a favor.                  |
+| `destructive` / `error` | `--color-destructive` / `--color-error` | `#c0392b`             | `#ef4444`              | Acciones destructivas, errores de validación y deudas (`.boton-rojo`). |
+| `warning`               | `--color-warning`                       | `#8a6100`             | `#f59e0b`              | Advertencias, procesos pendientes y votaciones abiertas.               |
+
+---
+
+### B. Variaciones Derivadas, Estados e Interacción
+
+A partir de los 7 colores nucleares se derivan de forma predecible las variaciones de interacción, contraste, superficies atenuadas y bordes estructurales:
+
+#### 1. Estados de Interacción (Hovers), Textos de Contraste (On-tokens) y Alias de Marca
+
+| Token Semántico / Figma | Variable CSS (`tokens.css`)                         | Valor Claro              | Valor Oscuro                   | Referencia / Rol                                     |
+| :---------------------- | :-------------------------------------------------- | :----------------------- | :----------------------------- | :--------------------------------------------------- |
+| `primary-hover`         | `--color-primary-hover`                             | `#4a4a49`                | `#e5e5e5`                      | Hover del botón primario (`.boton:hover`).           |
+| `secondary-hover`       | `--color-secondary-hover`                           | `#ffd93d`                | `#ffe683`                      | Hover en elementos de marca interactivos.            |
+| `destructive-hover`     | `--color-destructive-hover` / `--color-error-hover` | `#a63125`                | `#ef4444`                      | Hover de botones destructivos (`.boton-rojo:hover`). |
+| `on-primary`            | `--color-on-primary`                                | `#ffffff`                | `#121211`                      | Texto legible sobre botón primario.                  |
+| `on-destructive`        | `--color-on-destructive`                            | `#ffffff`                | `#ffffff`                      | Texto legible sobre botón destructivo.               |
+| `on-brand`              | `--color-on-brand`                                  | `#1c1c1a`                | `#1c1c1a`                      | Texto legible sobre fondos amarillos de marca.       |
+| `brand` / `brand-hover` | `--color-brand` / `--color-brand-hover`             | `var(--color-secondary)` | `var(--color-secondary-hover)` | Alias identitarios vinculados a `secondary`.         |
+
+#### 2. Estructura, Fondos y Contenedores Neutros
+
+| Token Semántico / Figma | Variable CSS (`tokens.css`) | Valor Claro | Valor Oscuro | Uso en Interfaz                                       |
+| :---------------------- | :-------------------------- | :---------- | :----------- | :---------------------------------------------------- |
+| `background`            | `--color-background`        | `#f6f6f4`   | `#121211`    | Fondo general de la aplicación (`body`).              |
+| `surface-soft`          | `--color-surface-soft`      | `#fbfbf9`   | `#2a2a28`    | Cabeceras de tabla, inputs protegidos y anidados.     |
+| `neutral-bg`            | `--color-neutral-bg`        | `#eeeeec`   | `#27272a`    | Fondo de chips cancelados y estados inactivos.        |
+| `foreground-soft`       | `--color-foreground-soft`   | `#2e2e2c`   | `#e4e4e0`    | Hover de elementos oscuros (nav activo, toolbar dev). |
+| `muted`                 | `--color-muted`             | `#6f6f6a`   | `#b8b8b2`    | Texto secundario, subtítulos y metadatos.             |
+| `placeholder`           | `--color-placeholder`       | `#b0b0aa`   | `#888882`    | Texto de placeholder en campos.                       |
+| `border`                | `--color-border`            | `#e3e3df`   | `#383835`    | Borde estructural estándar (tarjetas, separadores).   |
+| `border-input`          | `--color-border-input`      | `#d1d1cd`   | `#4c4c47`    | Borde de campos de formulario interactivos.           |
+
+#### 3. Variaciones Contextuales de Superficie y Borde
+
+| Token Semántico / Figma | Variable CSS (`tokens.css`)                           | Valor Claro           | Valor Oscuro          | Token Nuclear Asociado | Uso en Interfaz                                    |
+| :---------------------- | :---------------------------------------------------- | :-------------------- | :-------------------- | :--------------------- | :------------------------------------------------- |
+| `success-bg`            | `--color-success-bg`                                  | `#edf7ef`             | `#064e3b`             | `--color-success`      | Fondo de chips confirmados y alertas de éxito.     |
+| `success-border`        | `--color-success-border`                              | `#c2e2c8`             | `#047857`             | `--color-success`      | Borde de tarjetas y badges de confirmación.        |
+| `destructive-bg`        | `--color-destructive-bg` / `--color-error-bg`         | `#fbeceb`             | `#450a0a`             | `--color-destructive`  | Fondo de alertas y avisos de error.                |
+| `destructive-border`    | `--color-destructive-border` / `--color-error-border` | `#f5c6cb`             | `#7f1d1d`             | `--color-destructive`  | Borde sutil de advertencias críticas.              |
+| `warning-bg`            | `--color-warning-bg`                                  | `#fff4d6`             | `#451a03`             | `--color-warning`      | Fondo de estados pendientes y avisos informativos. |
+| `warning-border`        | `--color-warning-border`                              | `#ffe683`             | `#78350f`             | `--color-warning`      | Borde de banners informativos.                     |
+| `edit` / `edit-hover`   | `--color-edit` / `--color-edit-hover`                 | `#a3a60b` / `#8e9109` | `#a3a60b` / `#8e9109` | —                      | Botón de edición (`.boton-editar`).                |
+| `overlay`               | `--color-overlay`                                     | `rgb(0 0 0 / 0.4)`    | `rgb(0 0 0 / 0.7)`    | —                      | Fondo de `dialog::backdrop`.                       |
 
 ---
 
@@ -179,24 +211,85 @@ Declarados en `tokens.css` (secciones I-M). Una dimensión reutilizable **siempr
 
 ---
 
-## 2. Semántica de Estados y Roles
+### J. Tokens Semánticos por Uso (Figma Variables)
 
-### A. Chips de Estado de Recursos
+Tokens de abstracción funcional definidos en la sección N de [`resources/css/tokens.css`](css/tokens.css) y alineados 1:1 con las variables semánticas de Figma:
 
-| Estado       | Token Fondo                  | Token Borde                      | Token Texto               | Significado en Interacción                               |
-| :----------- | :--------------------------- | :------------------------------- | :------------------------ | :------------------------------------------------------- |
-| `pendiente`  | `warning-bg` (`#fff4d6`)     | `warning-border` (`#ffe683`)     | `warning` (`#8a6100`)     | Abierto a cambios/votación o en espera de resolución.    |
-| `confirmado` | `success-bg` (`#edf7ef`)     | `success-border` (`#c2e2c8`)     | `success` (`#25663a`)     | Acordado o aprobado definitivamente. Inmutable.          |
-| `cancelado`  | `neutral-bg` (`#eeeeec`)     | `border` (`#e3e3df`)             | `muted` (`#6f6f6a`)       | Detenido sin efecto posterior.                           |
-| `bloqueado`  | `destructive-bg` (`#fbeceb`) | `destructive-border` (`#f5c6cb`) | `destructive` (`#c0392b`) | Detenido por regla de negocio (deuda o planes abiertos). |
+| Variable CSS              | Token Figma / Uso       | Referencia Nuclear         | Valor Claro | Valor Oscuro | Rol Semántico por Uso                                         |
+| :------------------------ | :---------------------- | :------------------------- | :---------- | :----------- | :------------------------------------------------------------ |
+| `--color-accion`          | `color-accion`          | `var(--color-primary)`     | `#60605f`   | `#ffffff`    | Color de acción primaria (botones interactivos principales).  |
+| `--color-superficie`      | `color-superficie`      | `var(--color-surface)`     | `#ffffff`   | `#1e1e1d`    | Color de superficie de lectura, tarjetas y modales.           |
+| `--color-texto-principal` | `color-texto-principal` | `var(--color-foreground)`  | `#1c1c1a`   | `#f6f6f4`    | Texto principal de lectura y títulos de alto contraste.       |
+| `--color-alerta-error`    | `color-alerta-error`    | `var(--color-destructive)` | `#c0392b`   | `#ef4444`    | Color de advertencias críticas, saldos deudores y bajas.      |
+| `--radio-control`         | `radio-control`         | `8px`                      | `8px`       | `8px`        | Radio estándar para controles interactivos (inputs, botones). |
+
+---
+
+## 2. Semántica de Estados y Roles (Mapeo Integral de Componentes)
+
+Todos los componentes de Planazo derivan sus cambios de color de la **Paleta Base Original**, garantizando coherencia sin colores desconectados:
+
+### A. Chips de Estado de Recursos (`.estado-*`)
+
+| Estado                    | Token Fondo                  | Token Borde                      | Token Texto               | Significado en Interacción                               |
+| :------------------------ | :--------------------------- | :------------------------------- | :------------------------ | :------------------------------------------------------- |
+| `pendiente`               | `warning-bg` (`#fff4d6`)     | `warning-border` (`#ffe683`)     | `warning` (`#8a6100`)     | Abierto a cambios/votación o en espera de resolución.    |
+| `confirmado`              | `success-bg` (`#edf7ef`)     | `success-border` (`#c2e2c8`)     | `success` (`#25663a`)     | Acordado o aprobado definitivamente. Inmutable.          |
+| `cancelado`               | `neutral-bg` (`#eeeeec`)     | `border` (`#e3e3df`)             | `muted` (`#6f6f6a`)       | Detenido sin efecto posterior.                           |
+| `bloqueado` / `rechazado` | `destructive-bg` (`#fbeceb`) | `destructive-border` (`#f5c6cb`) | `destructive` (`#c0392b`) | Detenido por regla de negocio (deuda o planes abiertos). |
 
 ### B. Badges de Rol y Autorización
 
 | Rol                     | Presentación Visual                                                 | Capacidades Ergonómicas                                       |
 | :---------------------- | :------------------------------------------------------------------ | :------------------------------------------------------------ |
-| `Organizador / Creador` | Sólido (`background: primary; color: #ffffff`)                      | Gestión total, desempate y cierre. No puede huir del recurso. |
+| `Organizador / Creador` | Sólido (`background: primary; color: on-primary`)                   | Gestión total, desempate y cierre. No puede huir del recurso. |
 | `Participante Activo`   | Contorno (`background: surface; border: border; color: foreground`) | Proponer, votar, retirarse voluntariamente si no adeuda.      |
 | `Invitado Pendiente`    | Atenuado (`background: neutral-bg; color: muted`)                   | Solo lectura hasta aceptar o declinar membresía.              |
+
+### C. Alertas Flash y Banners de Prevención (`.alerta-*`)
+
+| Tipo de Alerta                        | Fondo (`*-bg`)               | Borde (`*-border`)               | Texto / Ícono             | Contexto de Activación                                                |
+| :------------------------------------ | :--------------------------- | :------------------------------- | :------------------------ | :-------------------------------------------------------------------- |
+| **Éxito (`.alerta-exito`)**           | `success-bg` (`#edf7ef`)     | `success-border` (`#c2e2c8`)     | `success` (`#25663a`)     | Operación exitosa (plan creado, gasto registrado, votación guardada). |
+| **Error / Bloqueo (`.alerta-error`)** | `destructive-bg` (`#fbeceb`) | `destructive-border` (`#f5c6cb`) | `destructive` (`#c0392b`) | Errores críticos, fallos de autorización y frenos de salida honesta.  |
+| **Advertencia (`.banner-aviso`)**     | `warning-bg` (`#fff4d6`)     | `warning-border` (`#ffe683`)     | `warning` (`#8a6100`)     | Empate pendiente de resolución o plazo de votación cercano a vencer.  |
+
+### D. Campos de Formulario e Interacción (`.campo`)
+
+| Estado del Campo                   | Fondo                      | Borde                      | Texto / Etiqueta          | Comportamiento Ergonómico                                           |
+| :--------------------------------- | :------------------------- | :------------------------- | :------------------------ | :------------------------------------------------------------------ |
+| **Reposo (Normal)**                | `surface` (`#ffffff`)      | `border-input` (`#d1d1cd`) | `foreground` (`#1c1c1a`)  | Altura táctil $\ge 44$ px, padding uniforme.                        |
+| **Foco (`:focus`)**                | `surface` (`#ffffff`)      | `foreground` (`#1c1c1a`)   | `foreground` (`#1c1c1a`)  | Anillo accesible `outline: 2px solid foreground` con offset de 2px. |
+| **Inválido / Error (`.invalido`)** | `destructive-bg` sutil     | `destructive` (`#c0392b`)  | `destructive` (`#c0392b`) | Borde rojo y mensaje de ayuda `.campo-error` explicativo.           |
+| **Deshabilitado (`:disabled`)**    | `surface-soft` (`#fbfbf9`) | `border` (`#e3e3df`)       | `muted` (`#6f6f6a`)       | Cursor `not-allowed`, eventos inhabilitados.                        |
+
+### E. Módulo de Gastos y Saldos Netos
+
+| Indicador Financiero  | Fondo                        | Borde                            | Texto / Monto             | Justificación Semántica                                             |
+| :-------------------- | :--------------------------- | :------------------------------- | :------------------------ | :------------------------------------------------------------------ |
+| **Saldo a Favor (+)** | `success-bg` (`#edf7ef`)     | `success-border` (`#c2e2c8`)     | `success` (`#25663a`)     | El usuario debe recibir fondos; denota tranquilidad y cumplimiento. |
+| **Saldo Deudor (-)**  | `destructive-bg` (`#fbeceb`) | `destructive-border` (`#f5c6cb`) | `destructive` (`#c0392b`) | El usuario adeuda fondos; denota urgencia de pago y frena retiros.  |
+| **Pago Pendiente**    | `warning-bg` (`#fff4d6`)     | `warning-border` (`#ffe683`)     | `warning` (`#8a6100`)     | Comprobante emitido a la espera de confirmación del acreedor.       |
+| **Pago Confirmado**   | `success-bg` (`#edf7ef`)     | `success-border` (`#c2e2c8`)     | `success` (`#25663a`)     | Liquidación saldada y archivada bilateralmente en el historial.     |
+
+> **Propiedades de Ámbito Local en Gastos (`resources/css/app.css`):**  
+> Para desacoplar los estilos de la vista `_gastos_liquidacion.blade.php` y evitar estilos en línea o valores fijos, los contenedores modulares (`.gastos-tono-exito`, `.gastos-tono-peligro`, `.gastos-tono-alerta`, `.gastos-tono-neutro`) declaran variables CSS de ámbito local que consumen exclusivamente los tokens de `tokens.css`:
+>
+> - `--gastos-fondo`: asigna `var(--color-success-bg)`, `var(--color-destructive-bg)`, `var(--color-warning-bg)` o `var(--color-surface-soft)`.
+> - `--gastos-borde`: asigna `var(--color-success-border)`, `var(--color-destructive-border)`, `var(--color-warning-border)` o `var(--color-border)`.
+> - `--gastos-texto`: asigna `var(--color-success)`, `var(--color-destructive)`, `var(--color-warning)` o `var(--color-muted)`.
+> - `--gastos-valor`: asigna `var(--color-success)`, `var(--color-destructive)`, `var(--color-warning)` o `var(--color-foreground)`.
+>
+> Ningún componente o tarjeta de gastos define colores ni dimensiones fuera de este sistema de tokens.
+
+### F. Barra de Navegación y Elementos de Marca
+
+| Elemento                      | Fondo                    | Borde / Separador    | Texto / Ícono            | Justificación de Identidad                                              |
+| :---------------------------- | :----------------------- | :------------------- | :----------------------- | :---------------------------------------------------------------------- |
+| **Barra Superior (`.barra`)** | `secondary` (`#ffe683`)  | `border` (`#e3e3df`) | `foreground` (`#1c1c1a`) | Identidad cálida y reconocible de Planazo en todo el sitio.             |
+| **Ítem Nav Activo**           | `foreground` (`#1c1c1a`) | Ninguno              | `on-primary` (`#ffffff`) | Máximo contraste para indicar la ubicación actual del usuario.          |
+| **Ítem Nav Inactivo (Hover)** | `neutral-bg` (`#eeeeec`) | Ninguno              | `foreground` (`#1c1c1a`) | Retroalimentación sutil sin sobrecargar la barra.                       |
+| **Chips de Filtro Activo**    | `secondary` (`#ffe683`)  | Ninguno              | `foreground` (`#1c1c1a`) | Coherencia con la marca; en hover pasa a `secondary-hover` (`#ffd93d`). |
 
 ---
 
@@ -206,11 +299,17 @@ Declarados en `tokens.css` (secciones I-M). Una dimensión reutilizable **siempr
 
 - **Regla de Fitts Inviolable:** Área táctil mínima de **44×44px** (`min-height: 44px`).
 - **Separación Antagónica:** Separación mínima de **12px** (`gap: 12px` / `gap-3`) entre acciones contiguas.
-- **Variantes Oficiales:**
-    - **Primario (`.boton`):** Fondo `primary` (`#60605f`), texto blanco, radio `50px`, padding `9px 16px`.
-    - **Secundario (`.boton-claro`):** Fondo `surface` (`#ffffff`), borde `border` (`#e3e3df`), texto `foreground`, radio `50px`.
-    - **Destructivo (`.boton-rojo`):** Fondo `destructive` (`#c0392b`), texto blanco, radio `50px`.
-    - **Procesando / Deshabilitado:** Opacidad `0.4`, cursor `not-allowed`.
+- **Matriz Canónica de Botones (Figma ⇄ Código):**
+    - **Tipos / Variantes:**
+        - **Primario (`.boton` / `--color-accion`):** Fondo `primary` (`#60605f`), texto blanco, radio `50px` (`--radius-pill`), padding `9px 16px`. Acción prioritaria de la pantalla.
+        - **Secundario (`.boton-claro` / `--color-secondary`):** Fondo `surface` (`#ffffff`), borde `border` (`#e3e3df`), texto `foreground`, radio `50px`. Acción neutra o retorno.
+        - **Destructivo / Peligro (`.boton-rojo` / `--color-alerta-error`):** Fondo `destructive` (`#c0392b`), texto blanco, radio `50px`. Acciones irreversibles o bajas.
+    - **Estados Interactivos Homogéneos:**
+        - **Normal:** Estado por defecto con contraste WCAG completo.
+        - **Hover (`:hover`):** Contraste tonal reforzado (`primary-hover` / `destructive-hover`).
+        - **Foco (`:focus-visible`):** Contorno accesible `2px solid var(--color-foreground)` con `outline-offset: 2px`.
+        - **Deshabilitado (`:disabled`):** Opacidad `0.4`, cursor `not-allowed`, eventos inhabilitados.
+        - **Cargando / Procesando (`aria-busy="true"`):** Indicador visual activo, previene reenvío involuntario.
 
 ### B. Componente de Íconos Vectoriales (`<x-icono nombre="..." />`)
 
@@ -265,6 +364,9 @@ Parcial `resources/views/layouts/_partials/nav.blade.php`. Sticky (`--z-nav`), a
 - **Tamaños (Figma: propiedad `Tamaño`):** `Small` (por defecto, `--dialog-sm` 400px), `Medium` (`.dialogo-md`, `--dialog-md` 480px), `Large` (`.dialogo-lg`, `--dialog-lg` 520px). Siempre limitados a `100vw − 2 × --space-4`.
 - Cabecera con título H2 (`.dialogo-titulo`) e ícono, cuerpo con `.dialogo-mensaje` y pie de acciones `.dialogo-botones` / `.dialogo-botones-derecha` con separación `--space-3`.
 - **Prohibido** crear clases de forma de diálogo por pantalla (`*-dialogo`); solo se elige el tamaño.
+- **Confirmación genérica (`<x-dialog-confirm />` + `public/js/ui.js`):** se dispara con `data-confirm`, `data-title`, `data-btn-ok` y `data-btn-cancel` en el botón del formulario. Aceptar usa `.boton` y cancelar `.boton-claro`; si la acción es destructiva (`data-type="danger"`, método `DELETE` o `.boton-rojo`) aceptar pasa a `.boton-rojo`. Los textos de ambos botones no comparten raíz léxica («Sí, cancelar» / «Mantener plan»).
+- **Selección obligatoria sin preselección (formularios que comprometen dinero o datos):** los grupos de opciones (participantes de un gasto, modalidad de pago) nacen sin ninguna opción marcada, ni en HTML ni por JavaScript, y sus controles son `required`; el campo dependiente (monto) permanece bloqueado hasta elegir.
+- **Sin controles deshabilitados mudos:** un botón `disabled` con solo `title` no explica nada; si no hay acción posible y el estado ya es visible (chip), el control se omite. Un bloqueo con motivo usa la Salida Honesta (§7).
 
 ### B. Tarjeta (`.tarjeta`) — Alcance: global
 
@@ -449,13 +551,13 @@ Aviso contextual en bloque. Base `.banner`: padding `--space-4`, borde 1px, radi
 
 Definido en `resources/views/components/activity-card.blade.php` L10–18. El tipo de evento determina el estilo del chip de la tarjeta de actividad:
 
-| Variante (Figma)            | Tipo de Evento    | Fondo     | Borde     | Texto     | Token de Referencia                                        |
-| :-------------------------- | :---------------- | :-------- | :-------- | :-------- | :--------------------------------------------------------- |
-| `Actividad Confirmado`      | `confirmado`      | `#edf7ef` | `#c2e2c8` | `#25663a` | `success-bg` / `success-border` / `success` ✅             |
-| `Actividad Cancelado`       | `cancelado`       | `#fbeceb` | `#f5c6cb` | `#c0392b` | `destructive-bg` / `destructive-border` / `destructive` ✅ |
-| `Actividad Pendiente`       | `pendiente`       | `#fff4d6` | `#ffe683` | `#8a6100` | `warning-bg` / `warning-border` / `warning` ✅             |
-| `Actividad Pago Confirmado` | `pago_confirmado` | `#edf7ef` | `#c2e2c8` | `#25663a` | `success-*` ✅                                             |
-| `Actividad Pago Rechazado`  | `pago_rechazado`  | `#fbeceb` | `#f5c6cb` | `#c0392b` | `destructive-*` ✅                                         |
+| Variante (Figma)            | Tipo de Evento    | Fondo     | Borde     | Texto     | Token de Referencia                                     |
+| :-------------------------- | :---------------- | :-------- | :-------- | :-------- | :------------------------------------------------------ |
+| `Actividad Confirmado`      | `confirmado`      | `#edf7ef` | `#c2e2c8` | `#25663a` | `success-bg` / `success-border` / `success`             |
+| `Actividad Cancelado`       | `cancelado`       | `#fbeceb` | `#f5c6cb` | `#c0392b` | `destructive-bg` / `destructive-border` / `destructive` |
+| `Actividad Pendiente`       | `pendiente`       | `#fff4d6` | `#ffe683` | `#8a6100` | `warning-bg` / `warning-border` / `warning`             |
+| `Actividad Pago Confirmado` | `pago_confirmado` | `#edf7ef` | `#c2e2c8` | `#25663a` | `success-*`                                             |
+| `Actividad Pago Rechazado`  | `pago_rechazado`  | `#fbeceb` | `#f5c6cb` | `#c0392b` | `destructive-*`                                         |
 
 > **Estado:** migrado a tokens oficiales (deuda saldada). Los estilos inline usan `var(--color-*)`.
 

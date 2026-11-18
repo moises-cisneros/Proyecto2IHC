@@ -137,11 +137,20 @@ class SalidaHonestaVistaTest extends TestCase
             ['user_id' => $participante->id, 'monto_asignado' => 50.00],
         ]);
 
-        $response = $this->actingAs($participante)->get("/planes/{$plan->id}?pestana=gastos");
+        $response = $this->actingAs($participante)->get("/planes/{$plan->id}?tab=gastos");
 
         $response->assertStatus(200);
         // Verifica que radio-pago-total no esté checked por defecto
         $response->assertDontSee('id="radio-pago-total" value="total" checked', false);
+
+        // La preselección tampoco puede ocurrir por JavaScript ni verse como «activa» antes de elegir
+        $html = $response->getContent();
+        $this->assertStringNotContainsString('radioTotal.checked = true', $html);
+        $this->assertStringNotContainsString('gastos-modalidad gastos-modalidad--activa', $html);
+        $this->assertStringContainsString('establecerModalidadNeutral();', $html);
+        // Elegir modalidad es obligatorio para enviar el pago
+        $this->assertStringContainsString('id="radio-pago-total" value="total" required', $html);
+        $this->assertStringContainsString('id="radio-pago-parcial" value="parcial" required', $html);
     }
 
     public function test_navbar_renderiza_enlace_mi_cuenta(): void

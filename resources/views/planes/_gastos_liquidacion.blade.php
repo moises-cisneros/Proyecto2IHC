@@ -69,7 +69,8 @@
         <div class="gastos-resumen-tarjeta gastos-resumen-tarjeta--acciones">
             @can('create', [\App\Models\Gasto::class, $plan])
                 <button type="button" class="boton gastos-boton gastos-boton--bloque"
-                    onclick="document.getElementById('modal-crear-gasto').showModal()" aria-label="Registrar nuevo gasto">
+                    onclick="if (window.track) { window.track('gasto_iniciado', { plan_id: {{ $plan->id }} }); } document.getElementById('modal-crear-gasto').showModal()"
+                    aria-label="Registrar nuevo gasto">
                     + Registrar Gasto
                 </button>
             @endcan
@@ -389,7 +390,7 @@
                     este plan todavía.</p>
                 @can('create', [\App\Models\Gasto::class, $plan])
                     <button type="button" class="boton gastos-boton gastos-boton--ancho"
-                        onclick="document.getElementById('modal-crear-gasto').showModal()">
+                        onclick="if (window.track) { window.track('gasto_iniciado', { plan_id: {{ $plan->id }} }); } document.getElementById('modal-crear-gasto').showModal()">
                         + Registrar el primer gasto
                     </button>
                 @endcan
@@ -572,20 +573,20 @@
                     Modalidad de pago
                 </label>
                 <div role="radiogroup" aria-label="Seleccionar modalidad de pago" class="gastos-modalidad-opciones">
-                    <label id="label-pago-total" class="gastos-modalidad gastos-modalidad--activa">
-                        <input type="radio" name="modalidad_pago" id="radio-pago-total" value="total"
+                    <label id="label-pago-total" class="gastos-modalidad">
+                        <input type="radio" name="modalidad_pago" id="radio-pago-total" value="total" required
                             onchange="cambiarModalidadPago('total')">
                         <span id="texto-radio-pago-total">Pagar totalidad (Bs 0.00)</span>
                     </label>
 
                     <label id="label-pago-parcial" class="gastos-modalidad">
-                        <input type="radio" name="modalidad_pago" id="radio-pago-parcial" value="parcial"
+                        <input type="radio" name="modalidad_pago" id="radio-pago-parcial" value="parcial" required
                             onchange="cambiarModalidadPago('parcial')">
                         <span>Pago parcial</span>
                     </label>
                 </div>
                 <div id="aviso-pago-modalidad" class="gastos-modalidad-aviso">
-                    Liquidación completa sin fricción de tipeo (campo numérico protegido).
+                    Elige cómo quieres pagar: la totalidad de tu deuda o un monto parcial.
                 </div>
             </div>
 
@@ -732,17 +733,44 @@
             textoRadioTotal.textContent = 'Pagar totalidad (Bs ' + deudaSeleccionadaActual.toFixed(2) + ')';
         }
 
-        if (radioTotal) {
-            radioTotal.checked = true;
-        }
-
-        cambiarModalidadPago('total');
-
-        if (inputMonto && deudaSeleccionadaActual > 0) {
-            inputMonto.value = deudaSeleccionadaActual.toFixed(2);
-        }
+        // Sin preselección: la persona elige la modalidad de forma consciente (patrón oscuro 4.1).
+        establecerModalidadNeutral();
 
         modal.showModal();
+    }
+
+    /**
+     * Estado inicial del modal de pago: ninguna modalidad elegida, monto vacío y bloqueado
+     * hasta que la persona decida entre pagar la totalidad o un monto parcial.
+     */
+    function establecerModalidadNeutral() {
+        var radioTotal = document.getElementById('radio-pago-total');
+        var radioParcial = document.getElementById('radio-pago-parcial');
+        var inputMonto = document.getElementById('input-pago-monto');
+        var avisoModalidad = document.getElementById('aviso-pago-modalidad');
+        var avisoSaldo = document.getElementById('aviso-saldo-restante');
+
+        if (radioTotal) radioTotal.checked = false;
+        if (radioParcial) radioParcial.checked = false;
+
+        ['label-pago-total', 'label-pago-parcial'].forEach(function(id) {
+            var etiqueta = document.getElementById(id);
+            if (etiqueta) {
+                etiqueta.classList.remove('gastos-modalidad--activa');
+            }
+        });
+
+        if (inputMonto) {
+            inputMonto.value = '';
+            inputMonto.readOnly = true;
+        }
+        if (avisoModalidad) {
+            avisoModalidad.textContent = 'Elige cómo quieres pagar: la totalidad de tu deuda o un monto parcial.';
+            avisoModalidad.classList.remove('gastos-modalidad-aviso--total', 'gastos-modalidad-aviso--parcial');
+        }
+        if (avisoSaldo) {
+            avisoSaldo.style.display = 'none';
+        }
     }
 
     function cambiarModalidadPago(modalidad) {
@@ -754,25 +782,19 @@
 
         if (modalidad === 'total') {
             if (labelTotal) {
-                labelTotal.style.background = 'var(--color-success-bg)';
-                labelTotal.style.borderColor = 'var(--color-success-border)';
-                labelTotal.style.color = 'var(--color-success)';
-                labelTotal.style.fontWeight = '600';
+                labelTotal.classList.add('gastos-modalidad--activa');
             }
             if (labelParcial) {
-                labelParcial.style.background = 'var(--color-surface)';
-                labelParcial.style.borderColor = 'var(--color-border-input)';
-                labelParcial.style.color = 'var(--color-primary-hover)';
-                labelParcial.style.fontWeight = '500';
+                labelParcial.classList.remove('gastos-modalidad--activa');
             }
             if (inputMonto) {
                 inputMonto.readOnly = true;
-                inputMonto.style.background = 'var(--color-surface-soft)';
                 inputMonto.value = deudaSeleccionadaActual > 0 ? deudaSeleccionadaActual.toFixed(2) : '';
             }
             if (avisoModalidad) {
                 avisoModalidad.textContent = 'Liquidación completa sin fricción de tipeo (campo numérico protegido).';
-                avisoModalidad.style.color = 'var(--color-success)';
+                avisoModalidad.classList.add('gastos-modalidad-aviso--total');
+                avisoModalidad.classList.remove('gastos-modalidad-aviso--parcial');
             }
             if (avisoSaldo) {
                 avisoSaldo.style.display = 'none';
@@ -780,25 +802,19 @@
         } else {
             // Parcial
             if (labelTotal) {
-                labelTotal.style.background = 'var(--color-surface)';
-                labelTotal.style.borderColor = 'var(--color-border-input)';
-                labelTotal.style.color = 'var(--color-primary-hover)';
-                labelTotal.style.fontWeight = '500';
+                labelTotal.classList.remove('gastos-modalidad--activa');
             }
             if (labelParcial) {
-                labelParcial.style.background = 'var(--color-success-bg)';
-                labelParcial.style.borderColor = 'var(--color-success-border)';
-                labelParcial.style.color = 'var(--color-success)';
-                labelParcial.style.fontWeight = '600';
+                labelParcial.classList.add('gastos-modalidad--activa');
             }
             if (inputMonto) {
                 inputMonto.readOnly = false;
-                inputMonto.style.background = 'var(--color-surface)';
                 inputMonto.focus();
             }
             if (avisoModalidad) {
                 avisoModalidad.textContent = 'Indica el monto parcial que deseas liquidar hoy.';
-                avisoModalidad.style.color = 'var(--color-primary-hover)';
+                avisoModalidad.classList.add('gastos-modalidad-aviso--parcial');
+                avisoModalidad.classList.remove('gastos-modalidad-aviso--total');
             }
             verificarMontoParcial(inputMonto ? inputMonto.value : 0);
         }
@@ -822,13 +838,13 @@
         if (monto > deudaSeleccionadaActual + 0.009) {
             avisoSaldo.textContent = 'Alerta: El monto ingresado (Bs ' + monto.toFixed(2) +
                 ') supera la deuda exigible (Bs ' + deudaSeleccionadaActual.toFixed(2) + ').';
-            avisoSaldo.style.color = 'var(--color-destructive)';
-            avisoSaldo.style.fontWeight = '600';
+            avisoSaldo.classList.add('gastos-aviso-saldo--alerta');
+            avisoSaldo.classList.remove('gastos-aviso-saldo--ok');
         } else if (monto > 0) {
             var saldoRestante = (deudaSeleccionadaActual - monto);
             avisoSaldo.textContent = 'Saldo restante estimado tras este pago: Bs ' + saldoRestante.toFixed(2);
-            avisoSaldo.style.color = 'var(--color-success)';
-            avisoSaldo.style.fontWeight = '500';
+            avisoSaldo.classList.add('gastos-aviso-saldo--ok');
+            avisoSaldo.classList.remove('gastos-aviso-saldo--alerta');
         } else {
             avisoSaldo.style.display = 'none';
         }
@@ -970,15 +986,13 @@
         var diff = Math.abs(suma - montoTotal);
         if (diff < 0.01 && montoTotal > 0) {
             aviso.textContent = 'Los montos asignados coinciden exactamente con el total (Bs ' + suma.toFixed(2) + ').';
-            aviso.style.background = 'var(--color-success-bg)';
-            aviso.style.color = 'var(--color-success)';
-            aviso.style.border = '1px solid var(--color-success-border)';
+            aviso.classList.add('gastos-aviso-suma--valido');
+            aviso.classList.remove('gastos-aviso-suma--invalido');
         } else {
             aviso.textContent = 'Aviso: Suma actual: Bs ' + suma.toFixed(2) + ' / Total requerido: Bs ' + montoTotal
                 .toFixed(2) + ' (Diferencia: Bs ' + (montoTotal - suma).toFixed(2) + ')';
-            aviso.style.background = 'var(--color-warning-bg)';
-            aviso.style.color = 'var(--color-warning)';
-            aviso.style.border = '1px solid var(--color-brand)';
+            aviso.classList.add('gastos-aviso-suma--invalido');
+            aviso.classList.remove('gastos-aviso-suma--valido');
         }
     }
 

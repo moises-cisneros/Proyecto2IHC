@@ -267,4 +267,54 @@ class ConfirmarPlanTest extends TestCase
 
         $response->assertStatus(403);
     }
+
+    /**
+     * Sin propuestas de fecha en la sala, el plan se confirma conservando su fecha límite
+     * (coherente con el aviso del modal y única vía de confirmación tras retirar el atajo del listado).
+     */
+    public function test_organizador_confirma_plan_sin_propuestas_de_fecha_conservando_fecha_limite(): void
+    {
+        $organizador = User::factory()->create();
+        $plan = Plan::factory()->create([
+            'user_id' => $organizador->id,
+            'organizador' => $organizador->name,
+            'estado' => 'pendiente',
+            'fecha_limite' => now()->addDays(5),
+        ]);
+
+        $this->actingAs($organizador)
+            ->post(route('planes.confirmar', $plan), [])
+            ->assertRedirect(route('planes.detalle', $plan))
+            ->assertSessionHas('exito');
+
+        $plan->refresh();
+        $this->assertSame('confirmado', $plan->estado);
+        $this->assertNull($plan->propuesta_fecha_id);
+        $this->assertNotNull($plan->fecha_confirmacion);
+    }
+
+    /**
+     * Con propuestas de fecha en la sala, elegir una sigue siendo obligatorio.
+     */
+    public function test_con_propuestas_de_fecha_confirmar_sin_elegir_ninguna_falla_la_validacion(): void
+    {
+        $organizador = User::factory()->create();
+        $plan = Plan::factory()->create([
+            'user_id' => $organizador->id,
+            'organizador' => $organizador->name,
+            'estado' => 'pendiente',
+        ]);
+        Opcion::create([
+            'plan_id' => $plan->id,
+            'user_id' => $organizador->id,
+            'tipo' => 'fecha',
+            'valor' => '2026-12-15T10:00',
+        ]);
+
+        $this->actingAs($organizador)
+            ->post(route('planes.confirmar', $plan), [])
+            ->assertSessionHasErrors('propuesta_fecha_id');
+
+        $this->assertSame('pendiente', $plan->fresh()->estado);
+    }
 }

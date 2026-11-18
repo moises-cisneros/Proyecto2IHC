@@ -7,46 +7,92 @@ use App\DTOs\ComprobanteScanResult;
 use App\Models\Pago;
 use App\Models\Plan;
 use App\Models\User;
-use App\Services\Comprobante\FakeComprobanteScanner;
+use App\Services\Comprobante\GeminiComprobanteScanner;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class ComprobanteScannerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_fake_scanner_extrae_datos_correctamente_de_fixture_valido(): void
+    public function test_gemini_scanner_aplica_plan_de_contingencia_si_falta_api_key(): void
     {
-        $scanner = new FakeComprobanteScanner;
-        $resultado = $scanner->scan('comprobante_transferencia_valido.png');
+        $scanner = new GeminiComprobanteScanner(apiKey: '');
+        $resultado = $scanner->scan('archivo_cualquiera.png');
+
+        $this->assertFalse($resultado->esComprobante);
+        $this->assertEquals(0.0, $resultado->confianza);
+        $this->assertStringContainsString('Servicio de escaneo no configurado', $resultado->mensajeError);
+        $this->assertEquals('invalido', $resultado->determinarEstadoEscaneo(100.00));
+    }
+
+    public function test_gemini_scanner_aplica_plan_de_contingencia_si_archivo_no_existe(): void
+    {
+        $scanner = new GeminiComprobanteScanner(apiKey: 'dummy-key');
+        $resultado = $scanner->scan('ruta/inexistente/comprobante.png');
+
+        $this->assertFalse($resultado->esComprobante);
+        $this->assertStringContainsString('no existe en disco', $resultado->mensajeError);
+        $this->assertEquals('invalido', $resultado->determinarEstadoEscaneo(100.00));
+    }
+
+    public function test_gemini_scanner_extrae_datos_correctamente_con_respuesta_valida(): void
+    {
+        Http::fake([
+            'generativelanguage.googleapis.com/*' => Http::response([
+                'candidates' => [
+                    [
+                        'content' => [
+                            'parts' => [
+                                [
+                                    'text' => json_encode([
+                                        'es_comprobante' => true,
+                                        'monto' => 100.00,
+                                        'banco' => 'Banco Unión',
+                                        'referencia' => 'OP-998877',
+                                        'confianza' => 0.95,
+                                    ]),
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ], 200),
+        ]);
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'test_receipt_');
+        file_put_contents($tempFile, 'fake image binary data');
+
+        $scanner = new GeminiComprobanteScanner(apiKey: 'dummy-key');
+        $resultado = $scanner->scan($tempFile);
+
+        @unlink($tempFile);
 
         $this->assertTrue($resultado->esComprobante);
         $this->assertEquals(100.00, $resultado->monto);
         $this->assertEquals('Banco Unión', $resultado->banco);
-        $this->assertNotEmpty($resultado->referencia);
-        $this->assertGreaterThanOrEqual(0.9, $resultado->confianza);
+        $this->assertEquals('OP-998877', $resultado->referencia);
         $this->assertEquals('verificado', $resultado->determinarEstadoEscaneo(100.00));
     }
 
-    public function test_fake_scanner_detecta_discrepancia_de_monto(): void
+    public function test_gemini_scanner_aplica_contingencia_si_api_externa_falla(): void
     {
-        $scanner = new FakeComprobanteScanner;
-        $resultado = $scanner->scan('comprobante_monto_discrepante.jpg');
+        Http::fake([
+            'generativelanguage.googleapis.com/*' => Http::response(['error' => 'Internal Server Error'], 500),
+        ]);
 
-        $this->assertTrue($resultado->esComprobante);
-        $this->assertEquals(35.50, $resultado->monto);
-        $this->assertFalse($resultado->coincideConMonto(100.00));
-        $this->assertEquals('discrepante', $resultado->determinarEstadoEscaneo(100.00));
-    }
+        $tempFile = tempnam(sys_get_temp_dir(), 'test_receipt_');
+        file_put_contents($tempFile, 'fake image binary data');
 
-    public function test_fake_scanner_maneja_imagen_invalida_o_ilegible(): void
-    {
-        $scanner = new FakeComprobanteScanner;
-        $resultado = $scanner->scan('foto_meme_invalido.png');
+        $scanner = new GeminiComprobanteScanner(apiKey: 'dummy-key');
+        $resultado = $scanner->scan($tempFile);
+
+        @unlink($tempFile);
 
         $this->assertFalse($resultado->esComprobante);
-        $this->assertNull($resultado->monto);
-        $this->assertNotNull($resultado->mensajeError);
+        $this->assertEquals(0.0, $resultado->confianza);
+        $this->assertStringContainsString('Error en servicio de escaneo inteligente (500)', $resultado->mensajeError);
         $this->assertEquals('invalido', $resultado->determinarEstadoEscaneo(100.00));
     }
 

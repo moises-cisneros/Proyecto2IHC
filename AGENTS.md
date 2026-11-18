@@ -107,17 +107,19 @@ _(Modo manual alternativo en host requiere PHP 8.2+, Composer 2.x, MySQL 8.0 y N
 
 ## 6. Skills Canónicas Especializadas (Activación Modular)
 
+> **Contrato de diseño:** `resources/DESIGN.md` (tokens y componentes) y `resources/FLOWS.md` (App Map, pantallas y Task Flows) son la fuente de verdad de Figma y del código. Un cambio de pantalla, flujo o permiso se escribe primero en el contrato; `php artisan test --filter FlowsContractTest` verifica que no haya deriva.
+
 Para optimizar el uso de tokens y mantener el contexto ligero, los protocolos extensos y matrices de evidencia están encapsulados en skills versionadas en `.agents/skills/`. **El agente debe leer la skill correspondiente únicamente cuando la tarea lo amerite:**
 
-| Skill                          | Cuándo Consultarla                                      | Protocolo y Referencia                                                                                                     |
-| :----------------------------- | :------------------------------------------------------ | :------------------------------------------------------------------------------------------------------------------------- |
-| **`e2e-testing`**              | Al diseñar o ejecutar pruebas E2E con Playwright.       | Selectores semánticos accesibles (`getByRole`, `getByLabel`), aislamiento secuencial y capturas en `docs/evidencias/`.     |
-| **`information-architecture`** | Al estructurar navegación, listados o diagramar flujos. | Taxonomías LATCH, chunking (7 ± 2), rótulos neutros, modelado de Task Flows vs App Maps y doble carril de roles.           |
-| **`interaction-decisions`**    | Al auditar o justificar decisiones ergonómicas de UI.   | Ley de Fitts: $T = a + b \log_{2}(2D/W)$, Ley de Hick: $T = b \log_{2}(n + 1)$, Carga Cognitiva y contraste Antes/Después. |
-| **`heuristic-evaluation`**     | Al ejecutar evaluaciones de usabilidad.                 | Escala de severidad 0-4 de Nielsen (H1–H10), issue tracker único y sub-issues de hallazgos.                                |
-| **`refactoring`**              | Al simplificar controladores o vistas monolíticas.      | Transformaciones Fowler seguras, preservación de tests y desacople de lógica sin alterar contratos observables.            |
-| **`design-system-audit`**      | Al crear o modificar vistas Blade, modales o CSS.       | Auditoría contra `resources/DESIGN.md`, prevención de emojis, verificación Fitts ($\ge 44$ px) y tokens oficiales.         |
-| **`dark-patterns`**            | Al diseñar o revisar flujos donde el usuario decide (entrar, salir, pagar, confirmar) o su copy. | Prueba de simetría, catálogo de 6 patrones, comandos `rg` de detección y checklist de salida honesta (Clase 22). |
+| Skill                          | Cuándo Consultarla                                                                               | Protocolo y Referencia                                                                                                     |
+| :----------------------------- | :----------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| **`e2e-testing`**              | Al diseñar o ejecutar pruebas E2E con Playwright.                                                | Selectores semánticos accesibles (`getByRole`, `getByLabel`), aislamiento secuencial y capturas en `docs/evidencias/`.     |
+| **`information-architecture`** | Al estructurar navegación, listados o diagramar flujos.                                          | Taxonomías LATCH, chunking (7 ± 2), rótulos neutros, modelado de Task Flows vs App Maps y doble carril de roles.           |
+| **`interaction-decisions`**    | Al auditar o justificar decisiones ergonómicas de UI.                                            | Ley de Fitts: $T = a + b \log_{2}(2D/W)$, Ley de Hick: $T = b \log_{2}(n + 1)$, Carga Cognitiva y contraste Antes/Después. |
+| **`heuristic-evaluation`**     | Al ejecutar evaluaciones de usabilidad.                                                          | Escala de severidad 0-4 de Nielsen (H1–H10), issue tracker único y sub-issues de hallazgos.                                |
+| **`refactoring`**              | Al simplificar controladores o vistas monolíticas.                                               | Transformaciones Fowler seguras, preservación de tests y desacople de lógica sin alterar contratos observables.            |
+| **`design-system-audit`**      | Al crear o modificar vistas Blade, modales o CSS.                                                | Auditoría contra `resources/DESIGN.md`, prevención de emojis, verificación Fitts ($\ge 44$ px) y tokens oficiales.         |
+| **`dark-patterns`**            | Al diseñar o revisar flujos donde el usuario decide (entrar, salir, pagar, confirmar) o su copy. | Prueba de simetría, catálogo de 6 patrones, comandos `rg` de detección y checklist de persuasión honesta.                  |
 
 ---
 

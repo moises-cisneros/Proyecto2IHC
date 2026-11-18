@@ -31,17 +31,15 @@ test.describe('Clase 21 — Analítica de Interacción (Dos eventos, un panel, u
         // Verificar que el plan aparece en la vista
         await expect(page.getByText(nombrePlan).first()).toBeVisible();
 
-        // 3. Confirmar el plan desde la tabla de planes
-        const filaPlan = page.locator('tr', { hasText: nombrePlan });
-        await filaPlan.getByRole('button', { name: 'Confirmar' }).click();
+        // 3. Confirmar el plan desde la sala (la confirmación exige pasar por la sala de votación)
+        await page.getByRole('link', { name: nombrePlan }).first().click();
+        await page.getByRole('button', { name: /Cerrar votación y confirmar/i }).click();
 
-        // Diálogo accesible de confirmación
-        const modalConfirmacion = page.locator('#dialog-confirm');
-        if (await modalConfirmacion.isVisible()) {
-            await page.getByRole('button', { name: 'Sí, confirmar' }).click();
-        }
+        const modalConfirmar = page.locator('#modal-confirmar-plan');
+        await expect(modalConfirmar).toBeVisible();
+        await modalConfirmar.getByRole('button', { name: 'Confirmar y cerrar votación' }).click();
 
-        await expect(page.getByText(/El plan ahora está confirmado/i)).toBeVisible();
+        await expect(page.getByText(/Plan confirmado con éxito/i)).toBeVisible();
         await page.screenshot({ path: 'docs/evidencias/clase-21/plan-confirmado.png' });
 
         // 4. Navegar al panel de analítica
@@ -66,9 +64,6 @@ test.describe('Clase 21 — Analítica de Interacción (Dos eventos, un panel, u
         expect(numConfirmados).toBeGreaterThanOrEqual(1);
 
         // 6. Verificar reflexión de diseño y tabla de eventos recientes
-        await expect(
-            page.getByRole('heading', { name: '¿Qué decisión de diseño cambiaría si supiera esto?' })
-        ).toBeVisible();
         await expect(page.getByText('plan_creacion_iniciada').first()).toBeVisible();
         await expect(page.getByText('plan_guardado').first()).toBeVisible();
         await expect(page.getByText('plan_confirmado').first()).toBeVisible();

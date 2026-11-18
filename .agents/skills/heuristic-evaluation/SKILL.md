@@ -24,7 +24,7 @@ metadata:
 - **Issue Principal (Tracker):**
   - Título: `Evaluación heurística H1–H10 · <funcionalidad>`.
   - Contiene la lista verificable de H1 a H10 (las que cumplen explican por qué; las que fallan referencian sus sub-issues).
-  - Permanece **abierto** durante el desarrollo y se cierra al completar la entrega.
+  - Permanece **abierto** durante el desarrollo y se cierra al completar la implementación.
 - **Sub-issues Atómicos (Solo para hallazgos con severidad > 0):**
   - No crear 10 issues al inicio. Solo se crean sub-issues para los hallazgos que requieren corrección en código.
   - Cada sub-issue debe ser conciso pero auto-contenido:
@@ -35,7 +35,7 @@ metadata:
     5. **Archivos afectados.**
     6. **Commit de cierre:** `fix: <descripción> (Closes #<sub-issue>, Refs #<issue-padre>)`.
 
-## 3. Entrega Oficial y Evidencias
+## 3. Informe de Auditoría y Evidencias
 
 - **Documento oficial:** `docs/evaluacion-euristica.md` (nombre real del archivo en el repo; no crear un duplicado con otra ortografía)
   - Resumen ejecutivo con tabla de 5 columnas: `Observación | Heurística | Severidad (0-4) | Mejora | Comprobación`.
@@ -46,8 +46,11 @@ metadata:
 
 ## 4. Decisiones Vigentes y Criterios de Severidad del Proyecto
 
-* **Auditoría de todo el repo:** cuando se evalúa el repositorio completo (no una sola funcionalidad), se recorre la **lista de pantallas** del App Map (acceso, `/mis-planes`, sala, editar, historial, Mi Cuenta, analítica) y se registra cada hallazgo con su pantalla.
+* **Auditoría de todo el repo:** cuando se evalúa el repositorio completo (no una sola funcionalidad), se recorre la **lista de pantallas** de `resources/FLOWS.md` (§2.1) (acceso, `/mis-planes`, sala, editar, historial, Mi Cuenta, analítica) y se registra cada hallazgo con su pantalla.
 * **Salidas y bloqueos (H3, H5, H6, H9):** se evalúan con la prueba de simetría y el catálogo de la skill `dark-patterns`. Un bloqueo sin explicación ni acción de salida es severidad >= 3.
 * **Reglas de negocio evadibles por una ruta paralela** (un endpoint que hace menos validaciones que el oficial) es severidad 4: rompe H5 (prevención de errores) y la integridad de datos. Corregir consolidando en la ruta con las invariantes, no parchando la copia.
 * **Evidencia mínima por hallazgo:** referencia `archivo:línea`, heurística, severidad 0–4, y test (PHPUnit o Playwright) que lo cubra.
 * **Estados canónicos del plan:** `pendiente`, `confirmado`, `cancelado`. Cualquier otro valor de estado en código o copy es un hallazgo de consistencia (H4).
+* **ARIA válido por rol:** `aria-pressed` solo en botones; en enlaces de navegación/filtro usar `aria-current="page"` en el activo. Un atributo ARIA inválido para el rol es hallazgo de severidad 1 (H4/accesibilidad) y debe tener test.
+* **Specs desactualizados cuentan como hallazgo:** un test E2E que ya no coincide con la UI (títulos, textos, diálogos) es deuda de verificación; se corrige junto con el cambio de interfaz.
+* **Enlaces que prometen una acción deben llevar a ella:** un «Liquidar» que aterriza en otra pestaña rompe H5/H7 aunque el botón exista. Cada enlace de resolución de la Salida Honesta se verifica con un test que comprueba el destino (`tab=gastos`).

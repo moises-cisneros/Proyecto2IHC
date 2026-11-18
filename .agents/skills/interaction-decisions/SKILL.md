@@ -64,7 +64,7 @@ Al evaluar o implementar una funcionalidad en Planazo:
 
 ---
 
-## 3. Reglas de Entrega y Versionado
+## 3. Reglas de Contribución y Versionado
 
 * **Sin atribución de IA:** Prohibido agregar `Co-Authored-By` o menciones de IA en commits, pull requests, issues o documentación.
 * **Formato de Commits:** Conventional Commits relacionando los sub-issues (`feat(...)`, `fix(...)`, `docs(...)`, `test(...)`).
@@ -80,3 +80,4 @@ Estas decisiones ya están tomadas; no se reabren sin una razón nueva.
 * **Simetría de confirmación:** los diálogos de salida usan `.boton-claro` (permanecer) y `.boton-rojo` (salir) con idéntica altura y separación (`DESIGN.md` §7.B). El criterio completo vive en la skill `dark-patterns`.
 * **Ley de Hick aplicada:** filtros visibles ≤ 4; pestañas por rol en `/mis-planes`; categorías del historial acotadas.
 * **Registro previo de decisiones:** `docs/decisiones-interaccion.md` y `docs/hallazgos de interaccion.md` guardan el antes/después ya documentado; actualizarlos en lugar de crear documentos paralelos.
+* **Diálogo de confirmación genérico (`<x-dialog-confirm />` + `public/js/ui.js`):** aceptar usa `.boton` y cancelar `.boton-claro`; si la acción es destructiva (`data-type="danger"`, método `DELETE` o `.boton-rojo`) la aceptación pasa a `.boton-rojo`. Los textos de los botones deben diferir en la raíz léxica («Sí, cancelar» / «Mantener plan»).

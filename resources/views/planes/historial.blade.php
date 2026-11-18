@@ -21,31 +21,31 @@
 
         <a href="{{ route('historial.index', ['categoria' => 'todos']) }}"
             class="boton historial-chip {{ $categoria === 'todos' ? '' : 'boton-claro' }}"
-            aria-pressed="{{ $categoria === 'todos' ? 'true' : 'false' }}">
+            @if ($categoria === 'todos') aria-current="page" @endif>
             Todos
         </a>
 
         <a href="{{ route('historial.index', ['categoria' => 'estados']) }}"
             class="boton historial-chip {{ $categoria === 'estados' ? '' : 'boton-claro' }}"
-            aria-pressed="{{ $categoria === 'estados' ? 'true' : 'false' }}">
+            @if ($categoria === 'estados') aria-current="page" @endif>
             Estados
         </a>
 
         <a href="{{ route('historial.index', ['categoria' => 'creaciones']) }}"
             class="boton historial-chip {{ $categoria === 'creaciones' ? '' : 'boton-claro' }}"
-            aria-pressed="{{ $categoria === 'creaciones' ? 'true' : 'false' }}">
+            @if ($categoria === 'creaciones') aria-current="page" @endif>
             Creaciones
         </a>
 
         <a href="{{ route('historial.index', ['categoria' => 'participacion']) }}"
             class="boton historial-chip {{ $categoria === 'participacion' ? '' : 'boton-claro' }}"
-            aria-pressed="{{ $categoria === 'participacion' ? 'true' : 'false' }}">
+            @if ($categoria === 'participacion') aria-current="page" @endif>
             Participación
         </a>
 
         <a href="{{ route('historial.index', ['categoria' => 'gastos']) }}"
             class="boton historial-chip {{ $categoria === 'gastos' ? '' : 'boton-claro' }}"
-            aria-pressed="{{ $categoria === 'gastos' ? 'true' : 'false' }}">
+            @if ($categoria === 'gastos') aria-current="page" @endif>
             Gastos
         </a>
 

@@ -1,6 +1,6 @@
 ---
 name: dark-patterns
-description: Protocolo permanente de prevención y auditoría de patrones oscuros (deceptive patterns) en Planazo, basado en la Clase 22. Usar al diseñar, modificar o revisar cualquier flujo, vista Blade, modal, formulario, copy o regla de negocio donde el usuario decide, acepta, paga, se une o se va. Aplica la prueba de simetría, el catálogo de 6 patrones y comandos rg de detección. No es exclusiva de una tarea.
+description: Protocolo permanente de prevención y auditoría de patrones oscuros (deceptive patterns) en Planazo. Usar al diseñar, modificar o revisar cualquier flujo, vista Blade, modal, formulario, copy o regla de negocio donde el usuario decide, acepta, paga, se une o se va. Aplica la prueba de simetría, el catálogo de 6 patrones y comandos rg de detección.
 license: MIT
 metadata:
   author: Planazo Team
@@ -12,9 +12,9 @@ metadata:
 > **Regla cardinal:**
 > *"Salir tiene que ser tan fácil como entrar: misma cantidad de toques, mismo peso visual, texto honesto sin chantaje emocional y consecuencias reales explicadas sin trucos."*
 
-**Definición operativa (Clase 22):** un patrón oscuro esconde, confunde o cansa al usuario para que no elija la otra opción; inventa urgencia o culpa; y funciona porque el usuario no entiende. La alternativa es la **persuasión honesta**: informar, ordenar con claridad y dejar que decida.
+**Definición operativa:** un patrón oscuro esconde, confunde o cansa al usuario para que no elija la otra opción; inventa urgencia o culpa; y funciona porque el usuario no entiende. La alternativa es la **persuasión honesta**: informar, ordenar con claridad y dejar que decida.
 
-Esta skill es **transversal**. Se consulta en cualquier cambio donde el usuario decide algo, no solo en tareas de «salida honesta».
+Esta skill es **transversal**. Se consulta en cualquier cambio donde el usuario decide algo, no solo en flujos de «salida honesta».
 
 ---
 
@@ -35,7 +35,7 @@ Si el cambio no toca ninguno, no hace falta auditar.
 
 ---
 
-## 2. Las cuatro preguntas de la clase (filtro rápido)
+## 2. Las cuatro preguntas clave de decisión honesta (filtro rápido)
 
 Antes de cerrar un cambio, responder en voz alta:
 
@@ -52,7 +52,7 @@ Toda acción con contraparte (entrar/salir, aceptar/rechazar, activar/desactivar
 
 | Eje | Criterio | Referencia en código |
 | :--- | :--- | :--- |
-| **Pasos** | Mismos clics/toques para ambos sentidos | Flujo en `FLOWS`/vista |
+| **Pasos** | Mismos clics/toques para ambos sentidos | Task Flow en `resources/FLOWS.md` §6 |
 | **Peso visual** | Mismo tamaño, tipografía y prominencia en ambos botones | `.boton-claro` + `.boton-rojo` (`DESIGN.md` §3.A, §7.B) |
 | **Tono** | Texto neutro, sin reproches ni emojis de culpa | Copy del modal |
 | **Consecuencias** | Se explican antes de actuar, con datos concretos | `.caja-salida-honesta` (`DESIGN.md` §7.A) |
@@ -63,7 +63,7 @@ Ergonomía asociada (skill `interaction-decisions`): altura táctil **≥ 44 px*
 
 ## 4. Catálogo de patrones, detección y corrección
 
-Los seis patrones catalogados en la auditoría de Planazo (`docs/internal/planificacion/planificacion-tarea-10.md` §2):
+Los seis patrones catalogados en la auditoría de Planazo:
 
 ### 4.1 Opciones preseleccionadas (*pre-ticked / default opt-in*)
 - **Señal:** `checked` por defecto en checkbox o radio que condiciona dinero, datos o participación.
@@ -104,6 +104,9 @@ Ejecutar sobre las vistas y JS antes de cerrar un cambio:
 # 4.1 Preseleccionados (revisar cada coincidencia: ¿condiciona dinero, datos o participación?)
 rg -n "\bchecked\b" resources/views/
 
+# 4.1 Preselección por JavaScript o por clase visual «activa» (el atributo HTML no basta)
+rg -n "\.checked\s*=\s*true|\.selected\s*=\s*true|--activa" resources/views/ resources/js/ public/js/
+
 # 4.2 Confirmaciones nativas genéricas
 rg -n "data-confirm|confirm\(" resources/views/ resources/js/
 
@@ -143,7 +146,7 @@ El resultado es una **lista de sospechas**, no un veredicto: cada coincidencia s
 | `heuristic-evaluation` | Severidad 0–4 y H5 (prevención), H6 (reconocimiento), H8 (minimalismo) para registrar hallazgos |
 | `design-system-audit` | Garantiza que la corrección use tokens y componentes oficiales |
 | `information-architecture` | Estados vacíos y bloqueos con salida guiada |
-| `e2e-testing` | Evidencia visual y flujos Playwright (`e2e/tarea-10-datos-salida-honesta.spec.ts`) |
+| `e2e-testing` | Evidencia visual y flujos Playwright de salida honesta (`e2e/tarea-10-datos-salida-honesta.spec.ts`) |
 
 ---
 
@@ -163,5 +166,11 @@ El resultado es una **lista de sospechas**, no un veredicto: cada coincidencia s
 
 ## 9. Decisiones Vigentes del Proyecto
 
+* **Aceptar sin poder rechazar:** en cualquier pantalla donde se ofrezca «Aceptar invitación» debe estar «Rechazar invitación» con la misma altura y separación (el listado de planes lo omitía; ahora son simétricos).
 * **Una sola salida de plan:** `planes.retirarse`. Existió un endpoint `abandonar` que evadía la regla de deuda y fue eliminado: una ruta paralela más permisiva que la oficial es en sí misma una forma de incoherencia ética (la regla de «salida honesta» solo vale si no hay atajos).
 * **Bloqueo por deuda es informado, no oculto:** el retiro bloqueado explica el motivo y enlaza a liquidar (patrón 4.4/4.5). Toda salida bloqueada debe seguir ese molde.
+* **Confirmar un plan solo en la sala:** el atajo del listado que confirmaba sin votación ni desempate se eliminó (misma lógica que la salida única: una ruta paralela más permisiva es un patrón de obstrucción inversa). El listado enlaza a la sala.
+* **Confirmaciones destructivas:** todo `data-confirm` que cancele o elimine lleva `data-type="danger"` para que el diálogo use `.boton-rojo` en la acción y `.boton-claro` en «Mantener» (`public/js/ui.js`).
+* **Sin controles deshabilitados mudos:** un botón `disabled` solo con `title` (tooltip) no es explicación suficiente; se omite o se reemplaza por el diálogo de Salida Honesta.
+* **Modalidad de pago sin preselección, ni por JavaScript:** al abrir el modal de pago ninguna modalidad está marcada (`establecerModalidadNeutral()`), el monto queda vacío y bloqueado hasta elegir «Pagar totalidad» o «Pago parcial», y ambas opciones son `required`. Un `radio.checked = true` en JS es el mismo patrón que un `checked` en el HTML.
+* **Un test que no encuentra el elemento no demuestra nada:** una aserción de ausencia (`assertDontSee`) debe ir acompañada de otra de presencia del componente que se inspecciona; si no, el test pasa aunque la vista ni siquiera lo renderice.
