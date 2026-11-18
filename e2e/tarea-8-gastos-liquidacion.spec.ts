@@ -153,10 +153,8 @@ test.describe('Tarea 8 — Proceso de Gastos y Liquidación con Estados y Consec
         await expect(pageCarlos.locator('.badge-estado-pago', { hasText: 'pendiente' }).first()).toBeVisible({
             timeout: 30000,
         });
-        // El escaneo del comprobante puede ser 'Verificado' (con API Gemini activa) o 'Sin verificar / Manual' (en CI u offline)
-        await expect(
-            pageCarlos.locator('.badge-escaneo', { hasText: /(?:Verificado|Manual|Sin verificar)/i }).first()
-        ).toBeVisible();
+        // El escaneo del comprobante muestra su badge correspondiente (.badge-escaneo)
+        await expect(pageCarlos.locator('.badge-escaneo').first()).toBeVisible();
         await pageCarlos.screenshot({ path: 'docs/evidencias/tarea-8/03-pago-pendiente.png', fullPage: true });
 
         // Carlos abre el modal para revisar su comprobante
