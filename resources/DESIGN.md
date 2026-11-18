@@ -327,7 +327,7 @@ Parcial `resources/views/layouts/_partials/nav.blade.php`. Sticky (`--z-nav`), a
 | :----------------- | :----------------------------------------------------------------- |
 | `.barra`           | Contenedor flex; `justify-content: space-between`                  |
 | `.barra-izquierda` | Agrupa marca + menú (gap `24px`); en móvil usa `display: contents` |
-| `.marca`           | Logotipo textual (`font-size-2xl`, bold)                           |
+| `.marca`           | Logotipo e isotipo SVG Planazo (`font-size-2xl`, bold, con `<x-icono nombre="planazo" />`) |
 | `.nav-menu`        | Contenedor del menú (`role="menubar"`) con items `.nav-item-*`     |
 | `.barra-derecha`   | Usuario (`.nav-usuario` con `.avatar`) + botón `.boton-salir`      |
 | `.form-reset`      | Formulario de cierre de sesión sin margen (clase global, §3.D)     |

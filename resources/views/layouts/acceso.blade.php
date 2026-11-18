@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('titulo') · Planazo</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2325663a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='18' x='3' y='4' rx='2'/%3E%3Cpath d='M8 2v4M16 2v4M3 10h18'/%3E%3Cpath d='m9 16 2 2 4-4'/%3E%3C/svg%3E">
     @vite('resources/css/app.css')
 
     {{-- Script anti-flicker de tema --}}
@@ -24,7 +25,10 @@
     <main class="pagina-acceso">
         {{-- Barra superior de acceso alineada con la tarjeta --}}
         <header class="acceso-barra-flotante">
-            <a href="{{ route('landing') }}" class="marca" aria-label="Volver al inicio">Planazo</a>
+            <a href="{{ route('landing') }}" class="marca" aria-label="Volver al inicio">
+                <x-icono nombre="planazo" tamano="md" class="marca-icono" />
+                <span>Planazo</span>
+            </a>
             <button type="button" id="boton-tema" class="boton-tema" aria-label="Cambiar tema de color"
                 title="Alternar modo claro / oscuro">
                 <svg class="icono-svg icono-tema-luna" xmlns="http://www.w3.org/2000/svg" width="18" height="18"

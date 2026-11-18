@@ -1,7 +1,10 @@
 {{-- Barra de navegación --}}
 <nav class="barra" aria-label="Navegación principal">
     <div class="barra-izquierda">
-        <a href="{{ route('planes.listar') }}" class="marca" aria-label="Planazo - Inicio">Planazo</a>
+        <a href="{{ route('planes.listar') }}" class="marca" aria-label="Planazo - Inicio">
+            <x-icono nombre="planazo" tamano="md" class="marca-icono" />
+            <span>Planazo</span>
+        </a>
 
         <div class="nav-menu" role="menubar" aria-label="Secciones de la aplicación">
             <x-nav-link :href="route('planes.listar')" :activo="request()->routeIs('planes.*') &&

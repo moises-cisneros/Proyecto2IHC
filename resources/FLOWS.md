@@ -297,6 +297,27 @@ Fuente: `app/Policies/PlanPolicy.php`, `GastoPolicy.php`, `PagoPolicy.php`. ✔ 
 
 > Un flujo = **una tarea** del usuario. Cada uno indica trigger, rol, ramas, resultado, telemetría y verificación. Las pruebas E2E están en `e2e/`; las de backend en `tests/`.
 
+> **App Map ≠ Task Flows.** El _App Map_ (§2) responde «¿qué pantallas existen y cómo se llega a ellas?». Un _Task Flow_ responde «¿qué pasos sigue una persona para completar **una tarea**, y qué ramas tiene según su rol y el estado del plan?». Una misma pantalla (por ejemplo `sala`) aparece en varios flujos. **En Figma, cada Task Flow es un _Flow_ del prototipo** con el nombre `TFn — <tarea>`; la numeración `TFn` es la única válida (no existen «Flujo 1/Flujo 2»).
+
+### Catálogo de flujos
+
+Figma admite **un solo flow por frame inicial**, por eso cada flujo arranca en un frame distinto. «Frames del recorrido» indica el orden en que se capturan para la documentación (`→` navega, `⇢` abre un overlay).
+
+| Flujo | Tarea (curso)                                | Rol                       | Frame inicial (Figma)       | Frames del recorrido                                                                                                                                                            |
+| :---- | :------------------------------------------- | :------------------------ | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| TF1   | Acceso y sesión                   | Sin sesión                | `landing`                   | `landing` → `ingresar` → `mis-planes` · `registro` → `mis-planes-vacio` · `recuperar` → `restablecer` → `ingresar`                                                              |
+| TF2   | Crear un plan (Clase 13)                     | Organizador               | `mis-planes-vacio`          | `mis-planes-vacio` ⇢ `modal-crear` → `mis-planes`                                                                                                                               |
+| TF3   | Invitar y responder invitación     | Organizador · invitado    | `mis-planes-invitaciones`   | Organizador: `sala-sin-propuestas` ⇢ `modal-invitar` · Invitado: `mis-planes-invitaciones` → `sala-invitacion-pendiente` → Aceptar `sala-participante` / Rechazar `mis-planes` |
+| TF4   | Proponer y votar             | Organizador · participante | `sala`                      | `sala` ⇢ `modal-proponer-opcion` · `sala-lugares` ⇢ `modal-proponer-lugar` · voto (badge) en `sala`                                                                             |
+| TF5   | Confirmar plan y resolver empate | Organizador            | `sala-empate`               | `sala-empate` ⇢ `modal-confirmar-plan-sin-empate` → `sala-confirmada` · ganador: `sala` ⇢ `modal-confirmar-plan` · sin propuestas: `sala-sin-propuestas` ⇢ `modal-confirmar-plan-sin-propuestas` → `sala-confirmada-sin-propuestas` |
+| TF6   | Retirarse de un plan              | Participante              | `sala-participante`         | Sin deuda: `sala-participante` ⇢ `modal-retirarse-sin-deuda` → `mis-planes` · Con deuda: `sala-participante-gastos` ⇢ `modal-retirarse` → `sala-gastos`                         |
+| TF7   | Gastos y liquidación              | Organizador · participante | `sala-gastos`               | `sala-gastos` ⇢ `modal-crear-gasto` · `modal-crear-pago` · `modal-configurar-cobro` · `modal-comprobante-1` ⇢ `modal-rechazar-1` · participante: `sala-participante-gastos` ⇢ `modal-crear-pago-participante` |
+| TF8   | Editar, cancelar o eliminar un plan | Organizador   | `editar-plan`               | `editar-plan` → `mis-planes` ⇢ `dialog-confirm` (cancelar) · `modal-eliminar-plan-1…4` (Salida Honesta o confirmación simétrica)                                                |
+| TF9   | Mi cuenta y salida honesta     | Todos                     | `mi-cuenta`                 | `mi-cuenta` ⇢ `modal-bloqueos-cuenta` → `sala` · `mi-cuenta` ⇢ `modal-eliminar-cuenta` → `ingresar`                                                                              |
+| TF10  | Consultar el historial         | Todos                     | `historial`                 | `historial` → `historial-estados` · `historial-creaciones` · `historial-participacion` · `historial-gastos`                                                                     |
+| TF11  | Analizar la interacción | Dev                       | `analitica`                 | Píldora Dev → `analitica`                                                                                                                                                       |
+| TF12  | Buscar y filtrar planes         | Organizador · participante | `mis-planes`                | `mis-planes` → `mis-planes-sin-resultados` · pestaña `mis-planes-invitaciones`                                                                                                  |
+
 ### TF1 — Ingresar, registrarse y recuperar acceso
 
 - **Rol:** sin sesión · **Trigger:** abrir `/` (muestra `landing`; si hay sesión activa redirige directo a `mis-planes`).
@@ -404,6 +425,14 @@ flowchart TD
 
 - Píldora flotante → `analitica`: 6 embudos, abandono y errores de freno · `e2e/clase-21-analitica.spec.ts`, `AnaliticaBackendTest`.
 
+### TF12 — Buscar y filtrar planes
+
+- **Rol:** organizador y participante · **Precondición:** sesión.
+- **Pasos:** `mis-planes` → escribir en «Buscar por nombre» y/o elegir estado (Todos, Pendiente, Confirmado, Cancelado) y fecha (Cualquier fecha, Próximos 7 días, Ya vencidos) → «Filtrar» → cada sección (Hoy · Próximos · Vencidos) se acota y mantiene su contador.
+- **Sin coincidencias:** estado vacío «Ningún plan coincide con los filtros aplicados en esta sección» (`mis-planes-sin-resultados`); «Limpiar» restablece el listado.
+- **Telemetría:** `busqueda_realizada`, `filtro_aplicado`, `busqueda_sin_resultados`.
+- **Verificación:** `FiltradoPlanesTest`, `ArquitecturaInformacionVistaTest`.
+
 ---
 
 ## 7. Reglas transversales
@@ -430,7 +459,9 @@ flowchart TD
 | TF7   | `gasto_registrado`, `pago_iniciado`, `pago_confirmado`, `pago_rechazado`                                       |
 | TF8   | `plan_eliminacion_bloqueada`, `plan_eliminado`                                                                 |
 | TF9   | `cuenta_eliminacion_bloqueada`, `cuenta_eliminada`                                                             |
-| TF10  | `busqueda_sin_resultados` (en el listado de planes)                                                            |
+| TF10  | — (consulta de solo lectura, sin telemetría propia)                                                            |
+| TF11  | — (es el panel que consume la telemetría de los demás flujos)                                                  |
+| TF12  | `busqueda_realizada`, `filtro_aplicado`, `busqueda_sin_resultados`                                             |
 
 ---
 
@@ -497,10 +528,24 @@ flowchart TD
 
 ### 11.1 Puntos de inicio de flujo (_Flow Starting Points_)
 
-| Nombre del Flujo               | Frame Inicial | Propósito                                                                   |
-| :----------------------------- | :------------ | :-------------------------------------------------------------------------- |
-| **Flujo 1 — Público / Acceso** | `landing`     | Evaluar la experiencia inicial, propuesta de valor, registro y recuperación |
-| **Flujo 2 — App Principal**    | `mis-planes`  | Evaluar la gestión de planes, votación colaborativa, gastos y cuenta        |
+Un _Flow_ de Figma por cada Task Flow de §6 (mismo número y nombre). Cada frame inicial es único: Figma no admite dos flows sobre el mismo frame.
+
+| Nombre del Flow en Figma                                    | Frame inicial             |
+| :---------------------------------------------------------- | :------------------------ |
+| **TF1 — Ingresar, registrarse y recuperar acceso**          | `landing`                 |
+| **TF2 — Crear un plan**                                     | `mis-planes-vacio`        |
+| **TF3 — Invitar y responder una invitación**                | `mis-planes-invitaciones` |
+| **TF4 — Proponer y votar**                                  | `sala`                    |
+| **TF5 — Confirmar el plan**                                 | `sala-empate`             |
+| **TF6 — Retirarse de un plan**                              | `sala-participante`       |
+| **TF7 — Gastos y liquidación**                              | `sala-gastos`             |
+| **TF8 — Editar, cancelar o eliminar un plan**               | `editar-plan`             |
+| **TF9 — Gestionar Mi Cuenta**                               | `mi-cuenta`               |
+| **TF10 — Consultar el historial**                           | `historial`               |
+| **TF11 — Analizar la interacción (Dev)**                    | `analitica`               |
+| **TF12 — Buscar y filtrar planes**                          | `mis-planes`              |
+
+El recorrido de cada flow (frames en orden de captura) está en el «Catálogo de flujos» de §6.
 
 ### 11.2 Grafo de Conexiones de Navegación y Modales
 
@@ -536,7 +581,7 @@ flowchart TD
 | `mis-planes`                                         | Fila Plan: Botón `Editar`                                             | `On click` |     `Navigate to`      | `editar-plan`                          | Instant                                          |
 | `mis-planes`                                         | Botón `Filtrar`                                                       | `On click` |     `Navigate to`      | `mis-planes-sin-resultados`            | Instant (simula filtro sin coincidencias)        |
 | `mis-planes`                                         | Fila Plan: Botón `Confirmar`                                          | `On click` |     `Navigate to`      | `sala` (plan 1) · `sala-empate` (plan 2) | Instant                                        |
-| `mis-planes`                                         | Fila Plan: ícono Entrar (grupo)                                       | `On click` |     `Navigate to`      | `sala` · `sala-sin-propuestas` · `sala-confirmada` · `sala-vencida` (según el plan de la fila) | Instant            |
+| `mis-planes`                                         | Fila Plan: ícono Entrar (grupo)                                       | `On click` |     `Navigate to`      | `sala` · `sala-sin-propuestas` · `sala-empate` · `sala-confirmada` · `sala-cancelada` · `sala-vencida` (según el estado del plan de la fila) | Instant            |
 | `mis-planes-invitaciones`                            | Fila de invitación pendiente (fila completa)                          | `On click` |     `Navigate to`      | `sala-invitacion-pendiente`            | Instant                                          |
 | `mis-planes`                                         | Fila Plan: Botón `Eliminar`                                           | `On click` |     `Open overlay`     | `modal-eliminar-plan-{id}`             | Centered · Backdrop 40% · Close on click outside |
 | `mis-planes`                                         | Fila Invitación: Botón `Aceptar invitación`                           | `On click` |     `Navigate to`      | `sala`                                 | Instant                                          |
@@ -596,7 +641,7 @@ Todos los diálogos modales en Figma se modelan como frames independientes con l
 - **Frames de estado sin entrada propia.** `mis-planes-vacio` se alcanza desde `registro` (cuenta nueva). `toast-alerta` es un estado del componente y se inspecciona directamente.
 - **Overlays.** Cada modal es un overlay de `1440 × 900` con su propio fondo («Fondo · cerrar diálogo») que cierra al hacer clic fuera; los cierres usan `Close overlay` y los cambios entre variantes de pago o comprobante usan `Swap overlay`.
 - **Modales rehechos desde el Blade.** Títulos, etiquetas, ayudas y botones de cada `<dialog>` repiten el texto real de las vistas (`_modal_crear`, `_participantes`, `_sala_votacion`, `_gastos_liquidacion`, `_tabla_seccion`, `_cabecera`, `perfil/cuenta`). Si un texto cambia en el Blade, se cambia aquí y en Figma.
-- **Eliminar plan por plan.** `modal-eliminar-plan-1` (Cena de reencuentro: bloqueado por deudas pendientes) · `-2` (Escapada al lago: eliminable) · `-3` (Ruta al atardecer: confirmado y con deudas, ofrece «Cancelar plan formalmente») · `-4` (Noche de cine: eliminable). Cada ícono de papelera de `mis-planes` abre la variante de su fila.
+- **Eliminar plan por plan.** `modal-eliminar-plan-1` (Cena de reencuentro: bloqueado por deudas pendientes) · `-2` (Escapada al lago: eliminable) · `-3` (Ruta al atardecer: confirmado y con deudas, ofrece «Cancelar plan formalmente») · `-4` (Noche de cine, cancelado: eliminable) · `-5` (Karaoke del viernes, vencido y pendiente: eliminable). Cada ícono de papelera de `mis-planes` abre la variante de su fila.
 - **Pagos.** El organizador no tiene deudas en el plan de ejemplo, por eso solo existe `modal-crear-pago` (sin destinatario elegido, «Pagar totalidad (Bs 0.00)»). Las variantes `-participante`, `-parcial-participante` y `-totalidad-participante` muestran a Carlos pagando 20 Bs a Ana; las dos radios intercambian el overlay (`Swap overlay`).
 - **Comprobante.** `modal-comprobante-1` (receptor: «Cerrar» y «Confirmar pago en 1 clic») y `modal-comprobante-1-solo-lectura` (solo «Cerrar»). El rechazo se abre desde la fila del pago (`modal-rechazar-1`), no desde el comprobante.
 - **`sala-confirmada-sin-propuestas`.** Es `sala-confirmada` con «Fechas propuestas (0)» y «Se conserva la fecha límite del plan»; se alcanza desde `modal-confirmar-plan-sin-propuestas`.

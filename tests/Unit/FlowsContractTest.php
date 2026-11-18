@@ -69,14 +69,29 @@ class FlowsContractTest extends TestCase
         }
     }
 
-    public function test_cada_pantalla_del_mapa_tiene_su_composicion_y_hay_once_task_flows(): void
+    public function test_cada_pantalla_del_mapa_tiene_su_composicion_y_hay_doce_task_flows(): void
     {
         foreach (['ingresar', 'registro', 'recuperar', 'mis-planes', 'sala', 'editar-plan', 'historial', 'mi-cuenta', 'analitica'] as $id) {
             $this->assertMatchesRegularExpression('/^### 4\.\d+ .*`'.preg_quote($id, '/').'`/m', $this->contrato, "Falta la composición de la pantalla {$id}");
         }
-        for ($i = 1; $i <= 11; $i++) {
+        for ($i = 1; $i <= 12; $i++) {
             $this->assertMatchesRegularExpression("/^### TF{$i} — /m", $this->contrato, "Falta el Task Flow TF{$i}");
         }
+    }
+
+    public function test_cada_task_flow_es_un_flow_de_figma_con_frame_inicial_unico(): void
+    {
+        preg_match('/^### 11\.1 .*?(?=^### 11\.2 )/ms', $this->contrato, $seccion);
+        $this->assertNotEmpty($seccion, 'Falta la sección 11.1 en FLOWS.md');
+
+        preg_match_all('/^\| \*\*TF(\d+) — [^|]+\*\*\s*\| `([a-z0-9-]+)`\s*\|/m', $seccion[0], $filas);
+
+        $this->assertSame(range(1, 12), array_map('intval', $filas[1]), 'Cada TFn debe tener su Flow en §11.1');
+        $this->assertSame(
+            $filas[2],
+            array_values(array_unique($filas[2])),
+            'Figma admite un solo flow por frame inicial: no repitas frames en §11.1'
+        );
     }
 
     public function test_los_specs_e2e_y_tests_citados_existen(): void

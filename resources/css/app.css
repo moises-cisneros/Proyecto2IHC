@@ -122,11 +122,18 @@ body {
 }
 
 .marca {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-bold);
     color: var(--color-foreground);
     text-decoration: none;
     line-height: var(--line-height-none);
+}
+
+.marca-icono {
+    flex-shrink: 0;
 }
 
 .nav-menu {

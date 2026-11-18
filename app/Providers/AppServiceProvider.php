@@ -11,6 +11,7 @@ use App\Policies\PagoPolicy;
 use App\Policies\PlanPolicy;
 use App\Services\Comprobante\GeminiComprobanteScanner;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (app()->environment('production') || str_starts_with((string) config('app.url'), 'https://')) {
+            URL::forceScheme('https');
+        }
+
         Gate::policy(Plan::class, PlanPolicy::class);
         Gate::policy(Gasto::class, GastoPolicy::class);
         Gate::policy(Pago::class, PagoPolicy::class);

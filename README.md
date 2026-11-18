@@ -175,6 +175,7 @@ docker compose exec planazo_app php artisan db:seed
 ```mermaid
 flowchart TD
     subgraph Acceso["Acceso (invitado)"]
+        Landing["/ (landing)<br/>Propuesta de valor"]
         Ingresar["/ingresar"]
         Registro["/registro"]
         Recuperar["/recuperar"]
@@ -193,6 +194,8 @@ flowchart TD
         Analitica["/analitica"]
     end
 
+    Landing --> Ingresar
+    Landing --> Registro
     Ingresar --> Registro
     Ingresar --> Recuperar --> Restablecer --> Ingresar
     Registro --> Ingresar
@@ -216,11 +219,11 @@ flowchart TD
 
 ## 🧭 Task Flows — Tareas de Usuario
 
-Cada flujo describe **una tarea** de principio a fin con sus ramas. Convenciones: 👤 participante · 🧑‍💼 organizador · ✉️ invitado pendiente.
+Cada flujo describe **una tarea** de principio a fin con sus ramas (el App Map de arriba, en cambio, muestra qué pantallas existen). En Figma, **cada Task Flow es un _Flow_ del prototipo** (`TF1 … TF12`, frame inicial y recorrido en [`FLOWS.md` §6](resources/FLOWS.md)). Convenciones: 👤 participante · 🧑‍💼 organizador · ✉️ invitado pendiente.
 
 |  #   | Tarea                                    |   Rol    | Pasos y ramas principales                                                                                                                                                                                                                    |
 | :--: | :--------------------------------------- | :------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| TF1  | Ingresar, registrarse y recuperar acceso | Invitado | `/ingresar` (límite 5 intentos/min, mensaje genérico ante error) · `/registro` · `/recuperar` responde igual exista o no el correo · `/restablecer/{token}` con enlace vencido pide uno nuevo                                                |
+| TF1  | Ingresar, registrarse y recuperar acceso | Invitado | `/` (landing) → `/ingresar` (límite 5 intentos/min, mensaje genérico ante error) · `/registro` · `/recuperar` responde igual exista o no el correo · `/restablecer/{token}` con enlace vencido pide uno nuevo                                                |
 | TF2  | Crear plan                               |    🧑‍💼    | `+ Crear plan` (modal) → nombre + fecha límite (no pasada) → organizador tomado de la sesión → plan `pendiente`                                                                                                                              |
 | TF3  | Invitar y responder invitación           | 🧑‍💼 / ✉️  | Organizador invita por correo → invitado ve «Aceptar» **y** «Rechazar» (simétricos) → al aceptar pasa a participante                                                                                                                         |
 | TF4  | Proponer y votar                         | 👤 / 🧑‍💼  | Proponer fecha o lugar → votar por aprobación (varios votos, se pueden retirar) → bloqueado cuando el plan se confirma                                                                                                                       |
@@ -231,6 +234,7 @@ Cada flujo describe **una tarea** de principio a fin con sus ramas. Convenciones
 | TF9  | Gestionar Mi Cuenta                      |  Todos   | Editar datos y contraseña · datos de cobro · descargar datos (JSON/CSV) · **Eliminar cuenta**: con bloqueos (planes abiertos o deudas) el diálogo lista cada causa con su acción; sin bloqueos pide la contraseña con botonera simétrica     |
 | TF10 | Consultar historial                      |  Todos   | `/historial` → filtrar por Estados · Creaciones · Participación · Gastos (o Todos) → estado vacío con salida hacia Mis planes                                                                                                                |
 | TF11 | Analizar interacción (Dev)               |   Dev    | Píldora flotante → `/analitica`: 6 embudos, abandono y errores de freno                                                                                                                                                                      |
+| TF12 | Buscar y filtrar planes                  |  Todos   | `/mis-planes` → buscar por nombre, filtrar por estado y fecha → secciones Hoy · Próximos · Vencidos se acotan → sin coincidencias: estado vacío con «Limpiar»                                                                                 |
 
 ### Detalle de los Flujos
 
@@ -238,7 +242,7 @@ Cada flujo describe **una tarea** de principio a fin con sus ramas. Convenciones
 2. **TF2 y `/mis-planes` — Dashboard:** dos pestañas por propósito/rol (_«Mis planes creados»_ y _«Planes donde participo»_), clasificación cronológica LATCH (_Hoy_, _Próximos_, _Vencidos_) y filtros acotados conforme a la Ley de Hick.
 3. **TF3–TF6 — Sala colaborativa (`/planes/{plan}`):** una sola pantalla con vistas por rol gobernadas por `PlanPolicy`. La **única** forma de salir de un plan es `planes.retirarse`; la **única** forma de confirmar es `planes.confirmar`.
 4. **TF7 — Gastos:** partes iguales ($Monto/N$) o cuotas personalizadas; matriz de saldos netos cruzados; ciclo de liquidación bilateral visible para ambas partes.
-5. **Servicio transversal — Historial (`/historial`):** bitácora inmutable en 4 dimensiones (Qué, Quién, Cuándo, Resultado) con selector temático de 4 categorías.
+5. **Servicio transversal — Historial (`/historial`):** bitácora inmutable en 4 dimensiones (Qué, Quién, Cuándo, Resultado) con selector temático de 4 categorías más «Todos».
 6. **Servicio de observabilidad — Analítica (`/analitica`):** solo entorno local y de pruebas; la navegación del usuario final queda libre de sobrecarga cognitiva.
 
 ---
@@ -248,7 +252,7 @@ Cada flujo describe **una tarea** de principio a fin con sus ramas. Convenciones
 La aplicación sigue una disciplina estricta de usabilidad, ergonomía y accesibilidad:
 
 - **Ley de Fitts:** $T = a + b \log_{2}(2D/W)$ — Todo botón o control interactivo (votar, proponer, invitar, confirmar) garantiza un área táctil mínima de **44×44px** (`min-height: 44px`). Los controles antagónicos mantienen una separación preventiva de **12px (`gap-3`)**.
-- **Ley de Hick:** $T = b \log_{2}(n + 1)$ — Clasificación en $n = 2$ pestañas en la sala de votación (_Fechas propuestas_ vs _Lugares propuestos_) y $n = 4$ chips temáticos en el historial (_Todos, Estados, Creaciones, Participación_).
+- **Ley de Hick:** $T = b \log_{2}(n + 1)$ — Clasificación en $n = 2$ pestañas en la sala de votación (_Fechas propuestas_ vs _Lugares propuestos_) y $n = 5$ chips temáticos en el historial (_Todos, Estados, Creaciones, Participación, Gastos_).
 - **Carga Cognitiva (7 ± 2 chunks):** Tarjetas sintéticas con los 4 metadatos esenciales para evitar sobrecarga mental.
 - **10 Heurísticas de Nielsen:**
     - _H1 (Visibilidad del estado):_ Contadores de votos en vivo y badges semánticos con texto e ícono.
@@ -357,7 +361,7 @@ pnpm run test:e2e:ui       # Consola interactiva de Playwright
 El repositorio cuenta con un pipeline de CI obligatorio que se dispara en cada `push` y `pull_request` sobre `main` y `master`:
 
 1. **Paso visible PHPUnit + Cobertura:** Ejecución de las 280+ pruebas backend con reporte detallado.
-2. **Paso visible Playwright E2E:** Ejecución secuencial de los 14 flujos end-to-end con Chromium.
+2. **Paso visible Playwright E2E:** Ejecución secuencial de las pruebas end-to-end (13 specs, 30 casos) con Chromium.
 3. **Subida de Artefactos (`actions/upload-artifact@v4`):** Guarda automáticamente los reportes `playwright-report` y `coverage` (`if: always()`).
 4. **Política de Cero Tolerancia:** Si una prueba falla en Actions, se repara inmediatamente; está terminantemente prohibido omitirla o borrarla.
 
@@ -368,7 +372,7 @@ El repositorio cuenta con un pipeline de CI obligatorio que se dispara en cada `
 - [AGENTS.md](AGENTS.md): Reglas operativas estrictas para agentes de IA, prohibición de atribución de IA, principios IHC (Fitts, Hick, Carga Cognitiva) y flujo de sub-issues.
 - [ARCHITECTURE.md](ARCHITECTURE.md): Arquitectura de capas, modelos Eloquent, controladores y vistas Blade.
 - [resources/DESIGN.md](resources/DESIGN.md): Guía oficial del sistema de diseño, arquitectura de tokens semánticos y componentes canónicos para Figma y código.
-- [resources/FLOWS.md](resources/FLOWS.md): Contrato interactivo con App Map (11 pantallas), Task Flows (TF1–TF11) e inventario de 36 rutas.
+- [resources/FLOWS.md](resources/FLOWS.md): Contrato interactivo con App Map (11 pantallas), Task Flows (TF1–TF12) e inventario de 37 rutas.
 - [CONTRIBUTING.md](CONTRIBUTING.md): Guía para colaboradores, ramas y convención de Conventional Commits.
 - [docs/internal/Tareas.md](docs/internal/Tareas.md): Bitácora de clases, hitos de entrega y flujos detallados de la aplicación.
 - [docs/](docs/): Evidencias académicas e historial de tareas previas.

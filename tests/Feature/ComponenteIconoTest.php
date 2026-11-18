@@ -13,6 +13,7 @@ class ComponenteIconoTest extends TestCase
     public function test_renderiza_iconos_validos_con_atributos_svg_accesibles(): void
     {
         $iconos = [
+            'planazo',
             'calendario',
             'ubicacion',
             'bloqueado',
