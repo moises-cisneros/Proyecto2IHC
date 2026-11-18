@@ -154,22 +154,17 @@ test.describe.serial('Tarea 6 — Votos Múltiples, Cierre de Sala y Verificaci�
             await page.getByLabel('Fecha y hora propuesta').fill('2026-12-30T19:00');
             await page.getByRole('button', { name: 'Guardar propuesta' }).click();
 
-            // 3. Regresa al listado de planes y confirma el plan
-            await page.goto('/mis-planes');
-            const filaPlan = page.locator('tr', { hasText: nombrePlan });
-            await filaPlan.getByRole('button', { name: 'Confirmar' }).click();
+            // 3. Confirma el plan desde la sala (única vía de confirmación)
+            await page.getByRole('button', { name: /Cerrar votación y confirmar/i }).click();
+            const modalConfirmar = page.locator('#modal-confirmar-plan');
+            await expect(modalConfirmar).toBeVisible();
+            await modalConfirmar.getByRole('button', { name: 'Confirmar y cerrar votación' }).click();
+            await expect(page.getByText(/Plan confirmado con éxito/i)).toBeVisible();
 
-            // Confirma en el diálogo modal nativo
-            const botonAceptarModal = page.locator('#dialog-confirm-aceptar');
-            await expect(botonAceptarModal).toBeVisible();
-            await botonAceptarModal.click();
-            await expect(page.getByText('El plan ahora está confirmado.')).toBeVisible();
-
-            // 4. Anita accede a la sala colaborativa del plan confirmado
-            await page.getByRole('link', { name: nombrePlan }).first().click();
+            // 4. La sala del plan confirmado queda cerrada para la deliberación
 
             // 5. Comprueba el banner accesible de cierre
-            const bannerCierre = page.getByRole('status');
+            const bannerCierre = page.getByRole('status').filter({ hasText: 'Votación finalizada.' });
             await expect(bannerCierre).toBeVisible();
             await expect(bannerCierre).toContainText(
                 'Votación finalizada. Este plan ha sido confirmado y la deliberación se encuentra cerrada.'

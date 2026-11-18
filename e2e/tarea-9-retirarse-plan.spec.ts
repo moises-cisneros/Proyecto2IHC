@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { marcarTodosLosParticipantes } from './helpers/gastos';
 import fs from 'node:fs';
 
 test.describe('Tarea 9 — Analítica de Interacción en toda la app y funcionalidad de Retirarse de un plan', () => {
@@ -140,6 +141,7 @@ test.describe('Tarea 9 — Analítica de Interacción en toda la app y funcional
         await pageLucas.getByRole('button', { name: /Registrar (nuevo )?gasto/i }).click();
         await pageLucas.getByLabel('Concepto o descripción').fill('Alquiler de salón');
         await pageLucas.getByLabel(/Monto total/i).fill('100.00');
+        await marcarTodosLosParticipantes(pageLucas);
         await pageLucas.getByRole('button', { name: 'Guardar Gasto' }).click();
         await expect(pageLucas.getByText('Alquiler de salón')).toBeVisible();
 

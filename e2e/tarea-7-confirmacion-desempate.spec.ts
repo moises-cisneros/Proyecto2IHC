@@ -89,14 +89,21 @@ test.describe('Tarea 7 — Confirmación de Plan, Resolución de Empates con Mot
         await pageParticipante.getByLabel('Correo electrónico').fill('usuario2@example.com');
         await pageParticipante.getByLabel('Contraseña').fill('password123');
         await pageParticipante.getByRole('button', { name: 'Entrar' }).click();
+        await expect(pageParticipante).toHaveURL(/.*mis-planes/);
+
+        // Si el usuario tiene la pestaña de creados activa por defecto, cambiar a invitaciones
+        const tabInvitaciones = pageParticipante.getByRole('tab', { name: /Planes donde participo/i });
+        if (await tabInvitaciones.isVisible()) {
+            await tabInvitaciones.click();
+        }
 
         await pageParticipante.getByRole('link', { name: nombrePlan }).first().click();
 
         // Acepta la invitación pendiente para habilitar la votación colaborativa
         const btnAceptarInvitacion = pageParticipante.getByRole('button', { name: /Aceptar invitación/ }).first();
-        if (await btnAceptarInvitacion.isVisible()) {
-            await btnAceptarInvitacion.click();
-        }
+        await expect(btnAceptarInvitacion).toBeVisible();
+        await btnAceptarInvitacion.click();
+        await expect(pageParticipante.getByText(/¡Invitación aceptada!/i)).toBeVisible();
 
         // Carlos vota por Fecha B
         await pageParticipante.getByRole('button', { name: /Votar por 21\/12\/2026 12:00/ }).click();
@@ -116,7 +123,7 @@ test.describe('Tarea 7 — Confirmación de Plan, Resolución de Empates con Mot
         // FASE 3: Organizador resuelve el empate con motivo obligatorio
         // -------------------------------------------------------------
         await pageOrganizador.reload();
-        const btnCerrar = pageOrganizador.getByRole('button', { name: '✓ Cerrar votación y confirmar' });
+        const btnCerrar = pageOrganizador.getByRole('button', { name: /Cerrar votación y confirmar/i });
         await expect(btnCerrar).toBeVisible();
         await btnCerrar.click();
 
