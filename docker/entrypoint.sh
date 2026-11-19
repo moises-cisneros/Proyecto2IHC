@@ -25,6 +25,10 @@ DB_CONN="${DB_CONNECTION:-mysql}"
 if [ "$DB_CONN" = "sqlite" ] || [ -z "$DB_HOST" ]; then
     echo "💾  Configurando SQLite para almacenamiento local..."
     mkdir -p database
+    if [ "$DB_WIPE_ON_BOOT" = "true" ]; then
+        echo "🧹  Limpiando base de datos SQLite por configuración DB_WIPE_ON_BOOT..."
+        rm -f database/database.sqlite
+    fi
     touch database/database.sqlite
     chmod 666 database/database.sqlite || true
     sed -i 's/^DB_CONNECTION=.*/DB_CONNECTION=sqlite/' .env
@@ -74,8 +78,13 @@ if [ "$DB_CONN" = "mysql" ] && [ -n "$DB_HOST" ]; then
 fi
 
 # ── 4. Ejecutar migraciones y seeders ─────────────────────────
-echo "📦  Ejecutando migraciones..."
-php artisan migrate --force
+if [ "$DB_WIPE_ON_BOOT" = "true" ]; then
+    echo "📦  Ejecutando fresh migrations por DB_WIPE_ON_BOOT..."
+    php artisan migrate:fresh --force
+else
+    echo "📦  Ejecutando migraciones..."
+    php artisan migrate --force
+fi
 
 echo "🌱  Cargando usuarios y datos de prueba (seeders)..."
 php artisan db:seed --force

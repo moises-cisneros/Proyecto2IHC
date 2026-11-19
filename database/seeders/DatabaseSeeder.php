@@ -22,42 +22,64 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Parámetros de usuarios configurables por variables de entorno (para aislamiento en la nube sin exponer en repo)
+        $user1Email = env('SEED_ORGANIZADOR_EMAIL', 'test@example.com');
+        $user1Pass = env('SEED_ORGANIZADOR_PASSWORD', 'password');
+        $user1Name = env('SEED_ORGANIZADOR_NAME', 'Test User');
+
+        $user2Email = env('SEED_PARTICIPANTE_EMAIL', 'test2@example.com');
+        $user2Pass = env('SEED_PARTICIPANTE_PASSWORD', 'password');
+        $user2Name = env('SEED_PARTICIPANTE_NAME', 'Test User 2');
+
+        $user3Email = env('SEED_USER1_EMAIL', 'usuario1@example.com');
+        $user3Pass = env('SEED_USER1_PASSWORD', 'password123');
+        $user3Name = env('SEED_USER1_NAME', 'Usuario 1');
+
+        $user4Email = env('SEED_USER2_EMAIL', 'usuario2@example.com');
+        $user4Pass = env('SEED_USER2_PASSWORD', 'password123');
+        $user4Name = env('SEED_USER2_NAME', 'Carlos');
+
+        // Si se configuraron correos personalizados para producción, eliminar cuentas viejas de prueba estándar
+        if ($user1Email !== 'test@example.com') {
+            User::whereIn('email', ['test@example.com', 'test2@example.com', 'usuario1@example.com', 'usuario2@example.com'])->delete();
+        }
+
         // Usuario 1: Organizador principal
         $user1 = User::updateOrCreate(
-            ['email' => 'test@example.com'],
+            ['email' => $user1Email],
             [
-                'name' => 'Test User',
-                'password' => Hash::make('password'),
+                'name' => $user1Name,
+                'password' => Hash::make($user1Pass),
                 'email_verified_at' => now(),
             ]
         );
 
         // Usuario 2: Participante y organizador alternativo
         $user2 = User::updateOrCreate(
-            ['email' => 'test2@example.com'],
+            ['email' => $user2Email],
             [
-                'name' => 'Test User 2',
-                'password' => Hash::make('password'),
+                'name' => $user2Name,
+                'password' => Hash::make($user2Pass),
                 'email_verified_at' => now(),
             ]
         );
 
         // Usuario 3
         $user3 = User::updateOrCreate(
-            ['email' => 'usuario1@example.com'],
+            ['email' => $user3Email],
             [
-                'name' => 'Usuario 1',
-                'password' => Hash::make('password123'),
+                'name' => $user3Name,
+                'password' => Hash::make($user3Pass),
                 'email_verified_at' => now(),
             ]
         );
 
         // Usuario 4
         $user4 = User::updateOrCreate(
-            ['email' => 'usuario2@example.com'],
+            ['email' => $user4Email],
             [
-                'name' => 'Carlos',
-                'password' => Hash::make('password123'),
+                'name' => $user4Name,
+                'password' => Hash::make($user4Pass),
                 'email_verified_at' => now(),
             ]
         );
