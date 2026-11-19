@@ -5,32 +5,10 @@ on:
         branches:
             - main
             - master
-        paths-ignore:
-            - 'docs/**'
-            - '*.md'
-            - '.agent/**'
-            - '.gemini/**'
-            - '.github/workflows/keep-alive.yml'
-            - 'odd/**'
-            - 'openspec/**'
-            - 'LICENSE'
-            - '.gitignore'
-            - '.editorconfig'
     pull_request:
         branches:
             - main
             - master
-        paths-ignore:
-            - 'docs/**'
-            - '*.md'
-            - '.agent/**'
-            - '.gemini/**'
-            - '.github/workflows/keep-alive.yml'
-            - 'odd/**'
-            - 'openspec/**'
-            - 'LICENSE'
-            - '.gitignore'
-            - '.editorconfig'
 
 concurrency:
     group: pruebas-${{ github.ref }}
