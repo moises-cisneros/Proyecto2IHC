@@ -1,4 +1,5 @@
 # Diff Coverage
+
 ## Diff: 731fb8d...HEAD, staged and unstaged changes
 
 - app/dtos/comprobantescanresult&#46;php (45.5%): Missing lines 23,39,50,52-60
@@ -43,8 +44,6 @@
 - **Missing**: 187 lines
 - **Coverage**: 89%
 
-
-
 ## app/dtos/comprobantescanresult&#46;php
 
 ```
@@ -54,30 +53,26 @@
   22         if (! $this->esComprobante || $this->monto === null) {
 ! 23             return false;
   24         }
-  25 
+  25
   26         return abs($this->monto - $montoEsperado) <= $tolerancia;
   27     }
 ```
 
-
 ---
-
 
 ```
   35             return 'invalido';
   36         }
-  37 
+  37
   38         if ($this->monto === null) {
 ! 39             return 'invalido';
   40         }
-  41 
+  41
   42         return $this->coincideConMonto($montoEsperado) ? 'verificado' : 'discrepante';
   43     }
 ```
 
-
 ---
-
 
 ```
   46      * Convierte el DTO a un array serializable.
@@ -99,15 +94,12 @@
   62 }
 ```
 
-
 ---
-
-
 
 ## app/http/controllers/autentificacioncontroller&#46;php
 
 ```
-  145 
+  145
   146     public function restablecer(Request $request)
   147     {
   148         $request->validate([
@@ -119,41 +111,35 @@
 ! 154             'contrasena.min' => 'La contraseña debe tener al menos 8 caracteres.',
   155             'contrasena.confirmed' => 'Las contraseñas no coinciden.',
   156         ]);
-  157 
+  157
   158         $datos = [
 ! 159             'email' => $request->correo,
 ! 160             'password' => $request->contrasena,
   161             'password_confirmation' => $request->contrasena_confirmation,
 ! 162             'token' => $request->token,
   163         ];
-  164 
+  164
   165         // Laravel revisa que el token sea válido y luego ejecuta esta función
   166         $estado = Password::reset($datos, function ($usuario, $contrasena) {
 ```
 
-
 ---
-
-
 
 ## app/http/controllers/colaboracioncontroller&#46;php
 
 ```
   36         ]);
-  37 
+  37
   38         $pestanaActiva = $request->input('tab', 'fechas');
   39         if (! in_array($pestanaActiva, ['fechas', 'lugares', 'gastos'])) {
 ! 40             $pestanaActiva = 'fechas';
   41         }
-  42 
+  42
   43         $fechas = $plan->opciones->where('tipo', 'fecha')->values();
   44         $lugares = $plan->opciones->where('tipo', 'lugar')->values();
 ```
 
-
 ---
-
-
 
 ## app/http/controllers/gastoscontroller&#46;php
 
@@ -164,14 +150,12 @@
   45                 if ($index === 0 && $diferencia > 0) {
 ! 46                     $montoAsignado = round($montoAsignado + $diferencia, 2);
   47                 }
-  48 
+  48
   49                 GastoDivision::create([
   50                     'gasto_id' => $gasto->id,
 ```
 
-
 ---
-
 
 ```
   53                 ]);
@@ -188,62 +172,53 @@
 ! 64                 ]);
   65             }
   66         }
-  67 
+  67
   68         // Trazabilidad en historial de actividades
 ```
 
-
 ---
-
 
 ```
    98             return (int) $d['deudor_id'] === (int) auth()->id() && (int) $d['acreedor_id'] === (int) $request->receptor_id;
    99         });
-  100 
+  100
   101         if ($deuda && $montoFloat > ((float) $deuda['monto'] + 0.009)) {
 ! 102             return back()->withErrors(['monto' => "El monto ingresado (Bs {$montoFloat}) excede la deuda exigible de Bs {$deuda['monto']}."]);
   103         }
-  104 
+  104
   105         $datosPago = [
   106             'deudor_id' => auth()->id(),
 ```
 
-
 ---
-
 
 ```
   164     {
   165         Gate::authorize('confirmar', $pago);
-  166 
+  166
   167         if ($pago->estado === 'confirmado') {
 ! 168             return back()->with('error', 'El pago ya se encuentra confirmado.');
   169         }
-  170 
+  170
   171         $pago->update([
   172             'estado' => 'confirmado',
 ```
 
-
 ---
-
 
 ```
   201     {
   202         Gate::authorize('rechazar', $pago);
-  203 
+  203
   204         if ($pago->estado !== 'pendiente') {
 ! 205             return back()->with('error', 'Solo se pueden rechazar pagos que se encuentren en estado pendiente.');
   206         }
-  207 
+  207
   208         $pago->update([
   209             'estado' => 'rechazado',
 ```
 
-
 ---
-
-
 
 ## app/http/controllers/perfilcobrocontroller&#46;php
 
@@ -258,24 +233,21 @@
   35         }
 ```
 
-
 ---
-
-
 
 ## app/http/controllers/planescontroller&#46;php
 
 ```
    82         $totalHoy = $hoy->count();
    83         $totalProximos = $proximos->count();
-   84 
+   84
    85         if ($buscar !== '') {
 !  86             Evento::registrar('busqueda_realizada', [
 !  87                 'termino' => $buscar,
 !  88                 'seccion' => $seccion,
 !  89                 'total_resultados' => $planes->count(),
 !  90             ]);
-   91 
+   91
 !  92             if ($planes->isEmpty()) {
 !  93                 Evento::registrar('busqueda_sin_resultados', [
 !  94                     'termino' => $buscar,
@@ -285,7 +257,7 @@
 !  98                 ]);
    99             }
   100         }
-  101 
+  101
   102         if ($estado !== '' || $fecha !== '') {
 ! 103             Evento::registrar('filtro_aplicado', [
 ! 104                 'estado' => $estado,
@@ -294,38 +266,33 @@
 ! 107                 'total_resultados' => $planes->count(),
 ! 108             ]);
   109         }
-  110 
+  110
   111         return view('planes.listar', compact(
   112             'planes',
 ```
 
-
 ---
-
 
 ```
   191                 'motivos' => array_keys($bloqueos),
   192             ]);
-  193 
+  193
   194             if ($request->expectsJson()) {
 ! 195                 return response()->json([
 ! 196                     'message' => 'No se puede eliminar el plan debido a impedimentos activos.',
 ! 197                     'bloqueos' => $bloqueos,
 ! 198                 ], 422);
   199             }
-  200 
+  200
   201             $mensaje = isset($bloqueos['plan_confirmado'])
 ! 202                 ? 'Un plan confirmado no puede eliminarse. Primero cancélalo.'
   203                 : 'El plan tiene gastos con deudas pendientes entre participantes que deben liquidarse antes de eliminarlo.';
-  204 
+  204
   205             return redirect()->back()
   206                 ->with('error', $mensaje)
 ```
 
-
 ---
-
-
 
 ## app/http/requests/confirmarplanrequest&#46;php
 
@@ -336,14 +303,12 @@
   30         if (is_numeric($plan)) {
 ! 31             $plan = Plan::find($plan);
   32         }
-  33 
+  33
   34         $tieneEmpate = $plan && ($plan->tieneEmpateFechas() || $plan->tieneEmpateLugares());
   35         // Sin propuestas de fecha en la sala, el plan conserva su fecha límite (aviso del modal de confirmación).
 ```
 
-
 ---
-
 
 ```
   53         $validator->after(function ($validator) {
@@ -352,21 +317,19 @@
   56             if (is_numeric($plan)) {
 ! 57                 $plan = Plan::find($plan);
   58             }
-  59 
+  59
   60             if (! $plan) {
 ! 61                 return;
   62             }
-  63 
+  63
   64             if ($this->filled('propuesta_fecha_id')) {
   65                 $opcionFecha = Opcion::find($this->propuesta_fecha_id);
 ```
 
-
 ---
 
-
 ```
-  63 
+  63
   64             if ($this->filled('propuesta_fecha_id')) {
   65                 $opcionFecha = Opcion::find($this->propuesta_fecha_id);
   66                 if (! $opcionFecha || ! $plan->validarPropuestaPertenece($opcionFecha, 'fecha')) {
@@ -380,14 +343,12 @@
   74             }
 ```
 
-
 ---
-
 
 ```
   73                 }
   74             }
-  75 
+  75
   76             if ($this->filled('propuesta_lugar_id')) {
 ! 77                 $opcionLugar = Opcion::find($this->propuesta_lugar_id);
 ! 78                 if (! $opcionLugar || ! $plan->validarPropuestaPertenece($opcionLugar, 'lugar')) {
@@ -402,10 +363,7 @@
   87         });
 ```
 
-
 ---
-
-
 
 ## app/http/requests/retirarseplanrequest&#46;php
 
@@ -416,15 +374,12 @@
   39             if (is_numeric($plan)) {
 ! 40                 $plan = Plan::find($plan);
   41             }
-  42 
+  42
   43             if ($plan && $plan->estado !== 'pendiente') {
   44                 $validator->errors()->add('plan', 'Solo puedes retirarte de un plan que se encuentre en estado pendiente.');
 ```
 
-
 ---
-
-
 
 ## app/http/requests/storegastorequest&#46;php
 
@@ -435,21 +390,19 @@
   46             if (is_numeric($plan)) {
 ! 47                 $plan = Plan::find($plan);
   48             }
-  49 
+  49
   50             if (! $plan) {
 ! 51                 return;
   52             }
-  53 
+  53
   54             // Obtener IDs de usuarios válidos del plan (creador + participantes aceptados)
   55             $participantesValidos = collect([$plan->user_id])
 ```
 
-
 ---
 
-
 ```
-  65 
+  65
   66             // Validar anti-IDOR: cada participante debe pertenecer al plan
   67             foreach ($participantesSeleccionados as $uid) {
   68                 if (! $participantesValidos->contains($uid)) {
@@ -457,29 +410,27 @@
 ! 70                     break;
   71                 }
   72             }
-  73 
+  73
   74             // Validación de división personalizada
 ```
 
-
 ---
-
 
 ```
   72             }
-  73 
+  73
   74             // Validación de división personalizada
   75             if ($this->input('tipo_division') === 'personalizada') {
 ! 76                 $montoTotal = round((float) $this->input('monto_total', 0), 2);
 ! 77                 $divisiones = $this->input('divisiones', []);
-  78 
+  78
 ! 79                 $sumaDivisiones = 0.0;
 ! 80                 foreach ($participantesSeleccionados as $uid) {
 ! 81                     $montoUser = isset($divisiones[$uid]) ? round((float) $divisiones[$uid], 2) : 0.0;
 ! 82                     $sumaDivisiones += $montoUser;
   83                 }
 ! 84                 $sumaDivisiones = round($sumaDivisiones, 2);
-  85 
+  85
 ! 86                 if (abs($sumaDivisiones - $montoTotal) > 0.01) {
 ! 87                     $validator->errors()->add(
 ! 88                         'divisiones',
@@ -491,10 +442,7 @@
   94     }
 ```
 
-
 ---
-
-
 
 ## app/http/requests/storepagorequest&#46;php
 
@@ -505,57 +453,50 @@
   41             if (is_numeric($plan)) {
 ! 42                 $plan = Plan::find($plan);
   43             }
-  44 
+  44
   45             if (! $plan) {
 ! 46                 return;
   47             }
-  48 
+  48
   49             $receptorId = (int) $this->input('receptor_id');
   50             $authId = (int) auth()->id();
 ```
-
 
 ---
 
-
 ```
   49             $receptorId = (int) $this->input('receptor_id');
   50             $authId = (int) auth()->id();
-  51 
+  51
   52             if ($receptorId === $authId) {
 ! 53                 $validator->errors()->add('receptor_id', 'No puedes registrar un pago hacia ti mismo.');
   54             }
-  55 
+  55
   56             $participantesValidos = collect([$plan->user_id])
   57                 ->merge($plan->participantes()->pluck('users.id'))
 ```
 
-
 ---
-
 
 ```
   62                 ->unique()
   63                 ->values();
-  64 
+  64
   65             if (! $participantesValidos->contains($receptorId)) {
 ! 66                 $validator->errors()->add('receptor_id', 'El destinatario del pago no pertenece a este plan.');
   67             }
-  68 
+  68
   69             // Validar que el monto no exceda la deuda neta calculada
   70             $monto = round((float) $this->input('monto', 0), 2);
 ```
 
-
 ---
-
-
 
 ## app/mail/transport/cloudflaremailtransport&#46;php
 
 ```
    8 use Symfony\Component\Mime\MessageConverter;
-   9 
+   9
   10 class CloudflareMailTransport extends AbstractTransport
   11 {
 ! 12     public function __construct(
@@ -564,21 +505,21 @@
   15     ) {
 ! 16         parent::__construct();
   17     }
-  18 
+  18
 ! 19     protected function doSend(SentMessage $message): void
   20     {
 ! 21         $email = MessageConverter::toEmail($message->getOriginalMessage());
-  22 
+  22
 ! 23         $recipients = collect($email->getTo())->map(fn ($addr) => $addr->getAddress())->implode(',');
 ! 24         $subject = $email->getSubject() ?? 'Notificación de Planazo';
 ! 25         $html = $email->getHtmlBody();
 ! 26         $text = $email->getTextBody();
-  27 
+  27
   28         // Si no hay texto plano pero hay HTML, generar fallback
 ! 29         if (empty($text) && ! empty($html)) {
 ! 30             $text = strip_tags((string) $html);
   31         }
-  32 
+  32
 ! 33         $response = Http::withToken($this->secret)
 ! 34             ->timeout(15)
 ! 35             ->post($this->endpoint, [
@@ -588,13 +529,13 @@
 ! 39                 'text' => $text,
 ! 40                 'from_name' => config('mail.from.name', 'Planazo'),
 ! 41             ]);
-  42 
+  42
 ! 43         if (! $response->successful() || ! ($response->json('success') ?? false)) {
 ! 44             $err = $response->json('error') ?? $response->body();
 ! 45             throw new \RuntimeException("Cloudflare Mail Bridge error: {$err}");
   46         }
   47     }
-  48 
+  48
 ! 49     public function __toString(): string
   50     {
 ! 51         return 'cloudflare_bridge';
@@ -602,15 +543,12 @@
   53 }
 ```
 
-
 ---
-
-
 
 ## app/models/gasto&#46;php
 
 ```
-  52 
+  52
   53     /**
   54      * Participantes entre quienes se dividió el gasto.
   55      */
@@ -623,15 +561,12 @@
   62 }
 ```
 
-
 ---
-
-
 
 ## app/models/gastodivision&#46;php
 
 ```
-  24 
+  24
   25     /**
   26      * Gasto al que corresponde esta división.
   27      */
@@ -639,20 +574,17 @@
   29     {
 ! 30         return $this->belongsTo(Gasto::class, 'gasto_id');
   31     }
-  32 
+  32
   33     /**
   34      * Usuario asignado a esta porción del gasto.
 ```
 
-
 ---
-
-
 
 ## app/models/pago&#46;php
 
 ```
-  62 
+  62
   63     /**
   64      * Evalúa si el pago está en estado pendiente de confirmación.
   65      */
@@ -660,17 +592,15 @@
   67     {
 ! 68         return $this->estado === 'pendiente';
   69     }
-  70 
+  70
   71     /**
   72      * Evalúa si el pago fue confirmado.
 ```
 
-
 ---
 
-
 ```
-  118 
+  118
   119     /**
   120      * Evalúa si el escaneo aún está pendiente de procesamiento.
   121      */
@@ -681,10 +611,7 @@
   126 }
 ```
 
-
 ---
-
-
 
 ## app/models/plan&#46;php
 
@@ -695,42 +622,37 @@
   164         if ($opciones->isEmpty()) {
 ! 165             return null;
   166         }
-  167 
+  167
   168         $maxVotos = $opciones->max('votos_count');
   169         $candidatas = $opciones->where('votos_count', $maxVotos);
 ```
 
-
 ---
-
 
 ```
   200             throw new \InvalidArgumentException("La propuesta #{$opcion->id} no pertenece al plan #{$this->id}.");
   201         }
-  202 
+  202
   203         if ($this->esInmutable()) {
 ! 204             throw new DomainException("No se pueden asignar opciones a un plan en estado {$this->estado}.");
   205         }
-  206 
+  206
   207         if ($opcion->tipo === 'fecha') {
   208             $this->propuesta_fecha_id = $opcion->id;
 ! 209         } elseif ($opcion->tipo === 'lugar') {
 ! 210             $this->propuesta_lugar_id = $opcion->id;
   211         }
-  212 
+  212
   213         if ($motivo !== null) {
   214             $this->motivo_desempate = $motivo;
 ```
 
-
 ---
-
-
 
 ## app/models/user&#46;php
 
 ```
-  68 
+  68
   69     /**
   70      * Actividades donde el usuario es destinatario o contraparte bilateral.
   71      */
@@ -738,17 +660,15 @@
   73     {
 ! 74         return $this->hasMany(PlanActivity::class, 'destinatario_id');
   75     }
-  76 
+  76
   77     /**
   78      * Planes creados por el usuario.
 ```
 
-
 ---
 
-
 ```
-  101 
+  101
   102     /**
   103      * Opciones de fecha o lugar propuestas por el usuario.
   104      */
@@ -756,15 +676,12 @@
   106     {
 ! 107         return $this->hasMany(Opcion::class);
   108     }
-  109 
+  109
   110     /**
   111      * Votos emitidos por el usuario.
 ```
 
-
 ---
-
-
 
 ## app/policies/gastopolicy&#46;php
 
@@ -777,14 +694,12 @@
   15     {
 ! 16         return $this->esParticipanteDelPlan($user, $gasto->plan);
   17     }
-  18 
+  18
   19     /**
   20      * Determina si el usuario puede registrar un nuevo gasto en el plan.
 ```
 
-
 ---
-
 
 ```
   21      */
@@ -793,15 +708,12 @@
   24         if ($plan->estado === 'cancelado') {
 ! 25             return false;
   26         }
-  27 
+  27
   28         return $this->esParticipanteDelPlan($user, $plan);
   29     }
 ```
 
-
 ---
-
-
 
 ## app/policies/pagopolicy&#46;php
 
@@ -812,15 +724,12 @@
   16         if ($plan->estado === 'cancelado') {
 ! 17             return false;
   18         }
-  19 
+  19
   20         return $this->esParticipanteDelPlan($user, $plan);
   21     }
 ```
 
-
 ---
-
-
 
 ## app/policies/planpolicy&#46;php
 
@@ -831,15 +740,12 @@
   35         if ($plan->estado === 'cancelado') {
 ! 36             return false;
   37         }
-  38 
+  38
   39         return $this->isInvitado($user, $plan);
   40     }
 ```
 
-
 ---
-
-
 
 ## app/providers/appserviceprovider&#46;php
 
@@ -850,19 +756,17 @@
   36         if (app()->environment('production') || str_starts_with((string) config('app.url'), 'https://')) {
 ! 37             URL::forceScheme('https');
   38         }
-  39 
+  39
   40         Gate::policy(Plan::class, PlanPolicy::class);
   41         Gate::policy(Gasto::class, GastoPolicy::class);
 ```
 
-
 ---
-
 
 ```
   41         Gate::policy(Gasto::class, GastoPolicy::class);
   42         Gate::policy(Pago::class, PagoPolicy::class);
-  43 
+  43
   44         Mail::extend('cloudflare', function (array $config = []) {
 ! 45             return new CloudflareMailTransport(
 ! 46                 $config['endpoint'] ?? env('MAIL_BRIDGE_ENDPOINT', 'https://planazo-mail-bridge.moisescisnerosdl.workers.dev'),
@@ -873,10 +777,7 @@
   51 }
 ```
 
-
 ---
-
-
 
 ## app/services/comprobante/geminicomprobantescanner&#46;php
 
@@ -887,7 +788,7 @@
   113             );
 ! 114         } catch (Throwable $e) {
 ! 115             Log::error('[GeminiComprobanteScanner] Excepción al procesar imagen: '.$e->getMessage());
-  116 
+  116
 ! 117             return new ComprobanteScanResult(
 ! 118                 esComprobante: false,
 ! 119                 confianza: 0.0,
@@ -898,10 +799,7 @@
   124 }
 ```
 
-
 ---
-
-
 
 ## app/services/userdataexportservice&#46;php
 
@@ -923,9 +821,7 @@
   172         }
 ```
 
-
 ---
-
 
 ```
   192         // 5. Liquidación de gastos
@@ -971,12 +867,9 @@
 ! 232                 $prec['creado_en'],
 ! 233             ]);
   234         }
-  235 
+  235
   236         rewind($fp);
   237         $csvContent = stream_get_contents($fp);
 ```
 
-
 ---
-
-

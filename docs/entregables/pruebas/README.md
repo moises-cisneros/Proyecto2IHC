@@ -6,12 +6,12 @@ Este directorio almacena la evidencia de ejecución, métricas de cobertura y lo
 
 ## 📊 Resumen Ejecutivo de Pruebas
 
-| Suite de Pruebas | Entorno / Herramienta | Pruebas Ejecutadas | Resultado | Evidencia / Reporte |
-| :--- | :--- | :--- | :--- | :--- |
-| **Pruebas Unitarias y de Integración** | PHPUnit 11 + PCOV | **283 pruebas** (1,347 aserciones) | ✅ 100% Pasadas | [`reportes/coverage/html/index.html`](reportes/coverage/html/index.html) |
-| **Pruebas End-to-End (E2E)** | Playwright (Chromium) | **30 pruebas** (13 specs) | ✅ 100% Pasadas | [`reportes/playwright-report/index.html`](reportes/playwright-report/index.html) |
-| **Cobertura Diferencial del Fork** | `diff-cover` (vs commit inicial `731fb8d`) | **1,836 líneas agregadas** | ✅ 89% Cobertura Real | [`reportes/diff-coverage.html`](reportes/diff-coverage.html) |
-| **Integración Continua (CI)** | GitHub Actions (`pruebas.yml`) | Pipeline Completo | ✅ En Verde (✓) | [Ver Pipeline en GitHub Actions](https://github.com/moises-cisneros/Proyecto2IHC/actions) |
+| Suite de Pruebas                       | Entorno / Herramienta                      | Pruebas Ejecutadas                 | Resultado             | Evidencia / Reporte                                                                       |
+| :------------------------------------- | :----------------------------------------- | :--------------------------------- | :-------------------- | :---------------------------------------------------------------------------------------- |
+| **Pruebas Unitarias y de Integración** | PHPUnit 11 + PCOV                          | **283 pruebas** (1,347 aserciones) | ✅ 100% Pasadas       | [`reportes/coverage/html/index.html`](reportes/coverage/html/index.html)                  |
+| **Pruebas End-to-End (E2E)**           | Playwright (Chromium)                      | **30 pruebas** (13 specs)          | ✅ 100% Pasadas       | [`reportes/playwright-report/index.html`](reportes/playwright-report/index.html)          |
+| **Cobertura Diferencial del Fork**     | `diff-cover` (vs commit inicial `731fb8d`) | **1,836 líneas agregadas**         | ✅ 89% Cobertura Real | [`reportes/diff-coverage.html`](reportes/diff-coverage.html)                              |
+| **Integración Continua (CI)**          | GitHub Actions (`pruebas.yml`)             | Pipeline Completo                  | ✅ En Verde (✓)       | [Ver Pipeline en GitHub Actions](https://github.com/moises-cisneros/Proyecto2IHC/actions) |
 
 ---
 
