@@ -4,6 +4,9 @@
 
 > Aplicación web desarrollada con **Laravel 12**, plantillas **Blade**, **Tailwind CSS 4** y **MySQL 8.0**. Diseñada para ejecutarse por defecto mediante **Docker**, con soporte completo para **ejecución manual local**.
 
+- 🎬 **Video Demostrativo de la Aplicación:** [Ver recorrido completo en Google Drive](https://drive.google.com/file/d/1SmEQfaGl5yrJzHJ5I6UO3l_oWGjUDftO/view?usp=sharing)
+- 🎨 **Prototipo y Sistema de Diseño en Figma:** [Ver Archivo en Figma](https://www.figma.com/design/wIJx272I0oFwfAaHs5s1AZ/2do-Proyecto-IHC---MC?node-id=176-351&t=zvDveuDqdkkvmNLh-1)
+
 ---
 
 ## 🚀 Requisitos Previos
@@ -373,6 +376,8 @@ El repositorio cuenta con un pipeline de CI obligatorio que se dispara en cada `
 - [resources/FLOWS.md](resources/FLOWS.md): Contrato interactivo con App Map (11 pantallas), Task Flows (TF1–TF8) e inventario de 37 rutas.
 - [CONTRIBUTING.md](CONTRIBUTING.md): Guía para colaboradores, ramas y convención de Conventional Commits.
 - [docs/entregables/](docs/entregables/README.md): Carpeta oficial de entregables de la entrega final y defensa oral (informe, diapositivas, DS, accesibilidad, video y credenciales).
+- [Video Demostrativo](https://drive.google.com/file/d/1SmEQfaGl5yrJzHJ5I6UO3l_oWGjUDftO/view?usp=sharing): Recorrido en video de los flujos principales de la aplicación funcionando.
+- [Sistema en Figma](https://www.figma.com/design/wIJx272I0oFwfAaHs5s1AZ/2do-Proyecto-IHC---MC?node-id=176-351&t=zvDveuDqdkkvmNLh-1): Prototipo interactivo y sistema de diseño con componentes y tokens.
 - [docs/internal/Tareas.md](docs/internal/Tareas.md): Bitácora de clases, hitos de entrega y flujos detallados de la aplicación.
 - [docs/](docs/): Evidencias académicas e historial de tareas previas.
 
