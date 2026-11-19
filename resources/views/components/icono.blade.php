@@ -23,8 +23,8 @@
     @case('planazo')
     @case('logo')
         <svg xmlns="http://www.w3.org/2000/svg" width="{{ $dimension }}" height="{{ $dimension }}" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            aria-hidden="true" class="{{ $clasesCss }}" {{ $atributosExtra }}>
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+            class="{{ $clasesCss }}" {{ $atributosExtra }}>
             <rect width="18" height="18" x="3" y="4" rx="2" />
             <path d="M8 2v4M16 2v4M3 10h18" />
             <path d="m9 16 2 2 4-4" />
@@ -33,8 +33,8 @@
 
     @case('calendario')
         <svg xmlns="http://www.w3.org/2000/svg" width="{{ $dimension }}" height="{{ $dimension }}" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
-            class="{{ $clasesCss }}" {{ $atributosExtra }}>
+            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+            aria-hidden="true" class="{{ $clasesCss }}" {{ $atributosExtra }}>
             <path d="M8 2v4M16 2v4M3 10h18" />
             <rect width="18" height="18" x="3" y="4" rx="2" />
         </svg>
@@ -103,9 +103,9 @@
 
     @case('pago')
     @case('tarjeta')
-        <svg xmlns="http://www.w3.org/2000/svg" width="{{ $dimension }}" height="{{ $dimension }}" viewBox="0 0 24 24"
-            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-            aria-hidden="true" class="{{ $clasesCss }}" {{ $atributosExtra }}>
+        <svg xmlns="http://www.w3.org/2000/svg" width="{{ $dimension }}" height="{{ $dimension }}"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" aria-hidden="true" class="{{ $clasesCss }}" {{ $atributosExtra }}>
             <rect width="20" height="14" x="2" y="5" rx="2" />
             <line x1="2" x2="22" y1="10" y2="10" />
         </svg>
