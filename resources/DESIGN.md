@@ -323,14 +323,14 @@ Todos los componentes de Planazo derivan sus cambios de color de la **Paleta Bas
 
 Parcial `resources/views/layouts/_partials/nav.blade.php`. Sticky (`--z-nav`), alto `60px`, fondo `brand` (`#ffe683`), borde `border` y sombra `--shadow-sm`. Sin estilos inline: todo vive en `app.css`.
 
-| Clase              | Función                                                            |
-| :----------------- | :----------------------------------------------------------------- |
-| `.barra`           | Contenedor flex; `justify-content: space-between`                  |
-| `.barra-izquierda` | Agrupa marca + menú (gap `24px`); en móvil usa `display: contents` |
+| Clase              | Función                                                                                    |
+| :----------------- | :----------------------------------------------------------------------------------------- |
+| `.barra`           | Contenedor flex; `justify-content: space-between`                                          |
+| `.barra-izquierda` | Agrupa marca + menú (gap `24px`); en móvil usa `display: contents`                         |
 | `.marca`           | Logotipo e isotipo SVG Planazo (`font-size-2xl`, bold, con `<x-icono nombre="planazo" />`) |
-| `.nav-menu`        | Contenedor del menú (`role="menubar"`) con items `.nav-item-*`     |
-| `.barra-derecha`   | Usuario (`.nav-usuario` con `.avatar`) + botón `.boton-salir`      |
-| `.form-reset`      | Formulario de cierre de sesión sin margen (clase global, §3.D)     |
+| `.nav-menu`        | Contenedor del menú (`role="menubar"`) con items `.nav-item-*`                             |
+| `.barra-derecha`   | Usuario (`.nav-usuario` con `.avatar`) + botón `.boton-salir`                              |
+| `.form-reset`      | Formulario de cierre de sesión sin margen (clase global, §3.D)                             |
 
 **Responsive (breakpoint `720px`, no tokenizable porque `var()` no aplica en `@media`):**
 
@@ -606,30 +606,30 @@ Píldora con borde (`--radius-pill`, `font-size-xs`, bold, ícono opcional `sm`,
 
 > Cada componente tiene un único origen. **Alcance** indica a quién pertenece: `Global` (reutilizable en cualquier vista) o la pantalla/flujo dueño.
 
-| Componente                                                            | Alcance                      | Archivo de Referencia                               | Sección     |
-| :-------------------------------------------------------------------- | :--------------------------- | :-------------------------------------------------- | :---------- |
-| `.boton` / `.boton-claro` / `.boton-rojo`                             | Global                       | `resources/css/app.css`                             | §3.A        |
-| `<x-icono nombre="..." />`                                            | Global                       | `components/icono.blade.php`                        | §3.B        |
-| `.barra` / `.nav-menu` / `.nav-usuario`                               | Layout (`layouts/app`)       | `layouts/_partials/nav.blade.php` & `app.css`       | §3.C        |
-| `<dialog>` (modal genérico)                                           | Global                       | `components/dialog-confirm.blade.php`               | §4.A        |
-| `.tarjeta` (+ `-header`, `-titulo`, `-desc`, `-acciones`, `-peligro`) | Global                       | `resources/css/app.css`                             | §4.B        |
-| `.formulario` / `.campo`                                              | Global                       | `resources/css/app.css`                             | §3.D        |
-| `.tabla-contenedor`                                                   | Global                       | `resources/css/app.css`                             | §4.C        |
-| `.avatar` / `.avatar-lg`                                              | Global                       | `resources/css/app.css`                             | §4.D        |
-| `.metrica` / `.metrica-enlace`                                        | Global                       | `resources/css/app.css`                             | §4.E        |
-| `<x-toast-alerta />`                                                  | Global                       | `components/toast-alerta.blade.php`                 | §5.A        |
-| `.estado .estado-{valor}`                                             | Global                       | `resources/css/app.css`                             | §2.A + §8.A |
-| `.badge-estado .badge-estado-{valor}`                                 | Global                       | `resources/css/app.css`                             | §8.F        |
-| Chip pago / fila pago                                                 | Plan (`_gastos_liquidacion`) | `planes/_gastos_liquidacion.blade.php`              | §8.B + §8.C |
-| `<x-activity-card />`                                                 | Global                       | `components/activity-card.blade.php`                | §8.E        |
-| `.caja-salida-honesta`                                                | Salida Honesta               | `resources/css/app.css`                             | §7.A        |
-| `<x-modal-salida-honesta />`                                          | Salida Honesta               | `components/modal-salida-honesta.blade.php`         | §7.B        |
-| `<dialog>` + `.dialogo-md` / `.dialogo-lg`                            | Global                       | `resources/css/app.css`                             | §4.A        |
-| `.banner` (+ `-neutro`, `-advertencia`, `-peligro`)                   | Global                       | `resources/css/app.css`                             | §8.D        |
-| `.form-reset`                                                         | Global                       | `resources/css/app.css`                             | §3.D        |
-| Radio / casilla (Figma «Opción de selección»)                         | Global                       | `resources/css/app.css` (`input[type=radio/checkbox]`) | §3.D     |
-| Aviso en línea (Figma «Aviso en línea»)                               | Global                       | `resources/css/app.css` (`.votacion-*`, `.gastos-receptor`) | §3.D |
-| `.cuenta-*` (layout)                                                  | Solo Mi Cuenta               | `perfil/cuenta.blade.php` & `resources/css/app.css` | §7.D        |
+| Componente                                                            | Alcance                      | Archivo de Referencia                                       | Sección     |
+| :-------------------------------------------------------------------- | :--------------------------- | :---------------------------------------------------------- | :---------- |
+| `.boton` / `.boton-claro` / `.boton-rojo`                             | Global                       | `resources/css/app.css`                                     | §3.A        |
+| `<x-icono nombre="..." />`                                            | Global                       | `components/icono.blade.php`                                | §3.B        |
+| `.barra` / `.nav-menu` / `.nav-usuario`                               | Layout (`layouts/app`)       | `layouts/_partials/nav.blade.php` & `app.css`               | §3.C        |
+| `<dialog>` (modal genérico)                                           | Global                       | `components/dialog-confirm.blade.php`                       | §4.A        |
+| `.tarjeta` (+ `-header`, `-titulo`, `-desc`, `-acciones`, `-peligro`) | Global                       | `resources/css/app.css`                                     | §4.B        |
+| `.formulario` / `.campo`                                              | Global                       | `resources/css/app.css`                                     | §3.D        |
+| `.tabla-contenedor`                                                   | Global                       | `resources/css/app.css`                                     | §4.C        |
+| `.avatar` / `.avatar-lg`                                              | Global                       | `resources/css/app.css`                                     | §4.D        |
+| `.metrica` / `.metrica-enlace`                                        | Global                       | `resources/css/app.css`                                     | §4.E        |
+| `<x-toast-alerta />`                                                  | Global                       | `components/toast-alerta.blade.php`                         | §5.A        |
+| `.estado .estado-{valor}`                                             | Global                       | `resources/css/app.css`                                     | §2.A + §8.A |
+| `.badge-estado .badge-estado-{valor}`                                 | Global                       | `resources/css/app.css`                                     | §8.F        |
+| Chip pago / fila pago                                                 | Plan (`_gastos_liquidacion`) | `planes/_gastos_liquidacion.blade.php`                      | §8.B + §8.C |
+| `<x-activity-card />`                                                 | Global                       | `components/activity-card.blade.php`                        | §8.E        |
+| `.caja-salida-honesta`                                                | Salida Honesta               | `resources/css/app.css`                                     | §7.A        |
+| `<x-modal-salida-honesta />`                                          | Salida Honesta               | `components/modal-salida-honesta.blade.php`                 | §7.B        |
+| `<dialog>` + `.dialogo-md` / `.dialogo-lg`                            | Global                       | `resources/css/app.css`                                     | §4.A        |
+| `.banner` (+ `-neutro`, `-advertencia`, `-peligro`)                   | Global                       | `resources/css/app.css`                                     | §8.D        |
+| `.form-reset`                                                         | Global                       | `resources/css/app.css`                                     | §3.D        |
+| Radio / casilla (Figma «Opción de selección»)                         | Global                       | `resources/css/app.css` (`input[type=radio/checkbox]`)      | §3.D        |
+| Aviso en línea (Figma «Aviso en línea»)                               | Global                       | `resources/css/app.css` (`.votacion-*`, `.gastos-receptor`) | §3.D        |
+| `.cuenta-*` (layout)                                                  | Solo Mi Cuenta               | `perfil/cuenta.blade.php` & `resources/css/app.css`         | §7.D        |
 
 ---
 

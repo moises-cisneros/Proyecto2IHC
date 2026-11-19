@@ -69,12 +69,12 @@ class FlowsContractTest extends TestCase
         }
     }
 
-    public function test_cada_pantalla_del_mapa_tiene_su_composicion_y_hay_doce_task_flows(): void
+    public function test_cada_pantalla_del_mapa_tiene_su_composicion_y_hay_ocho_task_flows(): void
     {
         foreach (['ingresar', 'registro', 'recuperar', 'mis-planes', 'sala', 'editar-plan', 'historial', 'mi-cuenta', 'analitica'] as $id) {
             $this->assertMatchesRegularExpression('/^### 4\.\d+ .*`'.preg_quote($id, '/').'`/m', $this->contrato, "Falta la composición de la pantalla {$id}");
         }
-        for ($i = 1; $i <= 12; $i++) {
+        for ($i = 1; $i <= 8; $i++) {
             $this->assertMatchesRegularExpression("/^### TF{$i} — /m", $this->contrato, "Falta el Task Flow TF{$i}");
         }
     }
@@ -86,7 +86,7 @@ class FlowsContractTest extends TestCase
 
         preg_match_all('/^\| \*\*TF(\d+) — [^|]+\*\*\s*\| `([a-z0-9-]+)`\s*\|/m', $seccion[0], $filas);
 
-        $this->assertSame(range(1, 12), array_map('intval', $filas[1]), 'Cada TFn debe tener su Flow en §11.1');
+        $this->assertSame(range(1, 8), array_map('intval', $filas[1]), 'Cada TFn debe tener su Flow en §11.1');
         $this->assertSame(
             $filas[2],
             array_values(array_unique($filas[2])),

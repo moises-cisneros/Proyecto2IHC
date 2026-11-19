@@ -7,7 +7,7 @@
      - App Map (mapa y tabla de pantallas):   rg -A 40 "^## 2" resources/FLOWS.md
      - Composición de una pantalla:           rg -A 30 "^### 4\.[0-9]+ .*mis-planes" resources/FLOWS.md
      - Matriz de permisos de la sala:         rg -A 25 "^## 5" resources/FLOWS.md
-     - Un Task Flow concreto:                 rg -A 25 "^### TF5" resources/FLOWS.md
+     - Un Task Flow concreto:                 rg -A 25 "^### TF4" resources/FLOWS.md
      - Reglas transversales:                  rg -A 20 "^## 7" resources/FLOWS.md
      - Inventario de rutas (verificado):      rg -A 45 "^## 9" resources/FLOWS.md
 -->
@@ -23,7 +23,7 @@
 | **Estados de invitación**      | `pendiente` · `aceptada` · `rechazada`                                                                                                                                                                                                                                                               |
 | **Estados de pago**            | `pendiente` → `confirmado` o `rechazado` (con motivo)                                                                                                                                                                                                                                                |
 | **Id de pantalla**             | kebab-case, único: `landing`, `ingresar`, `registro`, `recuperar`, `restablecer`, `mis-planes`, `sala`, `editar-plan`, `historial`, `mi-cuenta`, `analitica`. **En Figma, cada frame se llama igual que su id.**                                                                                     |
-| **Sub-frames de estado sala**  | `sala` (pestaña Fechas, por defecto), `sala-lugares`, `sala-gastos`, `sala-confirmada` (congelada)                                                                                                                                                                                                                          |
+| **Sub-frames de estado sala**  | `sala` (pestaña Fechas, por defecto), `sala-lugares`, `sala-gastos`, `sala-confirmada` (congelada)                                                                                                                                                                                                   |
 | **Overlays de diálogo Figma**  | `modal-crear`, `modal-eliminar-plan-{id}`, `modal-invitar`, `modal-proponer-opcion`, `modal-confirmar-plan`, `modal-retirarse`, `modal-crear-gasto`, `modal-crear-pago`, `modal-comprobante-{id}`, `modal-rechazar-{id}`, `modal-configurar-cobro`, `modal-bloqueos-cuenta`, `modal-eliminar-cuenta` |
 | **Parámetro de pestaña**       | `?tab=fechas\|lugares\|gastos` (única forma válida; `pestana` no existe)                                                                                                                                                                                                                             |
 | **Componentes**                | Se citan por su nombre en `DESIGN.md` (`.tarjeta`, `.banner-*`, `.badge-estado-*`, `<dialog>`, `<x-icono>`…)                                                                                                                                                                                         |
@@ -214,14 +214,14 @@ flowchart TD
 
 **Inventario de frames Figma de `sala`.** Cada frame es una combinación única rol × estado × pestaña:
 
-| Familia | Frames |
-| :-- | :-- |
-| Organizador, plan pendiente | `sala` (Fechas), `sala-lugares`, `sala-gastos`, `sala-empate`, `sala-sin-propuestas` |
-| Participante | `sala-participante` (Fechas), `sala-participante-lugares`, `sala-participante-gastos` |
-| Invitado pendiente | `sala-invitacion-pendiente`, `sala-invitacion-pendiente-lugares`, `sala-invitacion-pendiente-gastos` |
-| Plan confirmado | `sala-confirmada`, `sala-confirmada-lugares`, `sala-confirmada-gastos`, `sala-confirmada-sin-propuestas` |
-| Plan cancelado | `sala-cancelada`, `sala-cancelada-lugares`, `sala-cancelada-gastos` |
-| Fecha límite vencida | `sala-vencida`, `sala-vencida-lugares`, `sala-vencida-gastos` |
+| Familia                     | Frames                                                                                                   |
+| :-------------------------- | :------------------------------------------------------------------------------------------------------- |
+| Organizador, plan pendiente | `sala` (Fechas), `sala-lugares`, `sala-gastos`, `sala-empate`, `sala-sin-propuestas`                     |
+| Participante                | `sala-participante` (Fechas), `sala-participante-lugares`, `sala-participante-gastos`                    |
+| Invitado pendiente          | `sala-invitacion-pendiente`, `sala-invitacion-pendiente-lugares`, `sala-invitacion-pendiente-gastos`     |
+| Plan confirmado             | `sala-confirmada`, `sala-confirmada-lugares`, `sala-confirmada-gastos`, `sala-confirmada-sin-propuestas` |
+| Plan cancelado              | `sala-cancelada`, `sala-cancelada-lugares`, `sala-cancelada-gastos`                                      |
+| Fecha límite vencida        | `sala-vencida`, `sala-vencida-lugares`, `sala-vencida-gastos`                                            |
 
 Otras variantes de estado: `landing-oscuro` (tema), `mis-planes-invitaciones` · `mis-planes-vacio` · `mis-planes-sin-resultados`, `historial-estados` · `historial-creaciones` · `historial-participacion` · `historial-gastos`, `toast-alerta`.
 
@@ -296,57 +296,66 @@ Fuente: `app/Policies/PlanPolicy.php`, `GastoPolicy.php`, `PagoPolicy.php`. ✔ 
 ## 6. Task Flows
 
 > Un flujo = **una tarea** del usuario. Cada uno indica trigger, rol, ramas, resultado, telemetría y verificación. Las pruebas E2E están en `e2e/`; las de backend en `tests/`.
-
+>
 > **App Map ≠ Task Flows.** El _App Map_ (§2) responde «¿qué pantallas existen y cómo se llega a ellas?». Un _Task Flow_ responde «¿qué pasos sigue una persona para completar **una tarea**, y qué ramas tiene según su rol y el estado del plan?». Una misma pantalla (por ejemplo `sala`) aparece en varios flujos. **En Figma, cada Task Flow es un _Flow_ del prototipo** con el nombre `TFn — <tarea>`; la numeración `TFn` es la única válida (no existen «Flujo 1/Flujo 2»).
+
+### Qué es un flujo (criterio)
+
+Se llama **flujo** a lo que cumple las cinco condiciones. Si falla alguna, es una pantalla o una funcionalidad, no un flujo.
+
+1. **Un objetivo de una persona:** «quiero X» (crear un plan, pagar una deuda, eliminar mi cuenta).
+2. **Un disparador y un final:** parte de una acción concreta y termina en un resultado observable, normalmente un cambio persistido (`POST`/`PUT`/`DELETE` en §9).
+3. **Varios pasos:** cruza dos o más pantallas, modales o interacciones.
+4. **Alguna decisión o rama:** según el rol, el estado del plan o una validación (con deuda / sin deuda, empate / ganador, bloqueado / permitido).
+5. **Entrega valor por sí mismo:** no es navegación pura ni una herramienta interna de desarrollo.
+
+Un flujo puede cruzar dos actores solo cuando el propio producto lo mide como un único embudo (por ejemplo, invitar y responder la invitación) y puede tener ramas por rol cuando el objetivo es el mismo (salir de un plan: participante o organizador).
+
+**Fuera de los flujos (siguen siendo pantallas del App Map):** `historial` (consulta de una pantalla, sin pasos ni resultado), `editar-plan` (formulario simple), `analitica` (herramienta Dev) y la búsqueda y filtros de `mis-planes` y las ediciones de `mi-cuenta` (datos, contraseña, cobro). Ver «Pantallas que no son flujos» al final de esta sección.
 
 ### Catálogo de flujos
 
-Figma admite **un solo flow por frame inicial**, por eso cada flujo arranca en un frame distinto. «Frames del recorrido» indica el orden en que se capturan para la documentación (`→` navega, `⇢` abre un overlay).
+Son **8 flujos**, cada uno con un objetivo de usuario. Figma admite **un solo flow por frame inicial**, por eso cada flujo arranca en un frame distinto. «Frames del recorrido» indica el orden en que se capturan para la documentación (`→` navega, `⇢` abre un overlay).
 
-| Flujo | Tarea (curso)                                | Rol                       | Frame inicial (Figma)       | Frames del recorrido                                                                                                                                                            |
-| :---- | :------------------------------------------- | :------------------------ | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| TF1   | Acceso y sesión                   | Sin sesión                | `landing`                   | `landing` → `ingresar` → `mis-planes` · `registro` → `mis-planes-vacio` · `recuperar` → `restablecer` → `ingresar`                                                              |
-| TF2   | Crear un plan (Clase 13)                     | Organizador               | `mis-planes-vacio`          | `mis-planes-vacio` ⇢ `modal-crear` → `mis-planes`                                                                                                                               |
-| TF3   | Invitar y responder invitación     | Organizador · invitado    | `mis-planes-invitaciones`   | Organizador: `sala-sin-propuestas` ⇢ `modal-invitar` · Invitado: `mis-planes-invitaciones` → `sala-invitacion-pendiente` → Aceptar `sala-participante` / Rechazar `mis-planes` |
-| TF4   | Proponer y votar             | Organizador · participante | `sala`                      | `sala` ⇢ `modal-proponer-opcion` · `sala-lugares` ⇢ `modal-proponer-lugar` · voto (badge) en `sala`                                                                             |
-| TF5   | Confirmar plan y resolver empate | Organizador            | `sala-empate`               | `sala-empate` ⇢ `modal-confirmar-plan-sin-empate` → `sala-confirmada` · ganador: `sala` ⇢ `modal-confirmar-plan` · sin propuestas: `sala-sin-propuestas` ⇢ `modal-confirmar-plan-sin-propuestas` → `sala-confirmada-sin-propuestas` |
-| TF6   | Retirarse de un plan              | Participante              | `sala-participante`         | Sin deuda: `sala-participante` ⇢ `modal-retirarse-sin-deuda` → `mis-planes` · Con deuda: `sala-participante-gastos` ⇢ `modal-retirarse` → `sala-gastos`                         |
-| TF7   | Gastos y liquidación              | Organizador · participante | `sala-gastos`               | `sala-gastos` ⇢ `modal-crear-gasto` · `modal-crear-pago` · `modal-configurar-cobro` · `modal-comprobante-1` ⇢ `modal-rechazar-1` · participante: `sala-participante-gastos` ⇢ `modal-crear-pago-participante` |
-| TF8   | Editar, cancelar o eliminar un plan | Organizador   | `editar-plan`               | `editar-plan` → `mis-planes` ⇢ `dialog-confirm` (cancelar) · `modal-eliminar-plan-1…4` (Salida Honesta o confirmación simétrica)                                                |
-| TF9   | Mi cuenta y salida honesta     | Todos                     | `mi-cuenta`                 | `mi-cuenta` ⇢ `modal-bloqueos-cuenta` → `sala` · `mi-cuenta` ⇢ `modal-eliminar-cuenta` → `ingresar`                                                                              |
-| TF10  | Consultar el historial         | Todos                     | `historial`                 | `historial` → `historial-estados` · `historial-creaciones` · `historial-participacion` · `historial-gastos`                                                                     |
-| TF11  | Analizar la interacción | Dev                       | `analitica`                 | Píldora Dev → `analitica`                                                                                                                                                       |
-| TF12  | Buscar y filtrar planes         | Organizador · participante | `mis-planes`                | `mis-planes` → `mis-planes-sin-resultados` · pestaña `mis-planes-invitaciones`                                                                                                  |
+| Flujo | Tarea                                                         | Rol                        | Frame inicial (Figma)      | Frames del recorrido (happy path primero)                                                                                                                                                                                                                                                                  |
+| :---- | :------------------------------------------------------------ | :------------------------- | :------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TF1   | Acceso y recuperar la contraseña (Tarea 1)                    | Sin sesión                 | `landing`                  | `landing` → `ingresar` → `mis-planes` · alta: `landing` → `registro` → `mis-planes-vacio` · recuperar: `ingresar` → `recuperar` → `restablecer` → `ingresar` → `mis-planes`                                                                                                                                |
+| TF2   | Crear un plan y confirmarlo (Clase 13, Tareas 2 y 7)          | Organizador                | `mis-planes-vacio`         | `mis-planes-vacio` ⇢ `modal-crear` → `mis-planes` → `sala` ⇢ `modal-confirmar-plan` → `sala-confirmada` · empate: `sala-empate` ⇢ `modal-confirmar-plan-sin-empate` → `sala-confirmada` · sin propuestas: `sala-sin-propuestas` ⇢ `modal-confirmar-plan-sin-propuestas` → `sala-confirmada-sin-propuestas` |
+| TF3   | Invitar y responder una invitación (Tarea 5)                  | Organizador · invitado     | `sala-sin-propuestas`      | Organizador: `sala-sin-propuestas` ⇢ `modal-invitar` ⇢ `toast-alerta` · Invitado: `mis-planes-invitaciones` → `sala-invitacion-pendiente` → Aceptar `sala-participante` / Rechazar `mis-planes`                                                                                                            |
+| TF4   | Proponer y votar (Tareas 5 y 6)                               | Organizador · participante | `sala`                     | `sala` ⇢ `modal-proponer-opcion` ⇢ `toast-alerta` · voto (badge) en `sala` · `sala-lugares` ⇢ `modal-proponer-lugar`                                                                                                                                                                                       |
+| TF5   | Registrar un gasto (Tarea 8)                                  | Organizador · participante | `sala-gastos`              | `sala-gastos` ⇢ `modal-crear-gasto` ⇢ `toast-alerta` · participante: `sala-participante-gastos` ⇢ `modal-crear-gasto`                                                                                                                                                                                      |
+| TF6   | Saldar una deuda con el perfil de pago (Tarea 8)              | Deudor · acreedor          | `sala-participante-gastos` | Deudor: `sala-participante-gastos` ⇢ `modal-crear-pago-participante` → `modal-crear-pago-totalidad-participante` / `modal-crear-pago-parcial-participante` ⇢ `toast-alerta` · Acreedor: `sala-gastos` ⇢ `modal-configurar-cobro` · `modal-comprobante-1` ⇢ `modal-rechazar-1`                              |
+| TF7   | Salir de un plan (Tarea 9, Clase 14, Tarea 10)                | Participante · organizador | `sala-participante`        | Participante sin deuda: `sala-participante` ⇢ `modal-retirarse-sin-deuda` → `mis-planes` · con deuda: `sala-participante-gastos` ⇢ `modal-retirarse` → `sala-gastos` · Organizador: `dialog-confirm` (cancelar) → `mis-planes` ⇢ `modal-eliminar-plan-1…3`                                                 |
+| TF8   | Eliminar mi cuenta o descargar mis datos (Clase 22, Tarea 10) | Todos                      | `mi-cuenta`                | Descarga: `mi-cuenta` ⇢ `toast-alerta` · Baja con bloqueos: `mi-cuenta` ⇢ `modal-bloqueos-cuenta` → `sala` · sin bloqueos: `mi-cuenta` ⇢ `modal-eliminar-cuenta` → `ingresar`                                                                                                                              |
 
-### TF1 — Ingresar, registrarse y recuperar acceso
+Cada flujo se documenta igual: **Pantallas en secuencia** (frames del happy path), **Happy path** (lo que se demuestra en Play), **Ramas y validación** (lo que cambia según rol, estado o dato inválido), telemetría y verificación.
+
+### TF1 — Acceso y recuperar la contraseña
 
 - **Rol:** sin sesión · **Trigger:** abrir `/` (muestra `landing`; si hay sesión activa redirige directo a `mis-planes`).
-- **Camino feliz:** en `landing` pulsar «Ingresar» → `ingresar` → credenciales válidas → `mis-planes`.
-- **Ramas:** credenciales inválidas → mensaje genérico · más de 5 intentos/min → bloqueo · «Regístrate» o «Registrarme» en `landing`/`ingresar` → `registro` → cuenta creada: el sistema inicia sesión y redirige a `mis-planes` (vacío, sin planes todavía) · «¿La olvidaste?» → `recuperar` → respuesta única → correo → `restablecer` → `ingresar`; enlace vencido → pedir uno nuevo.
-- **Verificación:** `e2e/acceso-recuperar-contrasena.spec.ts`, `tests/Feature/AutentificacionTest.php`, `HardeningAutenticacionTest.php`.
+- **Pantallas en secuencia:** `landing` → `ingresar` → `mis-planes`.
+- **Fin del flujo:** `mis-planes` (cuenta nueva: `mis-planes-vacio`). Desde ahí la persona ya está dentro de la app y empiezan los demás flujos.
+- **Happy path:** «Ingresar» → correo y contraseña válidos → «Entrar» → `mis-planes` con los planes del usuario.
+- **Ramas y validación:**
+    - **Registrarse:** «Registrarme» → `registro` → cuenta creada: el sistema inicia sesión y redirige a `mis-planes-vacio` (cuenta nueva, sin planes). Confirmación de contraseña distinta o correo ya registrado → no se crea la cuenta.
+    - **Credenciales inválidas:** mensaje genérico que no revela si el correo existe · más de 5 intentos/min → bloqueo.
+    - **Recuperar contraseña:** «¿La olvidaste?» → `recuperar` → correo → respuesta única (idéntica exista o no la cuenta) → enlace por correo → `restablecer` → nueva contraseña → `ingresar` («Contraseña cambiada. Ya puedes ingresar.») → «Entrar» → `mis-planes` (fin del flujo). Enlace vencido → «El enlace no es válido o ya expiró. Pide uno nuevo.»
+- **Telemetría:** — (acceso y recuperación: sin telemetría de embudo).
+- **Verificación:** `e2e/acceso-recuperar-contrasena.spec.ts`, `AutentificacionTest`, `HardeningAutenticacionTest`.
 
-### TF2 — Crear un plan
+### TF2 — Crear un plan y confirmarlo _(única vía de confirmación: la sala)_
 
 - **Rol:** organizador · **Precondición:** sesión.
-- **Pasos:** `mis-planes` → «+ Crear plan» → nombre + fecha límite (no pasada) → «Guardar» → plan `pendiente`, organizador tomado de la sesión → vuelve al listado («¡Plan creado!»).
-- **Telemetría:** `plan_creacion_iniciada` (cliente), `plan_guardado`.
-- **Verificación:** `e2e/crear-plan.spec.ts`, `feedback-2-fechas-pasadas.spec.ts`, `CreacionPlanTest`, `ValidacionFechasPlanTest`.
-
-### TF3 — Invitar y responder una invitación
-
-- **Organizador:** `sala` → «Invitar» → correo → «Enviar invitación» (`invitacion_enviada`).
-- **Invitado pendiente:** ve el plan en «Planes donde participo» (o el banner en la sala) → **Aceptar invitación** (`invitacion_aceptada`) o **Rechazar invitación** (`invitacion_rechazada`). Ambas opciones están en `mis-planes` y en `sala`, con la misma altura y separación ≥ 12 px.
-- **Resultado:** al aceptar pasa a participante; al rechazar la invitación queda `rechazada`.
-- **Verificación:** `SimetriaInvitacionListadoTest`, `SalidaHonestaVistaTest`, `e2e/tarea-10-datos-salida-honesta.spec.ts` (flujo 4).
-
-### TF4 — Proponer y votar
-
-- **Roles:** organizador y participante · **Precondición:** plan `pendiente` y fecha límite vigente.
-- **Pasos:** `sala` → pestaña Fechas/Lugares → «Proponer» → `modal-proponer-opcion` (`propuesta_creada`) → «Votar por…» (`voto_emitido`); se puede «Retirar voto»; varios votos permitidos (aprobación).
-- **Fin:** al confirmarse el plan o vencer la fecha límite se deshabilita («Votación cerrada»).
-- **Verificación:** `e2e/tarea-6-varios-votos.spec.ts`, `ColaboracionEndpointsTest`, `ReglasColaboracionCierreTest`.
-
-### TF5 — Confirmar el plan _(única vía: la sala)_
+- **Pantallas en secuencia:** `mis-planes-vacio` ⇢ `modal-crear` → `mis-planes` → `sala` ⇢ `modal-confirmar-plan` → `sala-confirmada`.
+- **Fin del flujo:** `sala-confirmada` (plan `confirmado`, sala congelada).
+- **Happy path:** «+ Crear mi primer plan» → nombre + fecha límite vigente → «Guardar» → plan `pendiente` con el organizador de la sesión (`plan_guardado`, «¡Plan creado!»). Desde el listado, «Confirmar» lleva a la sala → «Cerrar votación y confirmar» → «Confirmar y cerrar votación» → plan `confirmado` (`plan_confirmado`).
+- **Ramas y validación** (ver diagrama al final):
+    - **Crear:** nombre vacío → error en el campo · fecha límite pasada → error y el plan no se crea · «Cancelar» cierra el diálogo sin guardar.
+    - **Confirmar:** hay un ganador indiscutido, o **empate** en primer lugar (`sala-empate`: hay que elegir ganadora y un motivo de al menos 5 caracteres), o **no hay propuestas de fecha** (`sala-sin-propuestas`: se conserva la fecha límite del plan).
+    - Desde `mis-planes`, «Confirmar» solo **enlaza a la sala**; no confirma. (`PUT /planes/{plan}/estado` solo acepta `cancelado`.)
+    - Un plan `confirmado` es inmutable: proponer y votar devuelven `403`.
+- **Telemetría:** `plan_creacion_iniciada` (cliente), `plan_guardado`, `plan_confirmado`.
+- **Verificación:** `e2e/crear-plan.spec.ts`, `e2e/feedback-2-fechas-pasadas.spec.ts`, `e2e/tarea-7-confirmacion-desempate.spec.ts`, `CreacionPlanTest`, `ValidacionFechasPlanTest`, `ConfirmarPlanTest`, `ConfirmacionPlanUnicaViaTest`.
 
 ```mermaid
 flowchart TD
@@ -362,10 +371,53 @@ flowchart TD
     H --> I["Plan confirmado · sala congelada · plan_confirmado"]
 ```
 
-- **Desde `mis-planes`:** «Confirmar» solo **enlaza a la sala**; no confirma. (`PUT /planes/{plan}/estado` solo acepta `cancelado`.)
-- **Verificación:** `e2e/tarea-7-confirmacion-desempate.spec.ts`, `ConfirmarPlanTest`, `ConfirmacionPlanUnicaViaTest`.
+### TF3 — Invitar y responder una invitación
 
-### TF6 — Retirarse de un plan _(única vía de salida)_
+- **Roles:** organizador (invita) e invitado (responde). Se mide como un único embudo.
+- **Pantallas en secuencia:** `sala-sin-propuestas` ⇢ `modal-invitar` · `mis-planes-invitaciones` → `sala-invitacion-pendiente` → `sala-participante`.
+- **Happy path:** el organizador pulsa «Invitar», escribe el correo y envía (`invitacion_enviada`). El invitado ve el plan en «Planes donde participo», entra a la sala y pulsa **Aceptar invitación** (`invitacion_aceptada`): pasa a participante.
+- **Ramas y validación:** correo inválido → error en el campo · **Rechazar invitación** (`invitacion_rechazada`) → la invitación queda `rechazada` y el invitado vuelve a `mis-planes` · plan cancelado → no se invita ni se responde · Aceptar y Rechazar están en `mis-planes` y en `sala`, con la misma altura y separación ≥ 12 px.
+- **Telemetría:** `invitacion_enviada`, `invitacion_aceptada`, `invitacion_rechazada`.
+- **Verificación:** `SimetriaInvitacionListadoTest`, `SalidaHonestaVistaTest`, `e2e/tarea-10-datos-salida-honesta.spec.ts` (flujo 4).
+
+### TF4 — Proponer y votar
+
+- **Roles:** organizador y participante · **Precondición:** plan `pendiente` y fecha límite vigente.
+- **Pantallas en secuencia:** `sala` ⇢ `modal-proponer-opcion` → `sala` (voto) → `sala-lugares` ⇢ `modal-proponer-lugar`.
+- **Happy path:** «Proponer opción» → fecha o lugar → guardar (`propuesta_creada`) → «Votar por esta opción» (`voto_emitido`) → el contador y la barra de votos se actualizan.
+- **Ramas y validación:** se puede «Retirar voto» («Votado (clic para retirar)») · varios votos por persona (aprobación) · fecha límite vencida o plan confirmado → «Votación cerrada»: proponer y votar devuelven `403` · invitado pendiente y ajenos no pueden proponer ni votar.
+- **Telemetría:** `votacion_iniciada`, `propuesta_creada`, `voto_emitido`.
+- **Verificación:** `e2e/tarea-6-varios-votos.spec.ts`, `ColaboracionEndpointsTest`, `ReglasColaboracionCierreTest`.
+
+### TF5 — Registrar un gasto
+
+- **Roles:** organizador y participante · **Precondición:** plan no cancelado.
+- **Pantallas en secuencia:** `sala-gastos` ⇢ `modal-crear-gasto` → `sala-gastos` (saldos recalculados).
+- **Happy path:** «Registrar gasto» → concepto + monto + tipo de división → **marcar conscientemente a los participantes** (ninguno preseleccionado) → partes iguales o cuotas personalizadas → «Guardar» → saldos netos recalculados (`gasto_registrado`).
+- **Ramas y validación:** monto inválido o sin participantes marcados → error en el campo · plan cancelado → solo lectura · el participante registra desde `sala-participante-gastos`.
+- **Telemetría:** `gasto_registrado`.
+- **Verificación:** `e2e/tarea-8-gastos-liquidacion.spec.ts`, `EticaGastosPatronOscuroTest`, `GastosControllerTest`, `GastosModalErgonomiaTest`.
+
+### TF6 — Saldar una deuda con el perfil de pago
+
+- **Roles:** deudor (paga) y acreedor (recibe y concilia) · **Precondición:** deuda pendiente en un plan no cancelado.
+- **Pantallas en secuencia:** `sala-participante-gastos` ⇢ `modal-crear-pago-participante` → `modal-crear-pago-totalidad-participante` ⇢ `toast-alerta` · `sala-gastos` ⇢ `modal-comprobante-1`.
+- **Perfil de pago:** el acreedor configura su método de cobro (alias y QR) en `modal-configurar-cobro`, también editable desde `mi-cuenta`; el deudor lo ve al pagar.
+- **Happy path:** el deudor pulsa «Registrar pago» → elige receptor y **modalidad** («Pagar totalidad» o «Pago parcial»; ninguna preseleccionada, el monto se desbloquea al elegir) → adjunta comprobante opcional → pago `pendiente` (`pago_iniciado`). El acreedor abre el comprobante y pulsa **Confirmar** (`pago_confirmado`).
+- **Ramas y validación:** el acreedor puede **Rechazar con motivo obligatorio** (`pago_rechazado`) · monto mayor a la deuda → error · sin perfil de pago configurado, el acreedor ve «Sin configurar» y debe completarlo · plan cancelado → solo lectura.
+- **Telemetría:** `pago_iniciado`, `pago_confirmado`, `pago_rechazado`.
+- **Verificación:** `e2e/tarea-8-gastos-liquidacion.spec.ts`, `EticaGastosPatronOscuroTest`, `GastosControllerTest`.
+
+### TF7 — Salir de un plan _(única vía de salida)_
+
+- **Roles:** participante (se retira) · organizador (cancela o elimina) · **Precondición:** plan `pendiente` para retirarse.
+- **Pantallas en secuencia:** `sala-participante` ⇢ `modal-retirarse-sin-deuda` → `mis-planes`.
+- **Happy path:** el participante sin deuda pulsa «Retirarse» → aviso «se anularán sus votos» → «Sí, retirarme» → votos anulados, ganadoras recalculadas y vuelve a `mis-planes` (`participante_retirado`).
+- **Ramas y validación** (ver diagrama al final):
+    - **Con deuda:** `sala-participante-gastos` ⇢ `modal-retirarse` → `sala-gastos` para liquidar primero (`retiro_bloqueado_deuda` + `error_freno_tarea`).
+    - **Organizador:** no puede retirarse. **Cancelar:** plan `confirmado` → «Cancelar» → diálogo destructivo («Sí, cancelar» / «Mantener plan») → `cancelado` (irreversible). **Eliminar:** `modal-eliminar-plan-{id}`; con bloqueos (plan `confirmado` o deudas) → **Salida Honesta** («1. ¿Por qué no puedes…?» + «2. ¿Qué debes hacer…?» con acción «Cancelar plan formalmente» / «Ir a saldar gastos») · `plan_eliminacion_bloqueada`; sin bloqueos → confirmación simétrica → `plan_eliminado`.
+- **Telemetría:** `retiro_iniciado`, `retiro_bloqueado_deuda`, `error_freno_tarea`, `participante_retirado`, `retiro_confirmado`, `plan_eliminacion_bloqueada`, `plan_eliminado`.
+- **Verificación:** `e2e/tarea-9-retirarse-plan.spec.ts`, `RetirarsePlanControllerTest`, `RetiroModalVistaTest`, `RetiroParticipanteDominioTest`, `SalidaHonestaControllerTest`, `SalidaHonestaTest`, `IntegridadPlanesTest`, `EnlacesLiquidarDeudaTest`.
 
 ```mermaid
 flowchart TD
@@ -377,29 +429,16 @@ flowchart TD
     D --> H["«Mantener plan»"]
 ```
 
-- **Reglas:** el organizador no puede retirarse (debe cancelar o eliminar). No existe otro endpoint de salida.
-- **Telemetría:** `retiro_iniciado`, `retiro_bloqueado_deuda` + `error_freno_tarea`, `participante_retirado`, `retiro_confirmado`.
-- **Verificación:** `e2e/tarea-9-retirarse-plan.spec.ts`, `RetirarsePlanControllerTest`, `RetiroModalVistaTest`, `RetiroParticipanteDominioTest`.
+### TF8 — Eliminar mi cuenta o descargar mis datos
 
-### TF7 — Gastos y liquidación
-
-- **Roles:** organizador y participante · **Precondición:** plan no cancelado.
-- **Registrar gasto:** «Registrar gasto» → concepto + monto + tipo de división → **marcar conscientemente a los participantes** (ninguno preseleccionado) → partes iguales o cuotas personalizadas → `gasto_registrado`.
-- **Pagar una deuda:** «Registrar pago» → receptor → **elegir modalidad** («Pagar totalidad» o «Pago parcial»; ninguna preseleccionada, el monto se desbloquea al elegir) → comprobante de transferencia (opcional, imagen) → `pago_iniciado` → pago `pendiente`.
-- **Acreedor:** abre el comprobante → **Confirmar** (`pago_confirmado`) o **Rechazar con motivo obligatorio** (`pago_rechazado`).
-- **Método de cobro:** `modal-configurar-cobro` (alias, QR) también editable desde `mi-cuenta`.
-- **Verificación:** `e2e/tarea-8-gastos-liquidacion.spec.ts`, `EticaGastosPatronOscuroTest`, `GastosControllerTest`, `GastosModalErgonomiaTest`.
-
-### TF8 — Editar, cancelar o eliminar un plan
-
-- **Editar:** `mis-planes` o `sala` → «Editar» → `editar-plan` → «Actualizar» (no disponible si está cancelado) · `e2e/planes-editar.spec.ts`.
-- **Cancelar:** plan `confirmado` → «Cancelar» → diálogo **destructivo** («Sí, cancelar» / «Mantener plan») → `cancelado` (irreversible).
-- **Eliminar:** «Eliminar» → `modal-eliminar-plan-{id}`.
-    - Con **bloqueos** (plan `confirmado`, o deudas pendientes) → **Salida Honesta**: «1. ¿Por qué no puedes…?» + «2. ¿Qué debes hacer…?» con acción («Cancelar plan formalmente» / «Ir a saldar gastos» → `sala?tab=gastos`) · `plan_eliminacion_bloqueada`.
-    - Sin bloqueos → confirmación simétrica → `plan_eliminado`.
-- **Verificación:** `SalidaHonestaControllerTest`, `SalidaHonestaTest`, `IntegridadPlanesTest`, `EnlacesLiquidarDeudaTest`.
-
-### TF9 — Gestionar Mi Cuenta
+- **Rol:** todos · **Precondición:** sesión.
+- **Pantallas en secuencia:** `mi-cuenta` ⇢ `modal-eliminar-cuenta` → `ingresar`.
+- **Happy path (baja):** «Eliminar mi cuenta» sin bloqueos → `modal-eliminar-cuenta` → contraseña actual → «Eliminar cuenta» → sesión cerrada y `ingresar` (`cuenta_eliminada`, sin datos personales).
+- **Ramas y validación** (ver diagrama al final):
+    - **Con bloqueos:** `modal-bloqueos-cuenta` → «Gestionar» (plan abierto) o «Liquidar» (deuda) → `sala` (`cuenta_eliminacion_bloqueada`).
+    - **Contraseña incorrecta** → error y la cuenta se conserva.
+    - **Descargar mis datos:** tarjeta «Descarga de datos» → JSON o CSV (`GET /perfil/datos/exportar`) → aviso de descarga (`toast-alerta`). Es la alternativa a eliminar: el usuario se lleva sus datos antes o en lugar de borrar.
+- **Verificación:** `e2e/tarea-10-datos-salida-honesta.spec.ts`, `PerfilGestionTest`, `SalidaHonestaVistaTest`.
 
 ```mermaid
 flowchart TD
@@ -412,26 +451,17 @@ flowchart TD
     F --> H["Eliminar cuenta → ingresar"]
 ```
 
-- **Otras tareas:** editar datos personales · cambiar contraseña (pide la actual) · datos de cobro (alias, QR) · descargar datos JSON/CSV.
-- **Telemetría:** `cuenta_eliminacion_bloqueada`, `cuenta_eliminada` (sin datos personales).
-- **Verificación:** `e2e/tarea-10-datos-salida-honesta.spec.ts`, `PerfilGestionTest`, `SalidaHonestaVistaTest`.
+### Pantallas que no son flujos
 
-### TF10 — Consultar el historial
+Existen en el App Map y tienen su verificación, pero no cumplen el criterio de flujo (sin pasos con ramas ni resultado propio).
 
-- `historial` → elegir categoría (Todos · Estados · Creaciones · Participación · Gastos) → lista; sin datos → estado vacío con salida a `mis-planes`.
-- **Verificación:** `e2e/historial-filtros.spec.ts`, `HistorialConsultaTest`, `HistorialVistaTest`.
-
-### TF11 — Analizar la interacción _(Dev)_
-
-- Píldora flotante → `analitica`: 6 embudos, abandono y errores de freno · `e2e/clase-21-analitica.spec.ts`, `AnaliticaBackendTest`.
-
-### TF12 — Buscar y filtrar planes
-
-- **Rol:** organizador y participante · **Precondición:** sesión.
-- **Pasos:** `mis-planes` → escribir en «Buscar por nombre» y/o elegir estado (Todos, Pendiente, Confirmado, Cancelado) y fecha (Cualquier fecha, Próximos 7 días, Ya vencidos) → «Filtrar» → cada sección (Hoy · Próximos · Vencidos) se acota y mantiene su contador.
-- **Sin coincidencias:** estado vacío «Ningún plan coincide con los filtros aplicados en esta sección» (`mis-planes-sin-resultados`); «Limpiar» restablece el listado.
-- **Telemetría:** `busqueda_realizada`, `filtro_aplicado`, `busqueda_sin_resultados`.
-- **Verificación:** `FiltradoPlanesTest`, `ArquitecturaInformacionVistaTest`.
+| Pantalla / función                       | Por qué no es flujo                                                                                                                                                                  | Verificación                                                                   |
+| :--------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------- |
+| `historial` (Tarea 4)                    | Consulta de solo lectura en una pantalla; filtra por categoría (Todos · Estados · Creaciones · Participación · Gastos); sin datos → estado vacío                                     | `e2e/historial-filtros.spec.ts`, `HistorialConsultaTest`, `HistorialVistaTest` |
+| `mis-planes`: buscar y filtrar (Tarea 3) | Herramienta de la pantalla: acota las secciones sin crear ni cambiar nada; sin filtros → estado vacío «Ningún plan coincide con los filtros aplicados» (`mis-planes-sin-resultados`) | `FiltradoPlanesTest`, `ArquitecturaInformacionVistaTest`                       |
+| `editar-plan`                            | Formulario simple: «Actualizar» (no disponible si el plan está cancelado)                                                                                                            | `e2e/planes-editar.spec.ts`                                                    |
+| `analitica` (Dev)                        | Herramienta interna: píldora flotante → panel con 6 embudos, abandono y errores de freno                                                                                             | `e2e/clase-21-analitica.spec.ts`, `AnaliticaBackendTest`                       |
+| `mi-cuenta`: datos, contraseña, cobro    | Formularios sin ramas; la contraseña actual es requisito para cambiarla (la descarga de datos y la baja sí son el flujo TF8)                                                         | `PerfilGestionTest`                                                            |
 
 ---
 
@@ -449,19 +479,18 @@ flowchart TD
 
 ## 8. Trazabilidad
 
-| Flujo | Eventos de telemetría (`Evento::registrar` / cliente)                                                          |
-| :---- | :------------------------------------------------------------------------------------------------------------- |
-| TF2   | `plan_creacion_iniciada`, `plan_guardado`                                                                      |
-| TF3   | `invitacion_enviada`, `invitacion_aceptada`, `invitacion_rechazada`                                            |
-| TF4   | `votacion_iniciada`, `propuesta_creada`, `voto_emitido`                                                        |
-| TF5   | `plan_confirmado`                                                                                              |
-| TF6   | `retiro_iniciado`, `retiro_bloqueado_deuda`, `error_freno_tarea`, `participante_retirado`, `retiro_confirmado` |
-| TF7   | `gasto_registrado`, `pago_iniciado`, `pago_confirmado`, `pago_rechazado`                                       |
-| TF8   | `plan_eliminacion_bloqueada`, `plan_eliminado`                                                                 |
-| TF9   | `cuenta_eliminacion_bloqueada`, `cuenta_eliminada`                                                             |
-| TF10  | — (consulta de solo lectura, sin telemetría propia)                                                            |
-| TF11  | — (es el panel que consume la telemetría de los demás flujos)                                                  |
-| TF12  | `busqueda_realizada`, `filtro_aplicado`, `busqueda_sin_resultados`                                             |
+| Flujo | Eventos de telemetría (`Evento::registrar` / cliente)                                                                                                          |
+| :---- | :------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TF1   | — (acceso y recuperación: sin telemetría de embudo)                                                                                                            |
+| TF2   | `plan_creacion_iniciada`, `plan_guardado`, `plan_confirmado`                                                                                                   |
+| TF3   | `invitacion_enviada`, `invitacion_aceptada`, `invitacion_rechazada`                                                                                            |
+| TF4   | `votacion_iniciada`, `propuesta_creada`, `voto_emitido`                                                                                                        |
+| TF5   | `gasto_registrado`                                                                                                                                             |
+| TF6   | `pago_iniciado`, `pago_confirmado`, `pago_rechazado`                                                                                                           |
+| TF7   | `retiro_iniciado`, `retiro_bloqueado_deuda`, `error_freno_tarea`, `participante_retirado`, `retiro_confirmado`, `plan_eliminacion_bloqueada`, `plan_eliminado` |
+| TF8   | `cuenta_eliminacion_bloqueada`, `cuenta_eliminada`                                                                                                             |
+
+> `historial`, `analitica` y la búsqueda de `mis-planes` (`busqueda_realizada`, `filtro_aplicado`, `busqueda_sin_resultados`) no son flujos: `analitica` es el panel que consume la telemetría de todos los demás.
 
 ---
 
@@ -469,45 +498,45 @@ flowchart TD
 
 > Generado desde `php artisan route:list`. **No editar a mano las columnas de ruta**: si el código cambia, el test de contrato falla hasta actualizarlo.
 
-| Ruta (nombre)                  | Método | URI                                  | Acción                               |     Guard      | Pantalla         |   Flujo   |
-| :----------------------------- | :----: | :----------------------------------- | :----------------------------------- | :------------: | :--------------- | :-------: |
-| `landing`                      |  GET   | `/`                                  | `Landing@inicio`                     |   sin sesión   | landing          |    TF1    |
-| `analitica.index`              |  GET   | `/analitica`                         | `Eventos@analitica`                  |     sesión     | analitica        |   TF11    |
-| `eventos.guardar`              |  POST  | `/eventos`                           | `Eventos@guardar`                    |     sesión     | (global)         |   TF11    |
-| `historial.index`              |  GET   | `/historial`                         | `Historial@index`                    |     sesión     | historial        |   TF10    |
-| `login`                        |  GET   | `/ingresar`                          | `Autentificacion@mostrarIngreso`     |   sin sesión   | ingresar         |    TF1    |
-| `ingresar`                     |  POST  | `/ingresar`                          | `Autentificacion@ingresar`           | sin sesión · 1 | ingresar         |    TF1    |
-| `planes.listar`                |  GET   | `/mis-planes`                        | `Planes@listar`                      |     sesión     | mis-planes       | TF2, TF10 |
-| `opciones.votar`               |  POST  | `/opciones/{opcion}/votar`           | `Colaboracion@votar`                 |     sesión     | sala             |    TF4    |
-| `pagos.confirmar`              |  POST  | `/pagos/{pago}/confirmar`            | `Gastos@confirmarPago`               |     sesión     | sala             |    TF7    |
-| `pagos.rechazar`               |  POST  | `/pagos/{pago}/rechazar`             | `Gastos@rechazarPago`                |     sesión     | sala             |    TF7    |
-| `perfil.contrasena.actualizar` |  PUT   | `/perfil/contrasena`                 | `Cuenta@actualizarContrasena`        |     sesión     | mi-cuenta        |    TF9    |
-| `perfil.datos`                 |  GET   | `/perfil/datos`                      | `Cuenta@datos`                       |     sesión     | mi-cuenta        |    TF9    |
-| `perfil.actualizar`            |  PUT   | `/perfil/datos`                      | `Cuenta@actualizarPerfil`            |     sesión     | mi-cuenta        |    TF9    |
-| `perfil.cobro.actualizar`      |  PUT   | `/perfil/datos-cobro`                | `PerfilCobro@update`                 |     sesión     | mi-cuenta, sala  | TF7, TF9  |
-| `perfil.datos.exportar`        |  GET   | `/perfil/datos/exportar`             | `Cuenta@exportar`                    |     sesión     | mi-cuenta        |    TF9    |
-| `perfil.eliminar-cuenta`       |  POST  | `/perfil/eliminar-cuenta`            | `Cuenta@eliminarCuenta`              |     sesión     | mi-cuenta        |    TF9    |
-| `planes.guardar`               |  POST  | `/planes`                            | `Planes@guardar`                     |     sesión     | mis-planes       |    TF2    |
-| `planes.detalle`               |  GET   | `/planes/{plan}`                     | `Colaboracion@detalle`               |     sesión     | sala             |  TF3–TF7  |
-| `planes.actualizar`            |  PUT   | `/planes/{plan}`                     | `Planes@actualizar`                  |     sesión     | editar-plan      |    TF8    |
-| `planes.eliminar`              | DELETE | `/planes/{plan}`                     | `Planes@eliminar`                    |     sesión     | mis-planes       |    TF8    |
-| `planes.aceptar`               |  POST  | `/planes/{plan}/aceptar`             | `Colaboracion@aceptar`               |     sesión     | sala, mis-planes |    TF3    |
-| `planes.confirmar`             |  POST  | `/planes/{plan}/confirmar`           | `Planes@confirmar`                   |     sesión     | sala             |    TF5    |
-| `planes.editar`                |  GET   | `/planes/{plan}/editar`              | `Planes@editar`                      |     sesión     | editar-plan      |    TF8    |
-| `planes.estado`                |  PUT   | `/planes/{plan}/estado`              | `Planes@cambiarEstado`               |     sesión     | mis-planes       |    TF8    |
-| `planes.gastos.guardar`        |  POST  | `/planes/{plan}/gastos`              | `Gastos@guardarGasto`                |     sesión     | sala             |    TF7    |
-| `planes.invitar`               |  POST  | `/planes/{plan}/invitar`             | `Colaboracion@invitar`               |     sesión     | sala             |    TF3    |
-| `planes.opciones.guardar`      |  POST  | `/planes/{plan}/opciones`            | `Colaboracion@guardarOpcion`         |     sesión     | sala             |    TF4    |
-| `planes.pagos.guardar`         |  POST  | `/planes/{plan}/pagos`               | `Gastos@guardarPago`                 |     sesión     | sala             |    TF7    |
-| `planes.rechazar-invitacion`   |  POST  | `/planes/{plan}/rechazar-invitacion` | `Colaboracion@rechazar`              |     sesión     | sala, mis-planes |    TF3    |
-| `planes.retirarse`             |  POST  | `/planes/{plan}/retirarse`           | `Planes@retirarse`                   |     sesión     | sala             |    TF6    |
-| `recuperar`                    |  GET   | `/recuperar`                         | `Autentificacion@mostrarRecuperar`   |   sin sesión   | recuperar        |    TF1    |
-| `enviar.correo`                |  POST  | `/recuperar`                         | `Autentificacion@enviarCorreo`       | sin sesión · 1 | recuperar        |    TF1    |
-| `registro`                     |  GET   | `/registro`                          | `Autentificacion@mostrarRegistro`    |   sin sesión   | registro         |    TF1    |
-| `registrar`                    |  POST  | `/registro`                          | `Autentificacion@registrar`          |   sin sesión   | registro         |    TF1    |
-| `restablecer`                  |  POST  | `/restablecer`                       | `Autentificacion@restablecer`        |   sin sesión   | restablecer      |    TF1    |
-| `password.reset`               |  GET   | `/restablecer/{token}`               | `Autentificacion@mostrarRestablecer` |   sin sesión   | restablecer      |    TF1    |
-| `salir`                        |  POST  | `/salir`                             | `Autentificacion@salir`              |     sesión     | (global)         |    TF1    |
+| Ruta (nombre)                  | Método | URI                                  | Acción                               |     Guard      | Pantalla         |     Flujo     |
+| :----------------------------- | :----: | :----------------------------------- | :----------------------------------- | :------------: | :--------------- | :-----------: |
+| `landing`                      |  GET   | `/`                                  | `Landing@inicio`                     |   sin sesión   | landing          |      TF1      |
+| `analitica.index`              |  GET   | `/analitica`                         | `Eventos@analitica`                  |     sesión     | analitica        |       —       |
+| `eventos.guardar`              |  POST  | `/eventos`                           | `Eventos@guardar`                    |     sesión     | (global)         |       —       |
+| `historial.index`              |  GET   | `/historial`                         | `Historial@index`                    |     sesión     | historial        |       —       |
+| `login`                        |  GET   | `/ingresar`                          | `Autentificacion@mostrarIngreso`     |   sin sesión   | ingresar         |      TF1      |
+| `ingresar`                     |  POST  | `/ingresar`                          | `Autentificacion@ingresar`           | sin sesión · 1 | ingresar         |      TF1      |
+| `planes.listar`                |  GET   | `/mis-planes`                        | `Planes@listar`                      |     sesión     | mis-planes       | TF2, TF3, TF7 |
+| `opciones.votar`               |  POST  | `/opciones/{opcion}/votar`           | `Colaboracion@votar`                 |     sesión     | sala             |      TF4      |
+| `pagos.confirmar`              |  POST  | `/pagos/{pago}/confirmar`            | `Gastos@confirmarPago`               |     sesión     | sala             |      TF6      |
+| `pagos.rechazar`               |  POST  | `/pagos/{pago}/rechazar`             | `Gastos@rechazarPago`                |     sesión     | sala             |      TF6      |
+| `perfil.contrasena.actualizar` |  PUT   | `/perfil/contrasena`                 | `Cuenta@actualizarContrasena`        |     sesión     | mi-cuenta        |       —       |
+| `perfil.datos`                 |  GET   | `/perfil/datos`                      | `Cuenta@datos`                       |     sesión     | mi-cuenta        |      TF8      |
+| `perfil.actualizar`            |  PUT   | `/perfil/datos`                      | `Cuenta@actualizarPerfil`            |     sesión     | mi-cuenta        |       —       |
+| `perfil.cobro.actualizar`      |  PUT   | `/perfil/datos-cobro`                | `PerfilCobro@update`                 |     sesión     | mi-cuenta, sala  |      TF6      |
+| `perfil.datos.exportar`        |  GET   | `/perfil/datos/exportar`             | `Cuenta@exportar`                    |     sesión     | mi-cuenta        |      TF8      |
+| `perfil.eliminar-cuenta`       |  POST  | `/perfil/eliminar-cuenta`            | `Cuenta@eliminarCuenta`              |     sesión     | mi-cuenta        |      TF8      |
+| `planes.guardar`               |  POST  | `/planes`                            | `Planes@guardar`                     |     sesión     | mis-planes       |      TF2      |
+| `planes.detalle`               |  GET   | `/planes/{plan}`                     | `Colaboracion@detalle`               |     sesión     | sala             |    TF2–TF7    |
+| `planes.actualizar`            |  PUT   | `/planes/{plan}`                     | `Planes@actualizar`                  |     sesión     | editar-plan      |       —       |
+| `planes.eliminar`              | DELETE | `/planes/{plan}`                     | `Planes@eliminar`                    |     sesión     | mis-planes       |      TF7      |
+| `planes.aceptar`               |  POST  | `/planes/{plan}/aceptar`             | `Colaboracion@aceptar`               |     sesión     | sala, mis-planes |      TF3      |
+| `planes.confirmar`             |  POST  | `/planes/{plan}/confirmar`           | `Planes@confirmar`                   |     sesión     | sala             |      TF2      |
+| `planes.editar`                |  GET   | `/planes/{plan}/editar`              | `Planes@editar`                      |     sesión     | editar-plan      |       —       |
+| `planes.estado`                |  PUT   | `/planes/{plan}/estado`              | `Planes@cambiarEstado`               |     sesión     | mis-planes       |      TF7      |
+| `planes.gastos.guardar`        |  POST  | `/planes/{plan}/gastos`              | `Gastos@guardarGasto`                |     sesión     | sala             |      TF5      |
+| `planes.invitar`               |  POST  | `/planes/{plan}/invitar`             | `Colaboracion@invitar`               |     sesión     | sala             |      TF3      |
+| `planes.opciones.guardar`      |  POST  | `/planes/{plan}/opciones`            | `Colaboracion@guardarOpcion`         |     sesión     | sala             |      TF4      |
+| `planes.pagos.guardar`         |  POST  | `/planes/{plan}/pagos`               | `Gastos@guardarPago`                 |     sesión     | sala             |      TF6      |
+| `planes.rechazar-invitacion`   |  POST  | `/planes/{plan}/rechazar-invitacion` | `Colaboracion@rechazar`              |     sesión     | sala, mis-planes |      TF3      |
+| `planes.retirarse`             |  POST  | `/planes/{plan}/retirarse`           | `Planes@retirarse`                   |     sesión     | sala             |      TF7      |
+| `recuperar`                    |  GET   | `/recuperar`                         | `Autentificacion@mostrarRecuperar`   |   sin sesión   | recuperar        |      TF1      |
+| `enviar.correo`                |  POST  | `/recuperar`                         | `Autentificacion@enviarCorreo`       | sin sesión · 1 | recuperar        |      TF1      |
+| `registro`                     |  GET   | `/registro`                          | `Autentificacion@mostrarRegistro`    |   sin sesión   | registro         |      TF1      |
+| `registrar`                    |  POST  | `/registro`                          | `Autentificacion@registrar`          |   sin sesión   | registro         |      TF1      |
+| `restablecer`                  |  POST  | `/restablecer`                       | `Autentificacion@restablecer`        |   sin sesión   | restablecer      |      TF1      |
+| `password.reset`               |  GET   | `/restablecer/{token}`               | `Autentificacion@mostrarRestablecer` |   sin sesión   | restablecer      |      TF1      |
+| `salir`                        |  POST  | `/salir`                             | `Autentificacion@salir`              |     sesión     | (global)         |      TF1      |
 
 ---
 
@@ -517,7 +546,8 @@ flowchart TD
 2. **Figma:** el frame de cada pantalla se llama como su id (§1); la variante de cada componente sigue el nombre de `DESIGN.md`.
 3. **Código:** ruta nueva → fila en §9 + pantalla en §2.1 si aplica; permiso nuevo → fila en §5; flujo nuevo → `TFn` en §6 con su verificación.
 4. **Verificación automática:** `php artisan test --filter FlowsContractTest` (rutas ↔ inventario, vistas ↔ pantallas, pantallas ↔ Task Flows).
-5. Las skills `information-architecture`, `heuristic-evaluation`, `e2e-testing` y `dark-patterns` leen este archivo como fuente del App Map.
+5. Si cambia un frame de «App» o un recorrido, regenera la página «Flujos» (§11.6).
+6. Las skills `information-architecture`, `heuristic-evaluation`, `e2e-testing` y `dark-patterns` leen este archivo como fuente del App Map.
 
 ---
 
@@ -530,96 +560,100 @@ flowchart TD
 
 Un _Flow_ de Figma por cada Task Flow de §6 (mismo número y nombre). Cada frame inicial es único: Figma no admite dos flows sobre el mismo frame.
 
-| Nombre del Flow en Figma                                    | Frame inicial             |
-| :---------------------------------------------------------- | :------------------------ |
-| **TF1 — Ingresar, registrarse y recuperar acceso**          | `landing`                 |
-| **TF2 — Crear un plan**                                     | `mis-planes-vacio`        |
-| **TF3 — Invitar y responder una invitación**                | `mis-planes-invitaciones` |
-| **TF4 — Proponer y votar**                                  | `sala`                    |
-| **TF5 — Confirmar el plan**                                 | `sala-empate`             |
-| **TF6 — Retirarse de un plan**                              | `sala-participante`       |
-| **TF7 — Gastos y liquidación**                              | `sala-gastos`             |
-| **TF8 — Editar, cancelar o eliminar un plan**               | `editar-plan`             |
-| **TF9 — Gestionar Mi Cuenta**                               | `mi-cuenta`               |
-| **TF10 — Consultar el historial**                           | `historial`               |
-| **TF11 — Analizar la interacción (Dev)**                    | `analitica`               |
-| **TF12 — Buscar y filtrar planes**                          | `mis-planes`              |
+| Nombre del Flow en Figma                           | Frame inicial              |
+| :------------------------------------------------- | :------------------------- |
+| **TF1 — Acceso y recuperar la contraseña**         | `landing`                  |
+| **TF2 — Crear un plan y confirmarlo**              | `mis-planes-vacio`         |
+| **TF3 — Invitar y responder una invitación**       | `sala-sin-propuestas`      |
+| **TF4 — Proponer y votar**                         | `sala`                     |
+| **TF5 — Registrar un gasto**                       | `sala-gastos`              |
+| **TF6 — Saldar una deuda con el perfil de pago**   | `sala-participante-gastos` |
+| **TF7 — Salir de un plan**                         | `sala-participante`        |
+| **TF8 — Eliminar mi cuenta o descargar mis datos** | `mi-cuenta`                |
 
 El recorrido de cada flow (frames en orden de captura) está en el «Catálogo de flujos» de §6.
 
+**Puntos de entrada de ramas por rol.** Algunas ramas no se alcanzan desde el frame inicial porque la app no enlaza esos frames entre sí (por ejemplo, un invitado no llega a su bandeja desde la sala del organizador). En la página «Flujos» cada una tiene su propio punto de inicio, con el prefijo del flujo y `·`:
+
+| Entrada adicional en Figma (página «Flujos») | Frame inicial              | Rama que prueba                                |
+| :------------------------------------------- | :------------------------- | :--------------------------------------------- |
+| **TF3 · Responder (invitado)**               | `mis-planes-invitaciones`  | Aceptar o rechazar la invitación               |
+| **TF5 · Registrar gasto (participante)**     | `sala-participante-gastos` | Registrar un gasto como participante           |
+| **TF6 · Conciliar (acreedor)**               | `sala-gastos`              | Configurar cobro, confirmar o rechazar el pago |
+
 ### 11.2 Grafo de Conexiones de Navegación y Modales
 
-| Frame / Capa Origen                                  | Elemento / Capa Clickeable                                            | Disparador |      Acción Figma      | Frame / Overlay Destino                | Configuración de Overlay / Animación             |
-| :--------------------------------------------------- | :-------------------------------------------------------------------- | :--------: | :--------------------: | :------------------------------------- | :----------------------------------------------- |
-| **Navegación Global (`layouts/app`)**                |                                                                       |            |                        |                                        |                                                  |
-| _Cualquier frame con navbar_                         | Marca `Planazo`                                                       | `On click` |     `Navigate to`      | `mis-planes`                           | Instant                                          |
-| _Cualquier frame con navbar_                         | Menú `Mis Planes`                                                     | `On click` |     `Navigate to`      | `mis-planes`                           | Instant                                          |
-| _Cualquier frame con navbar_                         | Menú `Historial`                                                      | `On click` |     `Navigate to`      | `historial`                            | Instant                                          |
-| _Cualquier frame con navbar_                         | Menú `Mi Cuenta`                                                      | `On click` |     `Navigate to`      | `mi-cuenta`                            | Instant                                          |
-| _Cualquier frame con navbar_                         | Botón `Salir`                                                         | `On click` |     `Navigate to`      | `ingresar`                             | Dissolve 150ms                                   |
-| _Cualquier frame con toolbar dev_                    | Píldora `Telemetría Dev`                                              | `On click` |     `Navigate to`      | `analitica`                            | Instant                                          |
-| **`landing`**                                        |                                                                       |            |                        |                                        |                                                  |
-| `landing`                                            | Botón `Ingresar` (navbar y hero)                                      | `On click` |     `Navigate to`      | `ingresar`                             | Instant                                          |
-| `landing`                                            | Botón `Registrarme` (navbar y hero)                                   | `On click` |     `Navigate to`      | `registro`                             | Instant                                          |
-| `landing`                                            | Botón de tema (sol / luna)                                            | `On click` |     `Navigate to`      | `landing-oscuro`                       | Instant                                          |
-| `landing-oscuro`                                     | Botón de tema (sol / luna)                                            | `On click` |     `Navigate to`      | `landing`                              | Instant                                          |
-| **`ingresar`**                                       |                                                                       |            |                        |                                        |                                                  |
-| `ingresar`                                           | Botón `Entrar`                                                        | `On click` |     `Navigate to`      | `mis-planes`                           | Smart animate 200ms                              |
-| `ingresar`                                           | Enlace `¿La olvidaste?`                                               | `On click` |     `Navigate to`      | `recuperar`                            | Instant                                          |
-| `ingresar`                                           | Botón `Regístrate`                                                    | `On click` |     `Navigate to`      | `registro`                             | Instant                                          |
-| **`registro`**                                       |                                                                       |            |                        |                                        |                                                  |
-| `registro`                                           | Botón `Registrarme`                                                   | `On click` |     `Navigate to`      | `mis-planes-vacio`                     | Instant (el código inicia sesión y redirige a `planes.listar`; una cuenta nueva no tiene planes) |
-| `registro`                                           | Enlace `Ingresa`                                                      | `On click` |     `Navigate to`      | `ingresar`                             | Instant                                          |
-| **`recuperar` / `restablecer`**                      |                                                                       |            |                        |                                        |                                                  |
-| `recuperar`                                          | Botón `Enviar enlace`                                                 | `On click` |     `Navigate to`      | `restablecer`                          | Instant (simula llegada de correo)               |
-| `recuperar`                                          | Enlace `← Volver a ingresar`                                          | `On click` |     `Navigate to`      | `ingresar`                             | Instant                                          |
-| `restablecer`                                        | Botón `Cambiar contraseña`                                            | `On click` |     `Navigate to`      | `ingresar`                             | Instant                                          |
-| **`mis-planes`**                                     |                                                                       |            |                        |                                        |                                                  |
-| `mis-planes`                                         | Botón `+ Crear plan`                                                  | `On click` |     `Open overlay`     | `modal-crear`                          | Centered · Backdrop 40% · Close on click outside |
-| `mis-planes`                                         | Tab `Planes donde participo`                                          | `On click` | `Swap overlay / state` | `mis-planes-invitaciones`              | Instant                                          |
-| `mis-planes`                                         | Fila Plan: Botón `Entrar a la sala` / `Ver sala`                      | `On click` |     `Navigate to`      | `sala`                                 | Instant                                          |
-| `mis-planes`                                         | Fila Plan: Botón `Editar`                                             | `On click` |     `Navigate to`      | `editar-plan`                          | Instant                                          |
-| `mis-planes`                                         | Botón `Filtrar`                                                       | `On click` |     `Navigate to`      | `mis-planes-sin-resultados`            | Instant (simula filtro sin coincidencias)        |
-| `mis-planes`                                         | Fila Plan: Botón `Confirmar`                                          | `On click` |     `Navigate to`      | `sala` (plan 1) · `sala-empate` (plan 2) | Instant                                        |
-| `mis-planes`                                         | Fila Plan: ícono Entrar (grupo)                                       | `On click` |     `Navigate to`      | `sala` · `sala-sin-propuestas` · `sala-empate` · `sala-confirmada` · `sala-cancelada` · `sala-vencida` (según el estado del plan de la fila) | Instant            |
-| `mis-planes-invitaciones`                            | Fila de invitación pendiente (fila completa)                          | `On click` |     `Navigate to`      | `sala-invitacion-pendiente`            | Instant                                          |
-| `mis-planes`                                         | Fila Plan: Botón `Eliminar`                                           | `On click` |     `Open overlay`     | `modal-eliminar-plan-{id}`             | Centered · Backdrop 40% · Close on click outside |
-| `mis-planes`                                         | Fila Invitación: Botón `Aceptar invitación`                           | `On click` |     `Navigate to`      | `sala`                                 | Instant                                          |
-| `mis-planes`                                         | Fila Invitación: Botón `Rechazar invitación`                          | `On click` |     `Navigate to`      | `mis-planes`                           | Instant (actualiza lista)                        |
-| **`sala`**                                           |                                                                       |            |                        |                                        |                                                  |
-| `sala`                                               | Enlace `← Volver a Mis Planes`                                        | `On click` |     `Navigate to`      | `mis-planes`                           | Instant                                          |
-| `sala`                                               | Botón `Editar plan`                                                   | `On click` |     `Navigate to`      | `editar-plan`                          | Instant                                          |
-| `sala`                                               | Botón `Retirarse`                                                     | `On click` |     `Open overlay`     | `modal-retirarse`                      | Centered · Backdrop 40% · Close on click outside |
-| `sala-participante` · `sala-participante-lugares`    | Botón `Retirarse` (sin saldo pendiente)                               | `On click` |     `Open overlay`     | `modal-retirarse-sin-deuda`            | Centered · Backdrop 40% · Close on click outside |
-| `sala-participante-gastos`                           | Botón `Retirarse` (con saldo pendiente)                               | `On click` |     `Open overlay`     | `modal-retirarse`                      | Centered · Backdrop 40% · Close on click outside |
-| `sala`                                               | Botón `Invitar`                                                       | `On click` |     `Open overlay`     | `modal-invitar`                        | Centered · Backdrop 40% · Close on click outside |
-| `sala`                                               | Tab `Fechas propuestas`                                               | `On click` |  `Navigate to / Swap`  | `sala`                                 | Instant                                          |
-| `sala`                                               | Tab `Lugares propuestos`                                              | `On click` |  `Navigate to / Swap`  | `sala-lugares`                         | Instant                                          |
-| `sala`                                               | Tab `Gastos y Liquidación`                                            | `On click` |  `Navigate to / Swap`  | `sala-gastos`                          | Instant                                          |
-| `sala`                                               | Botón `Proponer opción`                                               | `On click` |     `Open overlay`     | `modal-proponer-opcion`                | Centered · Backdrop 40% · Close on click outside |
-| `sala`                                               | Botón `Cerrar votación y confirmar`                                   | `On click` |     `Open overlay`     | `modal-confirmar-plan`                 | Centered · Backdrop 40% · Close on click outside |
-| `sala-gastos`                                        | Botón `Registrar gasto`                                               | `On click` |     `Open overlay`     | `modal-crear-gasto`                    | Centered · Backdrop 40% · Close on click outside |
-| `sala-gastos`                                        | Botón `Registrar pago`                                                | `On click` |     `Open overlay`     | `modal-crear-pago`                     | Centered · Backdrop 40% · Close on click outside |
-| `sala-gastos`                                        | Fila pago: Botón `Ver comprobante`                                    | `On click` |     `Open overlay`     | `modal-comprobante-{id}`               | Centered · Backdrop 40% · Close on click outside |
-| `sala-gastos`                                        | Fila pago: Botón `Rechazar`                                           | `On click` |     `Open overlay`     | `modal-rechazar-{id}`                  | Centered · Backdrop 40% · Close on click outside |
-| `sala-gastos`                                        | Botón `Configurar cobro`                                              | `On click` |     `Open overlay`     | `modal-configurar-cobro`               | Centered · Backdrop 40% · Close on click outside |
-| **`editar-plan`**                                    |                                                                       |            |                        |                                        |                                                  |
-| `editar-plan`                                        | Botón `Actualizar`                                                    | `On click` |     `Navigate to`      | `mis-planes`                           | Smart animate 200ms                              |
-| `editar-plan`                                        | Botón `Cancelar`                                                      | `On click` |     `Navigate to`      | `mis-planes`                           | Instant                                          |
-| **`historial`**                                      |                                                                       |            |                        |                                        |                                                  |
-| `historial`                                          | Enlace `Volver a Mis Planes`                                          | `On click` |     `Navigate to`      | `mis-planes`                           | Instant                                          |
-| `historial`                                          | Chips de categoría (`Estados`, `Gastos`, etc.)                        | `On click` | `Swap overlay / state` | `historial-{categoria}`                | Instant                                          |
-| **`mi-cuenta`**                                      |                                                                       |            |                        |                                        |                                                  |
-| `mi-cuenta`                                          | Botón `Eliminar mi cuenta` (con bloqueos)                             | `On click` |     `Open overlay`     | `modal-bloqueos-cuenta`                | Centered · Backdrop 40% · Close on click outside |
-| `mi-cuenta`                                          | Encabezado «Eliminación de cuenta» (atajo de prototipo, caso sin bloqueos) | `On click` | `Open overlay` | `modal-eliminar-cuenta`                | Centered · Backdrop 40% · Close on click outside |
-| **Diálogos / Overlays (Botones de Cierre y Acción)** |                                                                       |            |                        |                                        |                                                  |
-| _Cualquier diálogo modal_                            | Botón `Cancelar` / `Mantener plan` / `Conservar cuenta` / `Entendido` | `On click` |    `Close overlay`     | —                                      | Instant                                          |
-| `modal-crear`                                        | Botón `Guardar`                                                       | `On click` |     `Navigate to`      | `mis-planes`                           | Smart animate 200ms                              |
-| `modal-confirmar-plan`                               | Botón `Confirmar y cerrar votación`                                   | `On click` |     `Navigate to`      | `sala-confirmada`                      | Instant (muestra sala congelada)                 |
-| `modal-retirarse`                                    | Botón `Sí, retirarme`                                                 | `On click` |     `Navigate to`      | `mis-planes`                           | Instant (retorno a listado)                      |
-| `modal-bloqueos-cuenta`                              | Botón `Gestionar` (plan abierto)                                      | `On click` |     `Navigate to`      | `sala`                                 | Instant                                          |
-| `modal-bloqueos-cuenta`                              | Botón `Liquidar` (deuda pendiente)                                    | `On click` |     `Navigate to`      | `sala` (con tab gastos)                | Instant                                          |
-| `modal-eliminar-cuenta`                              | Botón `Eliminar cuenta definitivamente`                               | `On click` |     `Navigate to`      | `ingresar`                             | Dissolve 200ms                                   |
+| Frame / Capa Origen                                  | Elemento / Capa Clickeable                                                 | Disparador |      Acción Figma      | Frame / Overlay Destino                                                                                                                      | Configuración de Overlay / Animación                                                             |
+| :--------------------------------------------------- | :------------------------------------------------------------------------- | :--------: | :--------------------: | :------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------- |
+| **Navegación Global (`layouts/app`)**                |                                                                            |            |                        |                                                                                                                                              |                                                                                                  |
+| _Cualquier frame con navbar_                         | Marca `Planazo`                                                            | `On click` |     `Navigate to`      | `mis-planes`                                                                                                                                 | Instant                                                                                          |
+| _Cualquier frame con navbar_                         | Menú `Mis Planes`                                                          | `On click` |     `Navigate to`      | `mis-planes`                                                                                                                                 | Instant                                                                                          |
+| _Cualquier frame con navbar_                         | Menú `Historial`                                                           | `On click` |     `Navigate to`      | `historial`                                                                                                                                  | Instant                                                                                          |
+| _Cualquier frame con navbar_                         | Menú `Mi Cuenta`                                                           | `On click` |     `Navigate to`      | `mi-cuenta`                                                                                                                                  | Instant                                                                                          |
+| _Cualquier frame con navbar_                         | Botón `Salir`                                                              | `On click` |     `Navigate to`      | `ingresar`                                                                                                                                   | Dissolve 150ms                                                                                   |
+| _Cualquier frame con toolbar dev_                    | Píldora `Telemetría Dev`                                                   | `On click` |     `Navigate to`      | `analitica`                                                                                                                                  | Instant                                                                                          |
+| **`landing`**                                        |                                                                            |            |                        |                                                                                                                                              |                                                                                                  |
+| `landing`                                            | Botón `Ingresar` (navbar y hero)                                           | `On click` |     `Navigate to`      | `ingresar`                                                                                                                                   | Instant                                                                                          |
+| `landing`                                            | Botón `Registrarme` (navbar y hero)                                        | `On click` |     `Navigate to`      | `registro`                                                                                                                                   | Instant                                                                                          |
+| `landing`                                            | Botón de tema (sol / luna)                                                 | `On click` |     `Navigate to`      | `landing-oscuro`                                                                                                                             | Instant                                                                                          |
+| `landing-oscuro`                                     | Botón de tema (sol / luna)                                                 | `On click` |     `Navigate to`      | `landing`                                                                                                                                    | Instant                                                                                          |
+| **`ingresar`**                                       |                                                                            |            |                        |                                                                                                                                              |                                                                                                  |
+| `ingresar`                                           | Botón `Entrar`                                                             | `On click` |     `Navigate to`      | `mis-planes`                                                                                                                                 | Smart animate 200ms                                                                              |
+| `ingresar`                                           | Enlace `¿La olvidaste?`                                                    | `On click` |     `Navigate to`      | `recuperar`                                                                                                                                  | Instant                                                                                          |
+| `ingresar`                                           | Botón `Regístrate`                                                         | `On click` |     `Navigate to`      | `registro`                                                                                                                                   | Instant                                                                                          |
+| **`registro`**                                       |                                                                            |            |                        |                                                                                                                                              |                                                                                                  |
+| `registro`                                           | Botón `Registrarme`                                                        | `On click` |     `Navigate to`      | `mis-planes-vacio`                                                                                                                           | Instant (el código inicia sesión y redirige a `planes.listar`; una cuenta nueva no tiene planes) |
+| `registro`                                           | Enlace `Ingresa`                                                           | `On click` |     `Navigate to`      | `ingresar`                                                                                                                                   | Instant                                                                                          |
+| **`recuperar` / `restablecer`**                      |                                                                            |            |                        |                                                                                                                                              |                                                                                                  |
+| `recuperar`                                          | Botón `Enviar enlace`                                                      | `On click` |     `Navigate to`      | `restablecer`                                                                                                                                | Instant (simula llegada de correo)                                                               |
+| `recuperar`                                          | Enlace `← Volver a ingresar`                                               | `On click` |     `Navigate to`      | `ingresar`                                                                                                                                   | Instant                                                                                          |
+| `restablecer`                                        | Botón `Cambiar contraseña`                                                 | `On click` |     `Navigate to`      | `ingresar`                                                                                                                                   | Instant                                                                                          |
+| **`mis-planes`**                                     |                                                                            |            |                        |                                                                                                                                              |                                                                                                  |
+| `mis-planes`                                         | Botón `+ Crear plan`                                                       | `On click` |     `Open overlay`     | `modal-crear`                                                                                                                                | Centered · Backdrop 40% · Close on click outside                                                 |
+| `mis-planes`                                         | Tab `Planes donde participo`                                               | `On click` | `Swap overlay / state` | `mis-planes-invitaciones`                                                                                                                    | Instant                                                                                          |
+| `mis-planes`                                         | Fila Plan: Botón `Entrar a la sala` / `Ver sala`                           | `On click` |     `Navigate to`      | `sala`                                                                                                                                       | Instant                                                                                          |
+| `mis-planes`                                         | Fila Plan: Botón `Editar`                                                  | `On click` |     `Navigate to`      | `editar-plan`                                                                                                                                | Instant                                                                                          |
+| `mis-planes`                                         | Botón `Filtrar`                                                            | `On click` |     `Navigate to`      | `mis-planes-sin-resultados`                                                                                                                  | Instant (simula filtro sin coincidencias)                                                        |
+| `mis-planes`                                         | Fila Plan: Botón `Confirmar`                                               | `On click` |     `Navigate to`      | `sala` (plan 1) · `sala-empate` (plan 2)                                                                                                     | Instant                                                                                          |
+| `mis-planes`                                         | Fila Plan: ícono Entrar (grupo)                                            | `On click` |     `Navigate to`      | `sala` · `sala-sin-propuestas` · `sala-empate` · `sala-confirmada` · `sala-cancelada` · `sala-vencida` (según el estado del plan de la fila) | Instant                                                                                          |
+| `mis-planes-invitaciones`                            | Fila de invitación pendiente (fila completa)                               | `On click` |     `Navigate to`      | `sala-invitacion-pendiente`                                                                                                                  | Instant                                                                                          |
+| `mis-planes`                                         | Fila Plan: Botón `Eliminar`                                                | `On click` |     `Open overlay`     | `modal-eliminar-plan-{id}`                                                                                                                   | Centered · Backdrop 40% · Close on click outside                                                 |
+| `mis-planes`                                         | Fila Invitación: Botón `Aceptar invitación`                                | `On click` |     `Navigate to`      | `sala`                                                                                                                                       | Instant                                                                                          |
+| `mis-planes`                                         | Fila Invitación: Botón `Rechazar invitación`                               | `On click` |     `Navigate to`      | `mis-planes`                                                                                                                                 | Instant (actualiza lista)                                                                        |
+| **`sala`**                                           |                                                                            |            |                        |                                                                                                                                              |                                                                                                  |
+| `sala`                                               | Enlace `← Volver a Mis Planes`                                             | `On click` |     `Navigate to`      | `mis-planes`                                                                                                                                 | Instant                                                                                          |
+| `sala`                                               | Botón `Editar plan`                                                        | `On click` |     `Navigate to`      | `editar-plan`                                                                                                                                | Instant                                                                                          |
+| `sala`                                               | Botón `Retirarse`                                                          | `On click` |     `Open overlay`     | `modal-retirarse`                                                                                                                            | Centered · Backdrop 40% · Close on click outside                                                 |
+| `sala-participante` · `sala-participante-lugares`    | Botón `Retirarse` (sin saldo pendiente)                                    | `On click` |     `Open overlay`     | `modal-retirarse-sin-deuda`                                                                                                                  | Centered · Backdrop 40% · Close on click outside                                                 |
+| `sala-participante-gastos`                           | Botón `Retirarse` (con saldo pendiente)                                    | `On click` |     `Open overlay`     | `modal-retirarse`                                                                                                                            | Centered · Backdrop 40% · Close on click outside                                                 |
+| `sala`                                               | Botón `Invitar`                                                            | `On click` |     `Open overlay`     | `modal-invitar`                                                                                                                              | Centered · Backdrop 40% · Close on click outside                                                 |
+| `sala`                                               | Tab `Fechas propuestas`                                                    | `On click` |  `Navigate to / Swap`  | `sala`                                                                                                                                       | Instant                                                                                          |
+| `sala`                                               | Tab `Lugares propuestos`                                                   | `On click` |  `Navigate to / Swap`  | `sala-lugares`                                                                                                                               | Instant                                                                                          |
+| `sala`                                               | Tab `Gastos y Liquidación`                                                 | `On click` |  `Navigate to / Swap`  | `sala-gastos`                                                                                                                                | Instant                                                                                          |
+| `sala`                                               | Botón `Proponer opción`                                                    | `On click` |     `Open overlay`     | `modal-proponer-opcion`                                                                                                                      | Centered · Backdrop 40% · Close on click outside                                                 |
+| `sala`                                               | Botón `Cerrar votación y confirmar`                                        | `On click` |     `Open overlay`     | `modal-confirmar-plan`                                                                                                                       | Centered · Backdrop 40% · Close on click outside                                                 |
+| `sala-gastos`                                        | Botón `Registrar gasto`                                                    | `On click` |     `Open overlay`     | `modal-crear-gasto`                                                                                                                          | Centered · Backdrop 40% · Close on click outside                                                 |
+| `sala-gastos`                                        | Botón `Registrar pago`                                                     | `On click` |     `Open overlay`     | `modal-crear-pago`                                                                                                                           | Centered · Backdrop 40% · Close on click outside                                                 |
+| `sala-gastos`                                        | Fila pago: Botón `Ver comprobante`                                         | `On click` |     `Open overlay`     | `modal-comprobante-{id}`                                                                                                                     | Centered · Backdrop 40% · Close on click outside                                                 |
+| `sala-gastos`                                        | Fila pago: Botón `Rechazar`                                                | `On click` |     `Open overlay`     | `modal-rechazar-{id}`                                                                                                                        | Centered · Backdrop 40% · Close on click outside                                                 |
+| `sala-gastos`                                        | Botón `Configurar cobro`                                                   | `On click` |     `Open overlay`     | `modal-configurar-cobro`                                                                                                                     | Centered · Backdrop 40% · Close on click outside                                                 |
+| **`editar-plan`**                                    |                                                                            |            |                        |                                                                                                                                              |                                                                                                  |
+| `editar-plan`                                        | Botón `Actualizar`                                                         | `On click` |     `Navigate to`      | `mis-planes`                                                                                                                                 | Smart animate 200ms                                                                              |
+| `editar-plan`                                        | Botón `Cancelar`                                                           | `On click` |     `Navigate to`      | `mis-planes`                                                                                                                                 | Instant                                                                                          |
+| **`historial`**                                      |                                                                            |            |                        |                                                                                                                                              |                                                                                                  |
+| `historial`                                          | Enlace `Volver a Mis Planes`                                               | `On click` |     `Navigate to`      | `mis-planes`                                                                                                                                 | Instant                                                                                          |
+| `historial`                                          | Chips de categoría (`Estados`, `Gastos`, etc.)                             | `On click` | `Swap overlay / state` | `historial-{categoria}`                                                                                                                      | Instant                                                                                          |
+| **`mi-cuenta`**                                      |                                                                            |            |                        |                                                                                                                                              |                                                                                                  |
+| `mi-cuenta`                                          | Botón `Eliminar mi cuenta` (con bloqueos)                                  | `On click` |     `Open overlay`     | `modal-bloqueos-cuenta`                                                                                                                      | Centered · Backdrop 40% · Close on click outside                                                 |
+| `mi-cuenta`                                          | Encabezado «Eliminación de cuenta» (atajo de prototipo, caso sin bloqueos) | `On click` |     `Open overlay`     | `modal-eliminar-cuenta`                                                                                                                      | Centered · Backdrop 40% · Close on click outside                                                 |
+| **Diálogos / Overlays (Botones de Cierre y Acción)** |                                                                            |            |                        |                                                                                                                                              |                                                                                                  |
+| _Cualquier diálogo modal_                            | Botón `Cancelar` / `Mantener plan` / `Conservar cuenta` / `Entendido`      | `On click` |    `Close overlay`     | —                                                                                                                                            | Instant                                                                                          |
+| `modal-crear`                                        | Botón `Guardar`                                                            | `On click` |     `Navigate to`      | `mis-planes`                                                                                                                                 | Smart animate 200ms                                                                              |
+| `modal-confirmar-plan`                               | Botón `Confirmar y cerrar votación`                                        | `On click` |     `Navigate to`      | `sala-confirmada`                                                                                                                            | Instant (muestra sala congelada)                                                                 |
+| `modal-retirarse`                                    | Botón `Sí, retirarme`                                                      | `On click` |     `Navigate to`      | `mis-planes`                                                                                                                                 | Instant (retorno a listado)                                                                      |
+| `modal-bloqueos-cuenta`                              | Botón `Gestionar` (plan abierto)                                           | `On click` |     `Navigate to`      | `sala`                                                                                                                                       | Instant                                                                                          |
+| `modal-bloqueos-cuenta`                              | Botón `Liquidar` (deuda pendiente)                                         | `On click` |     `Navigate to`      | `sala` (con tab gastos)                                                                                                                      | Instant                                                                                          |
+| `modal-eliminar-cuenta`                              | Botón `Eliminar cuenta definitivamente`                                    | `On click` |     `Navigate to`      | `ingresar`                                                                                                                                   | Dissolve 200ms                                                                                   |
 
 ### 11.3 Especificación Geométrica de Overlays en Figma
 
@@ -649,3 +683,35 @@ Todos los diálogos modales en Figma se modelan como frames independientes con l
 - **Avisos (toast).** `toast-alerta` se abre como overlay y se cierra solo a los 3 s (o con su botón de cierre). Lo disparan los guardados: invitar, proponer, registrar gasto, registrar pago, configurar cobro, rechazar o confirmar pago, y los botones de guardar y descargar de `mi-cuenta`. En los modales la acción es «cerrar overlay» + «abrir toast».
 - **Confirmar plan.** `modal-confirmar-plan`, `-sin-empate` y `-sin-propuestas` navegan a la sala congelada correspondiente; `modal-confirmar-lugar` a `sala-confirmada-lugares`. En `sala-vencida*`, «Cerrar votación y confirmar» abre `modal-confirmar-plan`.
 - **Estados de lista.** «Filtrar» lleva a `mis-planes-sin-resultados`; «Limpiar» vuelve a `mis-planes`; «+ Crear mi primer plan» (`mis-planes-vacio`) abre `modal-crear`; «Rechazar invitación» vuelve a `mis-planes`.
+
+### 11.5 Guía de prueba en Play por flujo
+
+Se prueba en la página **«Flujos»** (§11.6): selecciona el flow en el menú de Play y recorre los pasos; cada fila es lo que debe ocurrir al hacer clic. En esa página cada flujo solo tiene las conexiones de su recorrido: lo que no pertenece al flujo (navbar hacia otras pantallas, otros flujos) no responde, y el flujo termina en su frame final. La página «App» sigue siendo el prototipo completo y navegable.
+
+| Flujo | Empieza en                 | Happy path (clic → resultado)                                                                                                                                                     | Ramas a probar                                                                                                                                                                                                                                                                            |
+| :---- | :------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| TF1   | `landing`                  | «Ingresar» → `ingresar` → «Entrar» → `mis-planes` (**fin**)                                                                                                                       | «Registrarme» → `registro` → `mis-planes-vacio` (**fin**) · `ingresar` «¿La olvidaste?» → `recuperar` → «Enviar enlace» → `restablecer` → «Cambiar contraseña» → `ingresar` → «Entrar» → `mis-planes` (**fin**)                                                                           |
+| TF2   | `mis-planes-vacio`         | «+ Crear mi primer plan» → `modal-crear` → «Guardar» → `mis-planes` → «Confirmar» → `sala` → «Cerrar votación y confirmar» → `modal-confirmar-plan` → `sala-confirmada` (**fin**) | Empate: «Confirmar» de la fila con empate → `sala-empate` → `modal-confirmar-plan-sin-empate` → `sala-confirmada` · sin propuestas: ícono de entrada → `sala-sin-propuestas` → `modal-confirmar-plan-sin-propuestas` → `sala-confirmada-sin-propuestas` · «Cancelar» cierra `modal-crear` |
+| TF3   | `sala-sin-propuestas`      | «Invitar» → `modal-invitar` → «Enviar invitación» → toast                                                                                                                         | Invitado (entrada **TF3 · Responder (invitado)**): `mis-planes-invitaciones` → fila → `sala-invitacion-pendiente` → «Aceptar invitación» → `sala-participante` (**fin**) · «Rechazar invitación» → `mis-planes` (**fin**)                                                                 |
+| TF4   | `sala`                     | «Proponer opción» → `modal-proponer-opcion` → guardar → toast · «Votar por esta opción» alterna el voto                                                                           | Pestaña Lugares → `sala-lugares` → «Proponer lugar» → `modal-proponer-lugar` · «Votado (clic para retirar)» retira el voto                                                                                                                                                                |
+| TF5   | `sala-gastos`              | «Registrar gasto» → `modal-crear-gasto` → «Guardar» → toast                                                                                                                       | Participante (entrada **TF5 · Registrar gasto (participante)**): `sala-participante-gastos` → «Registrar gasto» → `modal-crear-gasto`                                                                                                                                                     |
+| TF6   | `sala-participante-gastos` | Deudor: «Registrar pago» → `modal-crear-pago-participante` → radios «Pagar totalidad» / «Pago parcial» → guardar → toast                                                          | Acreedor (entrada **TF6 · Conciliar (acreedor)**): `sala-gastos` → «Configurar cobro» → `modal-configurar-cobro` · «Ver comprobante» → `modal-comprobante-1` → «Confirmar pago» · «Rechazar» → `modal-rechazar-1`                                                                         |
+| TF7   | `sala-participante`        | «Retirarse» → `modal-retirarse-sin-deuda` → «Sí, retirarme» → `mis-planes`                                                                                                        | Con deuda: `sala-participante-gastos` → «Retirarse» → `modal-retirarse` → `sala-gastos` · organizador: `dialog-confirm` «Sí, cancelar» → `mis-planes` · papelera de cada fila → `modal-eliminar-plan-1…3`                                                                                 |
+| TF8   | `mi-cuenta`                | «Eliminar mi cuenta» → `modal-bloqueos-cuenta` → «Gestionar» → `sala` (**fin**)                                                                                                   | Descargar JSON/CSV → toast · encabezado «Eliminación de cuenta» → `modal-eliminar-cuenta` → «Eliminar cuenta definitivamente» → `ingresar` (**fin**)                                                                                                                                      |
+
+**Capturas para la entrega:** en la página «Flujos», selecciona la sección `TFn` (sus frames están en fila, de izquierda a derecha, en el orden del recorrido) y exporta; añade una captura de las conexiones con el frame inicial seleccionado en la pestaña Prototype.
+
+### 11.6 Página «Flujos» (generada)
+
+La página **«Flujos»** del archivo de Figma agrupa cada Task Flow en una _Section_ `TFn — <tarea>` con **copias** de sus frames en fila (orden del recorrido, happy path primero y ramas después). Sirve para dos cosas: probar el flujo en Play sin que la app entera esté conectada, y sacar las capturas de la entrega seleccionando una sola sección.
+
+- **Qué conserva cada copia:** solo las conexiones cuyo destino es otro frame del mismo flujo. Se eliminan la navbar hacia otras pantallas y los saltos a otros flujos. Los estados hover de los componentes no se tocan.
+- **Dónde termina cada flujo:** los frames _terminales_ (`terminal` en el script) pierden toda navegación saliente: `mis-planes` y `mis-planes-vacio` en TF1, `sala-confirmada` y `sala-confirmada-sin-propuestas` en TF2, `sala-participante` y `mis-planes` en TF3, `sala` e `ingresar` en TF8.
+- **Ramas por rol:** las entradas adicionales de §11.1 existen porque esos frames no son alcanzables desde el inicio del flujo.
+- **No se edita a mano.** La página se regenera desde «App»: cualquier ajuste va en «App» (o en la configuración del script) y se vuelve a generar.
+
+**Cómo regenerarla** (cuando cambie un frame de «App», un recorrido de §6 o un frame inicial de §11.1):
+
+1. Actualiza §6 y §11.1 (contract-first) y, si cambia la lista de frames o los finales, el arreglo `FLOWS` de [`scripts/figma/regenerar-flujos.js`](../scripts/figma/regenerar-flujos.js).
+2. Ejecuta el contenido de ese script con la herramienta `use_figma` del MCP de Figma sobre el archivo `<FIGMA_FILE_KEY>`. Para regenerar solo algunos flujos, pon sus ids en la constante `ONLY` (por ejemplo `['TF4']`); vacía regenera todos. Si el script tarda demasiado, regenera por tandas.
+3. Revisa lo que devuelve: `strayLinks` debe ser `0` (ninguna navegación apunta fuera del flujo) y `unreachableFromStart` lista los frames que solo sirven como captura o se prueban desde una entrada adicional.
