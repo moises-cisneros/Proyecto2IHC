@@ -347,6 +347,17 @@ La suite de pruebas de Laravel valida la lógica de negocio, políticas de autor
     php artisan test --coverage
     ```
 
+- **Reporte de Cobertura de Líneas Agregadas en el Fork (`diff-cover`):**
+
+    Para auditar la cobertura estricta sobre el código nuevo añadido en el fork:
+
+    ```bash
+    # Requiere diff-cover (pip install diff-cover)
+    diff-cover docs/entregables/pruebas/reportes/coverage/clover.xml --compare-branch 731fb8d
+    ```
+
+    Los reportes completos generados (HTML interactivo y Markdown) se encuentran en [`docs/entregables/pruebas/`](docs/entregables/pruebas/).
+
 ### Pruebas E2E (Playwright)
 
 Automatización de tareas humanas accesibles en el navegador Chromium:

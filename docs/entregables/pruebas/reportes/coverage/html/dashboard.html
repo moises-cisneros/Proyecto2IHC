@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <title>Dashboard for /home/runner/work/Proyecto2IHC/Proyecto2IHC/app</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="_css/bootstrap.min.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="_css/nv.d3.min.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="_css/style.css?v=11.0.12" rel="stylesheet" type="text/css">
+  <link href="_css/custom.css" rel="stylesheet" type="text/css">
+ </head>
+ <body>
+  <header>
+   <div class="container-fluid">
+    <div class="row">
+     <div class="col-md-12">
+      <nav aria-label="breadcrumb">
+       <ol class="breadcrumb">
+         <li class="breadcrumb-item"><a href="index.html">/home/runner/work/Proyecto2IHC/Proyecto2IHC/app</a></li>
+         <li class="breadcrumb-item active">(Dashboard)</li>
+
+       </ol>
+      </nav>
+     </div>
+    </div>
+   </div>
+  </header>
+  <div class="container-fluid">
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Classes</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="classCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="classComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Mail/Transport/CloudflareMailTransport.php.html#10">App\Mail\Transport\CloudflareMailTransport</a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="DTOs/ComprobanteScanResult.php.html#5">App\DTOs\ComprobanteScanResult</a></td><td class="text-right">38%</td></tr>
+       <tr><td><a href="Models/Gasto.php.html#11">App\Models\Gasto</a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Models/GastoDivision.php.html#9">App\Models\GastoDivision</a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Providers/AppServiceProvider.php.html#19">App\Providers\AppServiceProvider</a></td><td class="text-right">64%</td></tr>
+       <tr><td><a href="Http/Controllers/AutentificacionController.php.html#12">App\Http\Controllers\AutentificacionController</a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Http/Requests/StoreGastoRequest.php.html#10">App\Http\Requests\StoreGastoRequest</a></td><td class="text-right">68%</td></tr>
+       <tr><td><a href="Http/Requests/ConfirmarPlanRequest.php.html#11">App\Http\Requests\ConfirmarPlanRequest</a></td><td class="text-right">70%</td></tr>
+       <tr><td><a href="Policies/GastoPolicy.php.html#9">App\Policies\GastoPolicy</a></td><td class="text-right">71%</td></tr>
+       <tr><td><a href="Services/UserDataExportService.php.html#7">App\Services\UserDataExportService</a></td><td class="text-right">79%</td></tr>
+       <tr><td><a href="Models/Pago.php.html#9">App\Models\Pago</a></td><td class="text-right">81%</td></tr>
+       <tr><td><a href="Http/Controllers/PlanesController.php.html#16">App\Http\Controllers\PlanesController</a></td><td class="text-right">85%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Class</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Mail/Transport/CloudflareMailTransport.php.html#10">App\Mail\Transport\CloudflareMailTransport</a></td><td class="text-right">56</td></tr>
+       <tr><td><a href="Http/Requests/ConfirmarPlanRequest.php.html#11">App\Http\Requests\ConfirmarPlanRequest</a></td><td class="text-right">32</td></tr>
+       <tr><td><a href="DTOs/ComprobanteScanResult.php.html#5">App\DTOs\ComprobanteScanResult</a></td><td class="text-right">27</td></tr>
+       <tr><td><a href="Http/Controllers/PlanesController.php.html#16">App\Http\Controllers\PlanesController</a></td><td class="text-right">25</td></tr>
+       <tr><td><a href="Http/Controllers/AutentificacionController.php.html#12">App\Http\Controllers\AutentificacionController</a></td><td class="text-right">21</td></tr>
+       <tr><td><a href="Http/Requests/StoreGastoRequest.php.html#10">App\Http\Requests\StoreGastoRequest</a></td><td class="text-right">16</td></tr>
+       <tr><td><a href="Services/UserDataExportService.php.html#7">App\Services\UserDataExportService</a></td><td class="text-right">15</td></tr>
+       <tr><td><a href="Policies/GastoPolicy.php.html#9">App\Policies\GastoPolicy</a></td><td class="text-right">5</td></tr>
+       <tr><td><a href="Providers/AppServiceProvider.php.html#19">App\Providers\AppServiceProvider</a></td><td class="text-right">4</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-12">
+     <h2>Methods</h2>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Coverage Distribution</h3>
+     <div id="methodCoverageDistribution" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Complexity</h3>
+     <div id="methodComplexity" style="height: 300px;">
+       <svg></svg>
+     </div>
+    </div>
+   </div>
+   <div class="row">
+    <div class="col-md-6">
+     <h3>Insufficient Coverage</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right">Coverage</th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="DTOs/ComprobanteScanResult.php.html#50"><abbr title="App\DTOs\ComprobanteScanResult::toArray">toArray</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/AutentificacionController.php.html#63"><abbr title="App\Http\Controllers\AutentificacionController::mostrarRegistro">mostrarRegistro</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/AutentificacionController.php.html#103"><abbr title="App\Http\Controllers\AutentificacionController::mostrarRecuperar">mostrarRecuperar</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/AutentificacionController.php.html#139"><abbr title="App\Http\Controllers\AutentificacionController::mostrarRestablecer">mostrarRestablecer</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/AutentificacionController.php.html#146"><abbr title="App\Http\Controllers\AutentificacionController::restablecer">restablecer</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Mail/Transport/CloudflareMailTransport.php.html#12"><abbr title="App\Mail\Transport\CloudflareMailTransport::__construct">__construct</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Mail/Transport/CloudflareMailTransport.php.html#19"><abbr title="App\Mail\Transport\CloudflareMailTransport::doSend">doSend</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Mail/Transport/CloudflareMailTransport.php.html#49"><abbr title="App\Mail\Transport\CloudflareMailTransport::__toString">__toString</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Gasto.php.html#56"><abbr title="App\Models\Gasto::participantes">participantes</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/GastoDivision.php.html#28"><abbr title="App\Models\GastoDivision::gasto">gasto</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Pago.php.html#66"><abbr title="App\Models\Pago::esPendiente">esPendiente</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/Pago.php.html#122"><abbr title="App\Models\Pago::esEscaneoPendiente">esEscaneoPendiente</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/User.php.html#72"><abbr title="App\Models\User::actividadesRecibidas">actividadesRecibidas</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Models/User.php.html#105"><abbr title="App\Models\User::opciones">opciones</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Policies/GastoPolicy.php.html#14"><abbr title="App\Policies\GastoPolicy::view">view</abbr></a></td><td class="text-right">0%</td></tr>
+       <tr><td><a href="Http/Controllers/PlanesController.php.html#154"><abbr title="App\Http\Controllers\PlanesController::editar">editar</abbr></a></td><td class="text-right">50%</td></tr>
+       <tr><td><a href="Http/Requests/StoreGastoRequest.php.html#41"><abbr title="App\Http\Requests\StoreGastoRequest::withValidator">withValidator</abbr></a></td><td class="text-right">51%</td></tr>
+       <tr><td><a href="Http/Requests/ConfirmarPlanRequest.php.html#51"><abbr title="App\Http\Requests\ConfirmarPlanRequest::withValidator">withValidator</abbr></a></td><td class="text-right">52%</td></tr>
+       <tr><td><a href="Providers/AppServiceProvider.php.html#34"><abbr title="App\Providers\AppServiceProvider::boot">boot</abbr></a></td><td class="text-right">54%</td></tr>
+       <tr><td><a href="Services/UserDataExportService.php.html#115"><abbr title="App\Services\UserDataExportService::exportarCsv">exportarCsv</abbr></a></td><td class="text-right">60%</td></tr>
+       <tr><td><a href="DTOs/ComprobanteScanResult.php.html#20"><abbr title="App\DTOs\ComprobanteScanResult::coincideConMonto">coincideConMonto</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Policies/GastoPolicy.php.html#22"><abbr title="App\Policies\GastoPolicy::create">create</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Policies/PagoPolicy.php.html#14"><abbr title="App\Policies\PagoPolicy::create">create</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Policies/PlanPolicy.php.html#33"><abbr title="App\Policies\PlanPolicy::rechazar">rechazar</abbr></a></td><td class="text-right">66%</td></tr>
+       <tr><td><a href="Models/Plan.php.html#197"><abbr title="App\Models\Plan::asignarGanadora">asignarGanadora</abbr></a></td><td class="text-right">70%</td></tr>
+       <tr><td><a href="Http/Controllers/PlanesController.php.html#31"><abbr title="App\Http\Controllers\PlanesController::listar">listar</abbr></a></td><td class="text-right">72%</td></tr>
+       <tr><td><a href="Http/Controllers/PlanesController.php.html#182"><abbr title="App\Http\Controllers\PlanesController::eliminar">eliminar</abbr></a></td><td class="text-right">79%</td></tr>
+       <tr><td><a href="Http/Controllers/GastosController.php.html#23"><abbr title="App\Http\Controllers\GastosController::guardarGasto">guardarGasto</abbr></a></td><td class="text-right">79%</td></tr>
+       <tr><td><a href="DTOs/ComprobanteScanResult.php.html#32"><abbr title="App\DTOs\ComprobanteScanResult::determinarEstadoEscaneo">determinarEstadoEscaneo</abbr></a></td><td class="text-right">80%</td></tr>
+       <tr><td><a href="Http/Controllers/AutentificacionController.php.html#108"><abbr title="App\Http\Controllers\AutentificacionController::enviarCorreo">enviarCorreo</abbr></a></td><td class="text-right">83%</td></tr>
+       <tr><td><a href="Http/Requests/RetirarsePlanRequest.php.html#34"><abbr title="App\Http\Requests\RetirarsePlanRequest::withValidator">withValidator</abbr></a></td><td class="text-right">85%</td></tr>
+       <tr><td><a href="Http/Requests/StorePagoRequest.php.html#36"><abbr title="App\Http\Requests\StorePagoRequest::withValidator">withValidator</abbr></a></td><td class="text-right">87%</td></tr>
+       <tr><td><a href="Models/Plan.php.html#161"><abbr title="App\Models\Plan::obtenerGanadorIndiscutido">obtenerGanadorIndiscutido</abbr></a></td><td class="text-right">87%</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+    <div class="col-md-6">
+     <h3>Project Risks</h3>
+     <div class="scrollbox">
+      <table class="table">
+       <thead>
+        <tr>
+         <th>Method</th>
+         <th class="text-right"><abbr title="Change Risk Anti-Patterns (CRAP) Index">CRAP</abbr></th>
+        </tr>
+       </thead>
+       <tbody>
+       <tr><td><a href="Http/Requests/ConfirmarPlanRequest.php.html#51"><abbr title="App\Http\Requests\ConfirmarPlanRequest::withValidator">withValidator</abbr></a></td><td class="text-right">31</td></tr>
+       <tr><td><a href="Mail/Transport/CloudflareMailTransport.php.html#19"><abbr title="App\Mail\Transport\CloudflareMailTransport::doSend">doSend</abbr></a></td><td class="text-right">30</td></tr>
+       <tr><td><a href="Services/UserDataExportService.php.html#115"><abbr title="App\Services\UserDataExportService::exportarCsv">exportarCsv</abbr></a></td><td class="text-right">23</td></tr>
+       <tr><td><a href="Http/Requests/StoreGastoRequest.php.html#41"><abbr title="App\Http\Requests\StoreGastoRequest::withValidator">withValidator</abbr></a></td><td class="text-right">18</td></tr>
+       <tr><td><a href="Http/Controllers/PlanesController.php.html#31"><abbr title="App\Http\Controllers\PlanesController::listar">listar</abbr></a></td><td class="text-right">14</td></tr>
+       <tr><td><a href="Http/Requests/StorePagoRequest.php.html#36"><abbr title="App\Http\Requests\StorePagoRequest::withValidator">withValidator</abbr></a></td><td class="text-right">8</td></tr>
+       <tr><td><a href="Http/Controllers/GastosController.php.html#23"><abbr title="App\Http\Controllers\GastosController::guardarGasto">guardarGasto</abbr></a></td><td class="text-right">7</td></tr>
+       <tr><td><a href="Models/Plan.php.html#197"><abbr title="App\Models\Plan::asignarGanadora">asignarGanadora</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Http/Controllers/AutentificacionController.php.html#146"><abbr title="App\Http\Controllers\AutentificacionController::restablecer">restablecer</abbr></a></td><td class="text-right">6</td></tr>
+       <tr><td><a href="Http/Controllers/PlanesController.php.html#182"><abbr title="App\Http\Controllers\PlanesController::eliminar">eliminar</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="DTOs/ComprobanteScanResult.php.html#32"><abbr title="App\DTOs\ComprobanteScanResult::determinarEstadoEscaneo">determinarEstadoEscaneo</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Http/Requests/RetirarsePlanRequest.php.html#34"><abbr title="App\Http\Requests\RetirarsePlanRequest::withValidator">withValidator</abbr></a></td><td class="text-right">4</td></tr>
+       <tr><td><a href="Providers/AppServiceProvider.php.html#34"><abbr title="App\Providers\AppServiceProvider::boot">boot</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="DTOs/ComprobanteScanResult.php.html#20"><abbr title="App\DTOs\ComprobanteScanResult::coincideConMonto">coincideConMonto</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Http/Controllers/AutentificacionController.php.html#108"><abbr title="App\Http\Controllers\AutentificacionController::enviarCorreo">enviarCorreo</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Models/Plan.php.html#161"><abbr title="App\Models\Plan::obtenerGanadorIndiscutido">obtenerGanadorIndiscutido</abbr></a></td><td class="text-right">3</td></tr>
+       <tr><td><a href="Policies/GastoPolicy.php.html#22"><abbr title="App\Policies\GastoPolicy::create">create</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Policies/PagoPolicy.php.html#14"><abbr title="App\Policies\PagoPolicy::create">create</abbr></a></td><td class="text-right">2</td></tr>
+       <tr><td><a href="Policies/PlanPolicy.php.html#33"><abbr title="App\Policies\PlanPolicy::rechazar">rechazar</abbr></a></td><td class="text-right">2</td></tr>
+
+       </tbody>
+      </table>
+     </div>
+    </div>
+   </div>
+   <footer>
+    <hr/>
+    <p>
+     <small>Generated by <a href="https://github.com/sebastianbergmann/php-code-coverage" target="_top">php-code-coverage 11.0.12</a> using <a href="https://www.php.net/" target="_top">PHP 8.2.35</a> and <a href="https://phpunit.de/">PHPUnit 11.5.56</a> at Thu Nov 19 3:36:11 UTC 2026.</small>
+    </p>
+   </footer>
+  </div>
+  <script src="_js/jquery.min.js?v=11.0.12" type="text/javascript"></script>
+  <script src="_js/d3.min.js?v=11.0.12" type="text/javascript"></script>
+  <script src="_js/nv.d3.min.js?v=11.0.12" type="text/javascript"></script>
+  <script type="text/javascript">
+$(document).ready(function() {
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#classCoverageDistribution svg')
+      .datum(getCoverageDistributionData([1,0,0,0,1,0,2,3,3,2,10,14], "Class Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.multiBarChart();
+    chart.tooltips(false)
+      .showControls(false)
+      .showLegend(false)
+      .reduceXTicks(false)
+      .staggerLabels(true)
+      .yAxis.tickFormat(d3.format('d'));
+
+    d3.select('#methodCoverageDistribution svg')
+      .datum(getCoverageDistributionData([15,0,0,0,0,0,4,5,4,5,7,154], "Method Coverage"))
+      .transition().duration(500).call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getCoverageDistributionData(data, label) {
+    var labels = [
+      '0%',
+      '0-10%',
+      '10-20%',
+      '20-30%',
+      '30-40%',
+      '40-50%',
+      '50-60%',
+      '60-70%',
+      '70-80%',
+      '80-90%',
+      '90-100%',
+      '100%'
+    ];
+    var values = [];
+    $.each(labels, function(key) {
+      values.push({x: labels[key], y: data[key]});
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Cyclomatic Complexity');
+
+    d3.select('#classComplexity svg')
+      .datum(getComplexityData([[38.88888888888889,9,"<a href=\"DTOs\/ComprobanteScanResult.php.html#5\">App\\DTOs\\ComprobanteScanResult<\/a>"],[66.26506024096386,14,"<a href=\"Http\/Controllers\/AutentificacionController.php.html#12\">App\\Http\\Controllers\\AutentificacionController<\/a>"],[99.33774834437085,8,"<a href=\"Http\/Controllers\/ColaboracionController.php.html#15\">App\\Http\\Controllers\\ColaboracionController<\/a>"],[100,0,"<a href=\"Http\/Controllers\/Controller.php.html#5\">App\\Http\\Controllers\\Controller<\/a>"],[100,7,"<a href=\"Http\/Controllers\/CuentaController.php.html#15\">App\\Http\\Controllers\\CuentaController<\/a>"],[100,2,"<a href=\"Http\/Controllers\/EventosController.php.html#11\">App\\Http\\Controllers\\EventosController<\/a>"],[91.36690647482014,17,"<a href=\"Http\/Controllers\/GastosController.php.html#18\">App\\Http\\Controllers\\GastosController<\/a>"],[100,6,"<a href=\"Http\/Controllers\/HistorialController.php.html#8\">App\\Http\\Controllers\\HistorialController<\/a>"],[93.33333333333333,7,"<a href=\"Http\/Controllers\/PerfilCobroController.php.html#10\">App\\Http\\Controllers\\PerfilCobroController<\/a>"],[85.18518518518519,24,"<a href=\"Http\/Controllers\/PlanesController.php.html#16\">App\\Http\\Controllers\\PlanesController<\/a>"],[70.73170731707317,21,"<a href=\"Http\/Requests\/ConfirmarPlanRequest.php.html#11\">App\\Http\\Requests\\ConfirmarPlanRequest<\/a>"],[100,3,"<a href=\"Http\/Requests\/RechazarPagoRequest.php.html#8\">App\\Http\\Requests\\RechazarPagoRequest<\/a>"],[93.33333333333333,7,"<a href=\"Http\/Requests\/RetirarsePlanRequest.php.html#9\">App\\Http\\Requests\\RetirarsePlanRequest<\/a>"],[100,3,"<a href=\"Http\/Requests\/StoreEventoRequest.php.html#8\">App\\Http\\Requests\\StoreEventoRequest<\/a>"],[68.62745098039215,12,"<a href=\"Http\/Requests\/StoreGastoRequest.php.html#10\">App\\Http\\Requests\\StoreGastoRequest<\/a>"],[91.30434782608695,11,"<a href=\"Http\/Requests\/StorePagoRequest.php.html#9\">App\\Http\\Requests\\StorePagoRequest<\/a>"],[100,3,"<a href=\"Http\/Requests\/StorePlanRequest.php.html#8\">App\\Http\\Requests\\StorePlanRequest<\/a>"],[100,3,"<a href=\"Http\/Requests\/UpdateDatosCobroRequest.php.html#8\">App\\Http\\Requests\\UpdateDatosCobroRequest<\/a>"],[100,3,"<a href=\"Http\/Requests\/UpdatePlanRequest.php.html#8\">App\\Http\\Requests\\UpdatePlanRequest<\/a>"],[0,7,"<a href=\"Mail\/Transport\/CloudflareMailTransport.php.html#10\">App\\Mail\\Transport\\CloudflareMailTransport<\/a>"],[100,20,"<a href=\"Models\/Evento.php.html#8\">App\\Models\\Evento<\/a>"],[50,4,"<a href=\"Models\/Gasto.php.html#11\">App\\Models\\Gasto<\/a>"],[50,2,"<a href=\"Models\/GastoDivision.php.html#9\">App\\Models\\GastoDivision<\/a>"],[100,5,"<a href=\"Models\/Invitacion.php.html#10\">App\\Models\\Invitacion<\/a>"],[100,6,"<a href=\"Models\/Opcion.php.html#12\">App\\Models\\Opcion<\/a>"],[81.81818181818183,11,"<a href=\"Models\/Pago.php.html#9\">App\\Models\\Pago<\/a>"],[98.20627802690582,78,"<a href=\"Models\/Plan.php.html#12\">App\\Models\\Plan<\/a>"],[100,6,"<a href=\"Models\/PlanActivity.php.html#10\">App\\Models\\PlanActivity<\/a>"],[96.36363636363636,24,"<a href=\"Models\/User.php.html#17\">App\\Models\\User<\/a>"],[100,2,"<a href=\"Models\/Voto.php.html#10\">App\\Models\\Voto<\/a>"],[71.42857142857143,5,"<a href=\"Policies\/GastoPolicy.php.html#9\">App\\Policies\\GastoPolicy<\/a>"],[91.66666666666666,8,"<a href=\"Policies\/PagoPolicy.php.html#9\">App\\Policies\\PagoPolicy<\/a>"],[97.5,30,"<a href=\"Policies\/PlanPolicy.php.html#8\">App\\Policies\\PlanPolicy<\/a>"],[64.28571428571429,4,"<a href=\"Providers\/AppServiceProvider.php.html#19\">App\\Providers\\AppServiceProvider<\/a>"],[91.25,15,"<a href=\"Services\/Comprobante\/GeminiComprobanteScanner.php.html#11\">App\\Services\\Comprobante\\GeminiComprobanteScanner<\/a>"],[79.6875,14,"<a href=\"Services\/UserDataExportService.php.html#7\">App\\Services\\UserDataExportService<\/a>"]], 'Class Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  nv.addGraph(function() {
+    var chart = nv.models.scatterChart()
+      .showDistX(true)
+      .showDistY(true)
+      .showLegend(false)
+      .forceX([0, 100]);
+    chart.tooltipContent(function(graph) {
+      return '<p>' + graph.point.class + '</p>';
+    });
+
+    chart.xAxis.axisLabel('Code Coverage (in percent)');
+    chart.yAxis.axisLabel('Method Complexity');
+
+    d3.select('#methodComplexity svg')
+      .datum(getComplexityData([[100,1,"<a href=\"DTOs\/ComprobanteScanResult.php.html#7\">App\\DTOs\\ComprobanteScanResult::__construct<\/a>"],[66.66666666666666,3,"<a href=\"DTOs\/ComprobanteScanResult.php.html#20\">App\\DTOs\\ComprobanteScanResult::coincideConMonto<\/a>"],[80,4,"<a href=\"DTOs\/ComprobanteScanResult.php.html#32\">App\\DTOs\\ComprobanteScanResult::determinarEstadoEscaneo<\/a>"],[0,1,"<a href=\"DTOs\/ComprobanteScanResult.php.html#50\">App\\DTOs\\ComprobanteScanResult::toArray<\/a>"],[100,1,"<a href=\"Http\/Controllers\/AutentificacionController.php.html#20\">App\\Http\\Controllers\\AutentificacionController::mostrarIngreso<\/a>"],[100,3,"<a href=\"Http\/Controllers\/AutentificacionController.php.html#25\">App\\Http\\Controllers\\AutentificacionController::ingresar<\/a>"],[0,1,"<a href=\"Http\/Controllers\/AutentificacionController.php.html#63\">App\\Http\\Controllers\\AutentificacionController::mostrarRegistro<\/a>"],[100,1,"<a href=\"Http\/Controllers\/AutentificacionController.php.html#68\">App\\Http\\Controllers\\AutentificacionController::registrar<\/a>"],[0,1,"<a href=\"Http\/Controllers\/AutentificacionController.php.html#103\">App\\Http\\Controllers\\AutentificacionController::mostrarRecuperar<\/a>"],[83.33333333333334,3,"<a href=\"Http\/Controllers\/AutentificacionController.php.html#108\">App\\Http\\Controllers\\AutentificacionController::enviarCorreo<\/a>"],[0,1,"<a href=\"Http\/Controllers\/AutentificacionController.php.html#139\">App\\Http\\Controllers\\AutentificacionController::mostrarRestablecer<\/a>"],[0,2,"<a href=\"Http\/Controllers\/AutentificacionController.php.html#146\">App\\Http\\Controllers\\AutentificacionController::restablecer<\/a>"],[100,1,"<a href=\"Http\/Controllers\/AutentificacionController.php.html#184\">App\\Http\\Controllers\\AutentificacionController::salir<\/a>"],[97.14285714285714,2,"<a href=\"Http\/Controllers\/ColaboracionController.php.html#20\">App\\Http\\Controllers\\ColaboracionController::detalle<\/a>"],[100,1,"<a href=\"Http\/Controllers\/ColaboracionController.php.html#69\">App\\Http\\Controllers\\ColaboracionController::invitar<\/a>"],[100,1,"<a href=\"Http\/Controllers\/ColaboracionController.php.html#108\">App\\Http\\Controllers\\ColaboracionController::aceptar<\/a>"],[100,1,"<a href=\"Http\/Controllers\/ColaboracionController.php.html#143\">App\\Http\\Controllers\\ColaboracionController::rechazar<\/a>"],[100,1,"<a href=\"Http\/Controllers\/ColaboracionController.php.html#174\">App\\Http\\Controllers\\ColaboracionController::guardarOpcion<\/a>"],[100,2,"<a href=\"Http\/Controllers\/ColaboracionController.php.html#210\">App\\Http\\Controllers\\ColaboracionController::votar<\/a>"],[100,1,"<a href=\"Http\/Controllers\/CuentaController.php.html#20\">App\\Http\\Controllers\\CuentaController::datos<\/a>"],[100,1,"<a href=\"Http\/Controllers\/CuentaController.php.html#44\">App\\Http\\Controllers\\CuentaController::actualizarPerfil<\/a>"],[100,1,"<a href=\"Http\/Controllers\/CuentaController.php.html#71\">App\\Http\\Controllers\\CuentaController::actualizarContrasena<\/a>"],[100,2,"<a href=\"Http\/Controllers\/CuentaController.php.html#96\">App\\Http\\Controllers\\CuentaController::exportar<\/a>"],[100,2,"<a href=\"Http\/Controllers\/CuentaController.php.html#121\">App\\Http\\Controllers\\CuentaController::eliminarCuenta<\/a>"],[100,1,"<a href=\"Http\/Controllers\/EventosController.php.html#16\">App\\Http\\Controllers\\EventosController::guardar<\/a>"],[100,1,"<a href=\"Http\/Controllers\/EventosController.php.html#32\">App\\Http\\Controllers\\EventosController::analitica<\/a>"],[79.54545454545455,7,"<a href=\"Http\/Controllers\/GastosController.php.html#23\">App\\Http\\Controllers\\GastosController::guardarGasto<\/a>"],[97.95918367346938,6,"<a href=\"Http\/Controllers\/GastosController.php.html#90\">App\\Http\\Controllers\\GastosController::guardarPago<\/a>"],[95.45454545454545,2,"<a href=\"Http\/Controllers\/GastosController.php.html#163\">App\\Http\\Controllers\\GastosController::confirmarPago<\/a>"],[95.83333333333334,2,"<a href=\"Http\/Controllers\/GastosController.php.html#200\">App\\Http\\Controllers\\GastosController::rechazarPago<\/a>"],[100,6,"<a href=\"Http\/Controllers\/HistorialController.php.html#13\">App\\Http\\Controllers\\HistorialController::index<\/a>"],[93.33333333333333,7,"<a href=\"Http\/Controllers\/PerfilCobroController.php.html#15\">App\\Http\\Controllers\\PerfilCobroController::update<\/a>"],[72.72727272727273,12,"<a href=\"Http\/Controllers\/PlanesController.php.html#31\">App\\Http\\Controllers\\PlanesController::listar<\/a>"],[100,1,"<a href=\"Http\/Controllers\/PlanesController.php.html#132\">App\\Http\\Controllers\\PlanesController::guardar<\/a>"],[50,1,"<a href=\"Http\/Controllers\/PlanesController.php.html#154\">App\\Http\\Controllers\\PlanesController::editar<\/a>"],[100,1,"<a href=\"Http\/Controllers\/PlanesController.php.html#166\">App\\Http\\Controllers\\PlanesController::actualizar<\/a>"],[79.16666666666666,4,"<a href=\"Http\/Controllers\/PlanesController.php.html#182\">App\\Http\\Controllers\\PlanesController::eliminar<\/a>"],[100,1,"<a href=\"Http\/Controllers\/PlanesController.php.html#226\">App\\Http\\Controllers\\PlanesController::cambiarEstado<\/a>"],[100,2,"<a href=\"Http\/Controllers\/PlanesController.php.html#248\">App\\Http\\Controllers\\PlanesController::confirmar<\/a>"],[100,2,"<a href=\"Http\/Controllers\/PlanesController.php.html#281\">App\\Http\\Controllers\\PlanesController::retirarse<\/a>"],[100,1,"<a href=\"Http\/Requests\/ConfirmarPlanRequest.php.html#16\">App\\Http\\Requests\\ConfirmarPlanRequest::authorize<\/a>"],[90,6,"<a href=\"Http\/Requests\/ConfirmarPlanRequest.php.html#26\">App\\Http\\Requests\\ConfirmarPlanRequest::rules<\/a>"],[52.17391304347826,13,"<a href=\"Http\/Requests\/ConfirmarPlanRequest.php.html#51\">App\\Http\\Requests\\ConfirmarPlanRequest::withValidator<\/a>"],[100,1,"<a href=\"Http\/Requests\/ConfirmarPlanRequest.php.html#95\">App\\Http\\Requests\\ConfirmarPlanRequest::messages<\/a>"],[100,1,"<a href=\"Http\/Requests\/RechazarPagoRequest.php.html#13\">App\\Http\\Requests\\RechazarPagoRequest::authorize<\/a>"],[100,1,"<a href=\"Http\/Requests\/RechazarPagoRequest.php.html#23\">App\\Http\\Requests\\RechazarPagoRequest::rules<\/a>"],[100,1,"<a href=\"Http\/Requests\/RechazarPagoRequest.php.html#33\">App\\Http\\Requests\\RechazarPagoRequest::messages<\/a>"],[100,1,"<a href=\"Http\/Requests\/RetirarsePlanRequest.php.html#14\">App\\Http\\Requests\\RetirarsePlanRequest::authorize<\/a>"],[100,1,"<a href=\"Http\/Requests\/RetirarsePlanRequest.php.html#24\">App\\Http\\Requests\\RetirarsePlanRequest::rules<\/a>"],[85.71428571428571,4,"<a href=\"Http\/Requests\/RetirarsePlanRequest.php.html#34\">App\\Http\\Requests\\RetirarsePlanRequest::withValidator<\/a>"],[100,1,"<a href=\"Http\/Requests\/RetirarsePlanRequest.php.html#54\">App\\Http\\Requests\\RetirarsePlanRequest::messages<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreEventoRequest.php.html#13\">App\\Http\\Requests\\StoreEventoRequest::authorize<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreEventoRequest.php.html#23\">App\\Http\\Requests\\StoreEventoRequest::rules<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreEventoRequest.php.html#36\">App\\Http\\Requests\\StoreEventoRequest::messages<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreGastoRequest.php.html#15\">App\\Http\\Requests\\StoreGastoRequest::authorize<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreGastoRequest.php.html#25\">App\\Http\\Requests\\StoreGastoRequest::rules<\/a>"],[51.515151515151516,9,"<a href=\"Http\/Requests\/StoreGastoRequest.php.html#41\">App\\Http\\Requests\\StoreGastoRequest::withValidator<\/a>"],[100,1,"<a href=\"Http\/Requests\/StoreGastoRequest.php.html#99\">App\\Http\\Requests\\StoreGastoRequest::messages<\/a>"],[100,1,"<a href=\"Http\/Requests\/StorePagoRequest.php.html#14\">App\\Http\\Requests\\StorePagoRequest::authorize<\/a>"],[100,1,"<a href=\"Http\/Requests\/StorePagoRequest.php.html#24\">App\\Http\\Requests\\StorePagoRequest::rules<\/a>"],[87.09677419354838,8,"<a href=\"Http\/Requests\/StorePagoRequest.php.html#36\">App\\Http\\Requests\\StorePagoRequest::withValidator<\/a>"],[100,1,"<a href=\"Http\/Requests\/StorePagoRequest.php.html#88\">App\\Http\\Requests\\StorePagoRequest::messages<\/a>"],[100,1,"<a href=\"Http\/Requests\/StorePlanRequest.php.html#13\">App\\Http\\Requests\\StorePlanRequest::authorize<\/a>"],[100,1,"<a href=\"Http\/Requests\/StorePlanRequest.php.html#23\">App\\Http\\Requests\\StorePlanRequest::rules<\/a>"],[100,1,"<a href=\"Http\/Requests\/StorePlanRequest.php.html#36\">App\\Http\\Requests\\StorePlanRequest::messages<\/a>"],[100,1,"<a href=\"Http\/Requests\/UpdateDatosCobroRequest.php.html#13\">App\\Http\\Requests\\UpdateDatosCobroRequest::authorize<\/a>"],[100,1,"<a href=\"Http\/Requests\/UpdateDatosCobroRequest.php.html#23\">App\\Http\\Requests\\UpdateDatosCobroRequest::rules<\/a>"],[100,1,"<a href=\"Http\/Requests\/UpdateDatosCobroRequest.php.html#36\">App\\Http\\Requests\\UpdateDatosCobroRequest::messages<\/a>"],[100,1,"<a href=\"Http\/Requests\/UpdatePlanRequest.php.html#13\">App\\Http\\Requests\\UpdatePlanRequest::authorize<\/a>"],[100,1,"<a href=\"Http\/Requests\/UpdatePlanRequest.php.html#23\">App\\Http\\Requests\\UpdatePlanRequest::rules<\/a>"],[100,1,"<a href=\"Http\/Requests\/UpdatePlanRequest.php.html#36\">App\\Http\\Requests\\UpdatePlanRequest::messages<\/a>"],[0,1,"<a href=\"Mail\/Transport\/CloudflareMailTransport.php.html#12\">App\\Mail\\Transport\\CloudflareMailTransport::__construct<\/a>"],[0,5,"<a href=\"Mail\/Transport\/CloudflareMailTransport.php.html#19\">App\\Mail\\Transport\\CloudflareMailTransport::doSend<\/a>"],[0,1,"<a href=\"Mail\/Transport\/CloudflareMailTransport.php.html#49\">App\\Mail\\Transport\\CloudflareMailTransport::__toString<\/a>"],[100,2,"<a href=\"Models\/Evento.php.html#28\">App\\Models\\Evento::registrar<\/a>"],[100,2,"<a href=\"Models\/Evento.php.html#39\">App\\Models\\Evento::getFechaBoliviaAttribute<\/a>"],[100,2,"<a href=\"Models\/Evento.php.html#49\">App\\Models\\Evento::getHoraBoliviaAttribute<\/a>"],[100,2,"<a href=\"Models\/Evento.php.html#59\">App\\Models\\Evento::calcularPorcentaje<\/a>"],[100,2,"<a href=\"Models\/Evento.php.html#71\">App\\Models\\Evento::calcularDropOff<\/a>"],[100,1,"<a href=\"Models\/Evento.php.html#96\">App\\Models\\Evento::metricasEmbudoCreacion<\/a>"],[100,1,"<a href=\"Models\/Evento.php.html#125\">App\\Models\\Evento::metricasEmbudo<\/a>"],[100,1,"<a href=\"Models\/Evento.php.html#142\">App\\Models\\Evento::metricasEmbudoVotacion<\/a>"],[100,1,"<a href=\"Models\/Evento.php.html#177\">App\\Models\\Evento::metricasEmbudoInvitaciones<\/a>"],[100,1,"<a href=\"Models\/Evento.php.html#215\">App\\Models\\Evento::metricasEmbudoGastos<\/a>"],[100,1,"<a href=\"Models\/Evento.php.html#252\">App\\Models\\Evento::metricasEmbudoRetiro<\/a>"],[100,2,"<a href=\"Models\/Evento.php.html#289\">App\\Models\\Evento::metricasEmbudoFiltros<\/a>"],[100,2,"<a href=\"Models\/Evento.php.html#328\">App\\Models\\Evento::metricasTodosLosEmbudos<\/a>"],[100,1,"<a href=\"Models\/Gasto.php.html#32\">App\\Models\\Gasto::plan<\/a>"],[100,1,"<a href=\"Models\/Gasto.php.html#40\">App\\Models\\Gasto::pagador<\/a>"],[100,1,"<a href=\"Models\/Gasto.php.html#48\">App\\Models\\Gasto::divisiones<\/a>"],[0,1,"<a href=\"Models\/Gasto.php.html#56\">App\\Models\\Gasto::participantes<\/a>"],[0,1,"<a href=\"Models\/GastoDivision.php.html#28\">App\\Models\\GastoDivision::gasto<\/a>"],[100,1,"<a href=\"Models\/GastoDivision.php.html#36\">App\\Models\\GastoDivision::user<\/a>"],[100,1,"<a href=\"Models\/Invitacion.php.html#28\">App\\Models\\Invitacion::plan<\/a>"],[100,1,"<a href=\"Models\/Invitacion.php.html#36\">App\\Models\\Invitacion::user<\/a>"],[100,1,"<a href=\"Models\/Invitacion.php.html#44\">App\\Models\\Invitacion::scopeAceptadas<\/a>"],[100,1,"<a href=\"Models\/Invitacion.php.html#52\">App\\Models\\Invitacion::scopeDeUsuario<\/a>"],[100,1,"<a href=\"Models\/Invitacion.php.html#63\">App\\Models\\Invitacion::rechazar<\/a>"],[100,1,"<a href=\"Models\/Opcion.php.html#30\">App\\Models\\Opcion::plan<\/a>"],[100,1,"<a href=\"Models\/Opcion.php.html#38\">App\\Models\\Opcion::user<\/a>"],[100,1,"<a href=\"Models\/Opcion.php.html#46\">App\\Models\\Opcion::votos<\/a>"],[100,1,"<a href=\"Models\/Opcion.php.html#54\">App\\Models\\Opcion::votantes<\/a>"],[100,1,"<a href=\"Models\/Opcion.php.html#62\">App\\Models\\Opcion::scopeFechas<\/a>"],[100,1,"<a href=\"Models\/Opcion.php.html#70\">App\\Models\\Opcion::scopeLugares<\/a>"],[100,1,"<a href=\"Models\/Pago.php.html#42\">App\\Models\\Pago::plan<\/a>"],[100,1,"<a href=\"Models\/Pago.php.html#50\">App\\Models\\Pago::deudor<\/a>"],[100,1,"<a href=\"Models\/Pago.php.html#58\">App\\Models\\Pago::receptor<\/a>"],[0,1,"<a href=\"Models\/Pago.php.html#66\">App\\Models\\Pago::esPendiente<\/a>"],[100,1,"<a href=\"Models\/Pago.php.html#74\">App\\Models\\Pago::esConfirmado<\/a>"],[100,1,"<a href=\"Models\/Pago.php.html#82\">App\\Models\\Pago::esRechazado<\/a>"],[100,1,"<a href=\"Models\/Pago.php.html#90\">App\\Models\\Pago::tieneComprobante<\/a>"],[100,1,"<a href=\"Models\/Pago.php.html#98\">App\\Models\\Pago::esEscaneoVerificado<\/a>"],[100,1,"<a href=\"Models\/Pago.php.html#106\">App\\Models\\Pago::esEscaneoDiscrepante<\/a>"],[100,1,"<a href=\"Models\/Pago.php.html#114\">App\\Models\\Pago::esEscaneoInvalido<\/a>"],[0,1,"<a href=\"Models\/Pago.php.html#122\">App\\Models\\Pago::esEscaneoPendiente<\/a>"],[100,3,"<a href=\"Models\/Plan.php.html#38\">App\\Models\\Plan::booted<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#82\">App\\Models\\Plan::actividades<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#90\">App\\Models\\Plan::user<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#98\">App\\Models\\Plan::propuestaFechaGanadora<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#106\">App\\Models\\Plan::propuestaLugarGanadora<\/a>"],[100,2,"<a href=\"Models\/Plan.php.html#114\">App\\Models\\Plan::tieneEmpateTipo<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#130\">App\\Models\\Plan::tieneEmpateFechas<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#138\">App\\Models\\Plan::tieneEmpateLugares<\/a>"],[100,2,"<a href=\"Models\/Plan.php.html#146\">App\\Models\\Plan::obtenerPropuestasEmpatadas<\/a>"],[87.5,3,"<a href=\"Models\/Plan.php.html#161\">App\\Models\\Plan::obtenerGanadorIndiscutido<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#181\">App\\Models\\Plan::esInmutable<\/a>"],[100,2,"<a href=\"Models\/Plan.php.html#189\">App\\Models\\Plan::validarPropuestaPertenece<\/a>"],[70,6,"<a href=\"Models\/Plan.php.html#197\">App\\Models\\Plan::asignarGanadora<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#221\">App\\Models\\Plan::opciones<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#229\">App\\Models\\Plan::invitaciones<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#237\">App\\Models\\Plan::participantes<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#246\">App\\Models\\Plan::gastos<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#254\">App\\Models\\Plan::pagos<\/a>"],[100,23,"<a href=\"Models\/Plan.php.html#268\">App\\Models\\Plan::calcularSaldosNetos<\/a>"],[100,4,"<a href=\"Models\/Plan.php.html#406\">App\\Models\\Plan::usuarioTieneDeuda<\/a>"],[100,4,"<a href=\"Models\/Plan.php.html#421\">App\\Models\\Plan::obtenerMontoDeudaUsuario<\/a>"],[100,3,"<a href=\"Models\/Plan.php.html#437\">App\\Models\\Plan::tieneDeudasPendientes<\/a>"],[100,1,"<a href=\"Models\/Plan.php.html#452\">App\\Models\\Plan::puedeEliminarse<\/a>"],[100,3,"<a href=\"Models\/Plan.php.html#462\">App\\Models\\Plan::validarBloqueosEliminacion<\/a>"],[100,3,"<a href=\"Models\/Plan.php.html#498\">App\\Models\\Plan::retirarParticipante<\/a>"],[100,2,"<a href=\"Models\/Plan.php.html#529\">App\\Models\\Plan::esParticipanteAceptado<\/a>"],[100,5,"<a href=\"Models\/Plan.php.html#536\">App\\Models\\Plan::scopeFiltrar<\/a>"],[100,1,"<a href=\"Models\/PlanActivity.php.html#31\">App\\Models\\PlanActivity::casts<\/a>"],[100,1,"<a href=\"Models\/PlanActivity.php.html#42\">App\\Models\\PlanActivity::plan<\/a>"],[100,1,"<a href=\"Models\/PlanActivity.php.html#50\">App\\Models\\PlanActivity::user<\/a>"],[100,1,"<a href=\"Models\/PlanActivity.php.html#58\">App\\Models\\PlanActivity::destinatario<\/a>"],[100,1,"<a href=\"Models\/PlanActivity.php.html#66\">App\\Models\\PlanActivity::scopeVisiblesParaUsuario<\/a>"],[100,1,"<a href=\"Models\/PlanActivity.php.html#77\">App\\Models\\PlanActivity::scopeRecientes<\/a>"],[100,1,"<a href=\"Models\/User.php.html#52\">App\\Models\\User::casts<\/a>"],[100,1,"<a href=\"Models\/User.php.html#64\">App\\Models\\User::actividades<\/a>"],[0,1,"<a href=\"Models\/User.php.html#72\">App\\Models\\User::actividadesRecibidas<\/a>"],[100,1,"<a href=\"Models\/User.php.html#80\">App\\Models\\User::planes<\/a>"],[100,1,"<a href=\"Models\/User.php.html#88\">App\\Models\\User::invitaciones<\/a>"],[100,1,"<a href=\"Models\/User.php.html#96\">App\\Models\\User::planesParticipados<\/a>"],[0,1,"<a href=\"Models\/User.php.html#105\">App\\Models\\User::opciones<\/a>"],[100,1,"<a href=\"Models\/User.php.html#113\">App\\Models\\User::votos<\/a>"],[100,1,"<a href=\"Models\/User.php.html#121\">App\\Models\\User::gastosPagados<\/a>"],[100,1,"<a href=\"Models\/User.php.html#129\">App\\Models\\User::gastoDivisiones<\/a>"],[100,1,"<a href=\"Models\/User.php.html#137\">App\\Models\\User::pagosRealizados<\/a>"],[100,1,"<a href=\"Models\/User.php.html#145\">App\\Models\\User::pagosRecibidos<\/a>"],[100,3,"<a href=\"Models\/User.php.html#153\">App\\Models\\User::tieneDatosCobro<\/a>"],[100,1,"<a href=\"Models\/User.php.html#161\">App\\Models\\User::puedeEliminarCuenta<\/a>"],[100,6,"<a href=\"Models\/User.php.html#171\">App\\Models\\User::validarBloqueosEliminacionCuenta<\/a>"],[100,2,"<a href=\"Models\/User.php.html#222\">App\\Models\\User::eliminarCuenta<\/a>"],[100,1,"<a href=\"Models\/Voto.php.html#25\">App\\Models\\Voto::opcion<\/a>"],[100,1,"<a href=\"Models\/Voto.php.html#33\">App\\Models\\Voto::user<\/a>"],[0,1,"<a href=\"Policies\/GastoPolicy.php.html#14\">App\\Policies\\GastoPolicy::view<\/a>"],[66.66666666666666,2,"<a href=\"Policies\/GastoPolicy.php.html#22\">App\\Policies\\GastoPolicy::create<\/a>"],[100,2,"<a href=\"Policies\/GastoPolicy.php.html#34\">App\\Policies\\GastoPolicy::esParticipanteDelPlan<\/a>"],[66.66666666666666,2,"<a href=\"Policies\/PagoPolicy.php.html#14\">App\\Policies\\PagoPolicy::create<\/a>"],[100,2,"<a href=\"Policies\/PagoPolicy.php.html#26\">App\\Policies\\PagoPolicy::confirmar<\/a>"],[100,2,"<a href=\"Policies\/PagoPolicy.php.html#38\">App\\Policies\\PagoPolicy::rechazar<\/a>"],[100,2,"<a href=\"Policies\/PagoPolicy.php.html#50\">App\\Policies\\PagoPolicy::esParticipanteDelPlan<\/a>"],[100,2,"<a href=\"Policies\/PlanPolicy.php.html#13\">App\\Policies\\PlanPolicy::view<\/a>"],[100,2,"<a href=\"Policies\/PlanPolicy.php.html#21\">App\\Policies\\PlanPolicy::aceptar<\/a>"],[66.66666666666666,2,"<a href=\"Policies\/PlanPolicy.php.html#33\">App\\Policies\\PlanPolicy::rechazar<\/a>"],[100,2,"<a href=\"Policies\/PlanPolicy.php.html#45\">App\\Policies\\PlanPolicy::update<\/a>"],[100,1,"<a href=\"Policies\/PlanPolicy.php.html#57\">App\\Policies\\PlanPolicy::delete<\/a>"],[100,1,"<a href=\"Policies\/PlanPolicy.php.html#65\">App\\Policies\\PlanPolicy::cambiarEstado<\/a>"],[100,2,"<a href=\"Policies\/PlanPolicy.php.html#73\">App\\Policies\\PlanPolicy::confirmar<\/a>"],[100,2,"<a href=\"Policies\/PlanPolicy.php.html#85\">App\\Policies\\PlanPolicy::invitar<\/a>"],[100,4,"<a href=\"Policies\/PlanPolicy.php.html#97\">App\\Policies\\PlanPolicy::proponer<\/a>"],[100,4,"<a href=\"Policies\/PlanPolicy.php.html#113\">App\\Policies\\PlanPolicy::votar<\/a>"],[100,3,"<a href=\"Policies\/PlanPolicy.php.html#131\">App\\Policies\\PlanPolicy::retirarse<\/a>"],[100,1,"<a href=\"Policies\/PlanPolicy.php.html#147\">App\\Policies\\PlanPolicy::isCreator<\/a>"],[100,1,"<a href=\"Policies\/PlanPolicy.php.html#155\">App\\Policies\\PlanPolicy::isParticipante<\/a>"],[100,1,"<a href=\"Policies\/PlanPolicy.php.html#163\">App\\Policies\\PlanPolicy::isInvitado<\/a>"],[100,2,"<a href=\"Policies\/PlanPolicy.php.html#174\">App\\Policies\\PlanPolicy::isCreatorOrParticipante<\/a>"],[100,1,"<a href=\"Providers\/AppServiceProvider.php.html#24\">App\\Providers\\AppServiceProvider::register<\/a>"],[54.54545454545454,3,"<a href=\"Providers\/AppServiceProvider.php.html#34\">App\\Providers\\AppServiceProvider::boot<\/a>"],[100,2,"<a href=\"Services\/Comprobante\/GeminiComprobanteScanner.php.html#13\">App\\Services\\Comprobante\\GeminiComprobanteScanner::__construct<\/a>"],[91.02564102564102,13,"<a href=\"Services\/Comprobante\/GeminiComprobanteScanner.php.html#24\">App\\Services\\Comprobante\\GeminiComprobanteScanner::scan<\/a>"],[100,1,"<a href=\"Services\/UserDataExportService.php.html#14\">App\\Services\\UserDataExportService::exportarJson<\/a>"],[60.60606060606061,13,"<a href=\"Services\/UserDataExportService.php.html#115\">App\\Services\\UserDataExportService::exportarCsv<\/a>"]], 'Method Complexity'))
+      .transition()
+      .duration(500)
+      .call(chart);
+
+    nv.utils.windowResize(chart.update);
+
+    return chart;
+  });
+
+  function getComplexityData(data, label) {
+    var values = [];
+    $.each(data, function(key) {
+      var value = Math.round(data[key][0]*100) / 100;
+      values.push({
+        x: value,
+        y: data[key][1],
+        class: data[key][2],
+        size: 0.05,
+        shape: 'diamond'
+      });
+    });
+
+    return [
+      {
+        key: label,
+        values: values,
+        color: "#4572A7"
+      }
+    ];
+  }
+});
+  </script>
+ </body>
+</html>
