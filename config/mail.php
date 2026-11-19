@@ -65,6 +65,12 @@ return [
             'transport' => 'resend',
         ],
 
+        'cloudflare' => [
+            'transport' => 'cloudflare',
+            'endpoint' => env('MAIL_BRIDGE_ENDPOINT', 'https://planazo-mail-bridge.moisescisnerosdl.workers.dev'),
+            'secret' => env('MAIL_BRIDGE_SECRET', 'planazo-secure-key-2026'),
+        ],
+
         'sendmail' => [
             'transport' => 'sendmail',
             'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
