@@ -5,6 +5,17 @@ on:
     branches:
       - master
       - main
+    paths-ignore:
+      - 'docs/**'
+      - '*.md'
+      - '.agent/**'
+      - '.gemini/**'
+      - '.github/workflows/keep-alive.yml'
+      - 'odd/**'
+      - 'openspec/**'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.editorconfig'
 
 jobs:
   validate-subissue:
